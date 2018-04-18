@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "893027912879",
+    "firebase_url": "https://ubuyquick-d4121.firebaseio.com",
+    "project_id": "ubuyquick-d4121",
+    "storage_bucket": "ubuyquick-d4121.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893027912879:android:69833b8eab863d5c",
+        "android_client_info": {
+          "package_name": "com.ubuyquick.vendor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893027912879-n4tnohc3fctbf6273ng5hucvvs218f58.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ubuyquick.vendor",
+            "certificate_hash": "ef10422d3f93d06332335d3bf2b7eef3ac0e7e5f"
+          }
+        },
+        {
+          "client_id": "893027912879-hvi1l6kfcnfni25r9o2ekror4um61man.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATVCX1JiSOOqVxNmQ4Lat1swUxJCE9Kzg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893027912879-hvi1l6kfcnfni25r9o2ekror4um61man.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
