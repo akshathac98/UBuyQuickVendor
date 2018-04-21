@@ -42,10 +42,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".auth.RegisterActivity"
+            android:name=".RegisterActivity"
             android:theme="@style/AppThemeFullScreen" />
         <activity
-            android:name=".auth.VerifyLoginActivity"
+            android:name=".auth.VerifyOTPActivity"
             android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".HomeActivity"

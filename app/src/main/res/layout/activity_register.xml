@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context="com.ubuyquick.vendor.auth.RegisterActivity">
+    tools:context="com.ubuyquick.vendor.RegisterActivity">
 
     <android.support.constraint.ConstraintLayout
         android:focusableInTouchMode="true"

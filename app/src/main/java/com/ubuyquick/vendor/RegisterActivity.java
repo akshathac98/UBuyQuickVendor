@@ -1,4 +1,4 @@
-package com.ubuyquick.vendor.auth;
+package com.ubuyquick.vendor;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -24,10 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ubuyquick.vendor.R;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

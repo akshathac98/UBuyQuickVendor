@@ -24,9 +24,9 @@ public class LoginActivity extends AppCompatActivity {
     private String terms = "By logging in, you agree to the <a><u><font color='black'>Terms &amp; Conditions</font></u></a> of " +
             "using this account and to the <a><u><font color='black'>Privacy Policy</font></u></a> of <a><u><font color='#03A9F4'>UBuyQuick.com</font></u></a>";
 
-    private TextView tv_terms, tv_register;
+    private TextView tv_terms;
     private TextInputEditText et_mobile_number;
-    private Button btn_login;
+    private Button btn_login, btn_signup;
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
@@ -59,18 +59,25 @@ public class LoginActivity extends AppCompatActivity {
         tv_terms = (TextView) findViewById(R.id.tv_terms);
         tv_terms.setText(Html.fromHtml(terms));
         et_mobile_number = (TextInputEditText) findViewById(R.id.et_mobile_number);
-        tv_register = (TextView) findViewById(R.id.tv_register);
+        btn_signup = (Button) findViewById(R.id.btn_signup);
         btn_login = (Button) findViewById(R.id.btn_login);
 
     }
 
     private void initializeListeners() {
 
-        tv_register.setOnClickListener(new View.OnClickListener() {
+        btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                String mobile_number = et_mobile_number.getText().toString();
+                if (mobile_number.length() == 10) {
+                    Intent i = new Intent(LoginActivity.this, VerifyOTPActivity.class);
+                    i.putExtra(Intent.EXTRA_PHONE_NUMBER, mobile_number);
+                    i.putExtra("VERIFICATION_TYPE", "REGISTER");
+                    startActivity(i);
+                } else {
+                    Toast.makeText(LoginActivity.this, "Enter valid mobile number", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -79,7 +86,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String mobile_number = et_mobile_number.getText().toString();
                 if (mobile_number.length() == 10) {
-                    Intent i = new Intent(LoginActivity.this, VerifyLoginActivity.class);
+                    Intent i = new Intent(LoginActivity.this, VerifyOTPActivity.class);
+                    i.putExtra("VERIFICATION_TYPE", "LOGIN");
                     i.putExtra(Intent.EXTRA_PHONE_NUMBER, mobile_number);
                     startActivity(i);
                 } else {

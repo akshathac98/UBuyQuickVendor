@@ -21,9 +21,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.0'
-    implementation 'com.android.support:support-v4:27.1.0'
-    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:multidex:1.0.3'
     testImplementation 'junit:junit:4.12'
@@ -32,6 +32,12 @@ dependencies {
 
     // Firebase Auth
     compile 'com.google.firebase:firebase-auth:15.0.0'
+
+    // Firebase Storage
+    compile 'com.google.firebase:firebase-storage:15.0.0'
+
+    // Firebase Cloud Firestore
+    compile 'com.google.firebase:firebase-firestore:15.0.0'
 
     // PinView
     compile 'com.chaos.view:pinview:1.3.1'

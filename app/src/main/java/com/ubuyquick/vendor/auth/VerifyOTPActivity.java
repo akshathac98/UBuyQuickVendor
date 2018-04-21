@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.chaos.view.PinView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
@@ -20,22 +21,27 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ubuyquick.vendor.HomeActivity;
 import com.ubuyquick.vendor.R;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class VerifyLoginActivity extends AppCompatActivity {
+public class VerifyOTPActivity extends AppCompatActivity {
 
-    private static final String TAG = "VerifyLoginActivity";
+    private static final String TAG = "VerifyOTPActivity";
 
-    private String mobile_number, mVerificationId;
+    private String mobile_number, mVerificationId, verification_type;
 
     private TextView tv_code;
     private Button btn_verify;
     private PinView pinView;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     private PhoneAuthProvider.ForceResendingToken token;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
@@ -46,8 +52,10 @@ public class VerifyLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_verify_login);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         mobile_number = getIntent().getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+        verification_type = getIntent().getStringExtra("VERIFICATION_TYPE");
 
         tv_code = (TextView) findViewById(R.id.tv_code);
         btn_verify = (Button) findViewById(R.id.btn_verify);
@@ -65,14 +73,39 @@ public class VerifyLoginActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     Log.d(TAG, "onComplete: sign in success");
-                                    Intent i = new Intent(VerifyLoginActivity.this, HomeActivity.class);
+                                    final Intent i = new Intent(VerifyOTPActivity.this, HomeActivity.class);
                                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(i);
-                                    finish();
+                                    if (verification_type.equals("REGISTER")) {
+                                        Map<String, Object> user = new HashMap<>();
+                                        user.put("email", "NA");
+                                        user.put("uid", task.getResult().getUser().getUid());
+                                        user.put("phone", mobile_number);
+                                        user.put("pan_number", "NA");
+                                        user.put("aadhar_number", "NA");
+
+                                        db.collection("users")
+                                                .document(mobile_number).set(user)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        startActivity(i);
+                                                        finish();
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(VerifyOTPActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    } else {
+                                        startActivity(i);
+                                        finish();
+                                    }
                                 } else {
                                     Log.d(TAG, "onComplete: failure: " + task.getException());
                                     if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                        Toast.makeText(VerifyLoginActivity.this, "Invalid OTP", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(VerifyOTPActivity.this, "Invalid OTP", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             }
@@ -81,7 +114,7 @@ public class VerifyLoginActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.d(TAG, "onFailure: " + e.getLocalizedMessage());
-                                Toast.makeText(VerifyLoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(VerifyOTPActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
             }
@@ -92,7 +125,7 @@ public class VerifyLoginActivity extends AppCompatActivity {
             public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
                 mVerificationId = s;
                 token = forceResendingToken;
-                Toast.makeText(VerifyLoginActivity.this, "OTP verification code sent", Toast.LENGTH_SHORT).show();
+                Toast.makeText(VerifyOTPActivity.this, "OTP verification code sent", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onCodeSent: " + s);
             }
 
@@ -100,17 +133,17 @@ public class VerifyLoginActivity extends AppCompatActivity {
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
                 Log.d(TAG, "onVerificationCompleted: " + phoneAuthCredential.getSmsCode());
                 pinView.setText(phoneAuthCredential.getSmsCode());
-                Toast.makeText(VerifyLoginActivity.this, "Verified successfully.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(VerifyOTPActivity.this, "Verified successfully.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 Log.d(TAG, "onVerificationFailed: " + e.getLocalizedMessage());
-                Toast.makeText(VerifyLoginActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(VerifyOTPActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         };
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber("+91" + mobile_number,
-                60, TimeUnit.SECONDS, VerifyLoginActivity.this, mCallbacks);
+                60, TimeUnit.SECONDS, VerifyOTPActivity.this, mCallbacks);
     }
 }
