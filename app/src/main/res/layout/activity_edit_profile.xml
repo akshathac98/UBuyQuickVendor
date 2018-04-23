@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context="com.ubuyquick.vendor.RegisterActivity">
+    tools:context="com.ubuyquick.vendor.EditProfileActivity">
 
     <android.support.constraint.ConstraintLayout
         android:focusableInTouchMode="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/textView3"
@@ -19,7 +19,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:text="Sign Up"
+            android:text="Edit Profile"
             android:textColor="@color/colorTextPrimary"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +35,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_user"
+            android:background="@drawable/ic_user"
+            android:backgroundTint="@android:color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
@@ -171,7 +172,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/tv_upload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -193,7 +194,7 @@
             android:layout_marginTop="12dp"
             android:src="@drawable/ic_document"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_upload" />
 
         <ImageView
             android:id="@+id/img_pan"
@@ -205,7 +206,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.371"
             app:layout_constraintStart_toEndOf="@+id/img_aadhar"
-            app:layout_constraintTop_toBottomOf="@+id/textView6"
+            app:layout_constraintTop_toBottomOf="@+id/tv_upload"
             android:src="@drawable/ic_document" />
 
         <TextView
@@ -241,7 +242,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
         <Button
-            android:id="@+id/btn_register"
+            android:id="@+id/btn_save"
             android:textColor="@android:color/white"
             android:textAllCaps="false"
             android:textSize="18sp"
@@ -251,13 +252,13 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Sign Up"
+            android:text="Save Profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_terms" />
 
         <Button
-            android:id="@+id/btn_login"
+            android:id="@+id/btn_cancel"
             android:background="@android:color/white"
             android:textColor="@color/colorTextPrimary"
             android:layout_width="match_parent"
@@ -267,12 +268,12 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:textAllCaps="false"
-            android:text="Login"
+            android:text="Cancel"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_register" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_save" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

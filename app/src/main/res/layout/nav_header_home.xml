@@ -12,9 +12,8 @@
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:layout_gravity="center"
-        android:layout_marginTop="18dp"
-        android:background="@drawable/ic_user"
-        android:backgroundTint="@android:color/white" />
+        android:layout_marginTop="24dp"
+        android:background="@drawable/ic_user" />
 
     <TextView
         android:id="@+id/tv_vendor_name"
@@ -23,7 +22,7 @@
         android:layout_below="@id/img_vendor"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Vendor Name"
+        android:text="loading..."
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 
@@ -33,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/img_vendor"
         android:layout_gravity="center"
-        android:text="Not Verified" />
+        android:text="loading..." />
 
     <View
         android:id="@+id/view1"
@@ -62,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_vendor_email"
         android:layout_marginStart="16dp"
-        android:text="ajaysrinivas530@gmail.com" />
+        android:text="loading..." />
 
     <View
         android:id="@+id/view2"
@@ -89,7 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="+91 9008003968" />
+        android:text="loading..." />
 
     <View
         android:layout_width="match_parent"
@@ -114,7 +113,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="ABCD1234EF89" />
+        android:text="loading..." />
 
     <View
         android:layout_width="match_parent"
@@ -139,7 +138,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="1234 5678 1234" />
+        android:text="loading..." />
 
     <LinearLayout
         android:layout_width="match_parent"

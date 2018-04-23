@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RegisterActivity"
+            android:name=".EditProfileActivity"
             android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".auth.VerifyOTPActivity"
@@ -50,7 +50,13 @@
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ShopActivity"
+            android:label="@string/title_activity_shop"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".AddShopActivity"
+            android:label="Add New Shop" />
     </application>
 
 </manifest>

@@ -75,16 +75,21 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                     Log.d(TAG, "onComplete: sign in success");
                                     final Intent i = new Intent(VerifyOTPActivity.this, HomeActivity.class);
                                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    if (verification_type.equals("REGISTER")) {
-                                        Map<String, Object> user = new HashMap<>();
-                                        user.put("email", "NA");
-                                        user.put("uid", task.getResult().getUser().getUid());
-                                        user.put("phone", mobile_number);
-                                        user.put("pan_number", "NA");
-                                        user.put("aadhar_number", "NA");
+                                    if (verification_type.equals("REGISTER") || task.getResult().getAdditionalUserInfo().isNewUser()) {
+                                        Map<String, Object> vendor = new HashMap<>();
+                                        vendor.put("email", "NA");
+                                        vendor.put("name", "NA");
+                                        vendor.put("verified", false);
+                                        vendor.put("uid", task.getResult().getUser().getUid());
+                                        vendor.put("phone", mobile_number);
+                                        vendor.put("pan_number", "NA");
+                                        vendor.put("photo_url", "NA");
+                                        vendor.put("aadhar_number", "NA");
+                                        vendor.put("aadhar_image_url", "NA");
+                                        vendor.put("pan_image_url", "NA");
 
-                                        db.collection("users")
-                                                .document(mobile_number).set(user)
+                                        db.collection("vendors")
+                                                .document(mobile_number).set(vendor)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
