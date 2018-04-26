@@ -25,6 +25,7 @@
             android:layout_marginStart="8dp">
 
             <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_shop_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorPrimary"
@@ -44,6 +45,7 @@
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/et_shop_address"
                 android:backgroundTint="@color/colorPrimary"
                 android:hint="Address:"
                 android:minLines="2" />
@@ -62,6 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
+                android:id="@+id/et_shop_pincode"
                 android:backgroundTint="@color/colorPrimary"
                 android:hint="Pincode:" />
         </android.support.design.widget.TextInputLayout>
@@ -79,7 +82,7 @@
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btn_from"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_below="@id/textView10"
@@ -92,7 +95,7 @@
             android:textColor="@android:color/white" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/btn_to"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_below="@id/textView10"
@@ -117,7 +120,7 @@
             android:id="@+id/textView12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/button"
+            android:layout_below="@id/btn_from"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="12dp"
@@ -184,6 +187,19 @@
             android:text="Delivery Radius:"
             android:layout_below="@id/btn_location"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_add_shop"
+            android:layout_marginStart="8dp"
+            android:textColor="@android:color/white"
+            android:text="Add Shop"
+            android:textSize="24sp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorAccent"
+            android:layout_below="@id/tv_delivery_radius"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </RelativeLayout>
 </merge>
