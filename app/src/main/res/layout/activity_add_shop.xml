@@ -17,7 +17,6 @@
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
             android:layout_height="160dp"
-            android:background="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,15 +25,14 @@
             <ImageView
                 android:id="@+id/img_shop"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#757575" />
+                android:layout_height="match_parent"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Shop Image"
-                android:textColor="@android:color/white"
+                android:id="@+id/tv_upload"
+                android:text="Upload Shop Image"
                 android:textSize="24sp" />
 
             <android.support.design.widget.FloatingActionButton

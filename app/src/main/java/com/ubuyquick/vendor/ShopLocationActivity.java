@@ -1,5 +1,6 @@
 package com.ubuyquick.vendor;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -72,13 +73,16 @@ public class ShopLocationActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onClick(View v) {
                 shopLocationMap.clear();
+                if (!TextUtils.isEmpty(et_delivery_radius.getText())) {
+                    delivery_radius = Double.parseDouble(et_delivery_radius.getText().toString());
+                }
                 MarkerOptions markerOptions = new MarkerOptions()
                         .position(new LatLng(lat, lng))
                         .draggable(true)
                         .title(lat + "," + lng);
                 shopLocationMap.addMarker(markerOptions);
                 shopLocationMap.addCircle(new CircleOptions()
-                        .center(new LatLng(lat, lng)).radius(Double.parseDouble(et_delivery_radius.getText().toString())));
+                        .center(new LatLng(lat, lng)).radius(delivery_radius));
             }
         });
 
@@ -116,6 +120,17 @@ public class ShopLocationActivity extends AppCompatActivity implements OnMapRead
                     shopLocationMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
 
                 }
+            }
+        });
+
+        btn_set_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("radius", delivery_radius);
+                returnIntent.putExtra("result", new double[]{lat, lng});
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
             }
         });
     }

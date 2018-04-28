@@ -189,6 +189,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="10dp"
+            android:text="Location:"
+            android:layout_below="@id/tv_delivery_radius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/btn_add_shop"
             android:layout_marginStart="8dp"
@@ -198,7 +210,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:background="@color/colorAccent"
-            android:layout_below="@id/tv_delivery_radius"
+            android:layout_below="@id/tv_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </RelativeLayout>
