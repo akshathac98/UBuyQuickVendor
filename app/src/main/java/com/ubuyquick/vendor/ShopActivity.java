@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ubuyquick.vendor.shop.AnalysisFragment;
+import com.ubuyquick.vendor.shop.OrderFragment;
 import com.ubuyquick.vendor.shop.ProfileFragment;
 
 public class ShopActivity extends AppCompatActivity {
@@ -109,10 +110,13 @@ public class ShopActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) {
-                return new ProfileFragment();
-            } else {
-                return new AnalysisFragment();
+            switch (position) {
+                case 0:
+                    return new ProfileFragment();
+                case 1:
+                    return new OrderFragment();
+                default:
+                    return new AnalysisFragment();
             }
         }
 

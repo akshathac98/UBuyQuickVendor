@@ -52,6 +52,7 @@
             <RatingBar
                 android:id="@+id/rb_shop_rating"
                 android:rating="3"
+                android:isIndicator="true"
                 android:stepSize="0.5"
                 android:layout_below="@id/tv_products"
                 android:layout_centerHorizontal="true"
