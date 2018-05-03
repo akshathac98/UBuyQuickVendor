@@ -194,6 +194,7 @@ public class AddShopActivity extends AppCompatActivity {
                 uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        final String shop_id = et_shop_name.getText().toString().toUpperCase().replace(' ', '_');
                         String url = taskSnapshot.getDownloadUrl().toString();
                         Map<String, Object> shop = new HashMap<>();
                         shop.put("shop_name", et_shop_name.getText().toString());
@@ -202,13 +203,22 @@ public class AddShopActivity extends AppCompatActivity {
                         shop.put("shop_timings", btn_from.getText() + " to " + btn_to.getText());
                         shop.put("shop_location", lat + "," + lng);
                         shop.put("delivery_radius", radius);
+                        shop.put("verified", false);
+                        shop.put("shop_rating", 0.0);
+                        shop.put("shop_status", "OFFLINE");
+                        shop.put("shop_id", shop_id);
                         shop.put("shop_image_url", url.substring(0, url.indexOf(".jpg")+4));
 
-                        db.collection("vendors").document(mobile_number).collection("shops").add(shop)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        db.collection("vendors").document(mobile_number).collection("shops").document(shop_id).set(shop)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
-                                    public void onSuccess(DocumentReference documentReference) {
+                                    public void onSuccess(Void aVoid) {
+                                        Intent i = new Intent(AddShopActivity.this, ShopActivity.class);
+                                        i.putExtra("shop_id", shop_id);
+                                        i.putExtra("shop_name", et_shop_name.getText().toString());
                                         Toast.makeText(AddShopActivity.this, "Shop added successfully", Toast.LENGTH_SHORT).show();
+                                        startActivity(i);
+                                        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
                                         finish();
                                     }
                                 })

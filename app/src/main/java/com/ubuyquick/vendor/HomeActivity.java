@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,17 +23,25 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.ubuyquick.vendor.adapter.ShopAdapter;
 import com.ubuyquick.vendor.auth.LoginActivity;
+import com.ubuyquick.vendor.model.Shop;
 import com.ubuyquick.vendor.utils.UniversalImageLoader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -46,24 +56,59 @@ public class HomeActivity extends AppCompatActivity
 
     private DocumentReference vendorRef;
 
-    private TextView tv_email, tv_name, tv_phone, tv_aadhar, tv_pan, tv_verified;
+    private TextView tv_email, tv_name, tv_phone, tv_aadhar, tv_pan, tv_verified, tv_status;
     private Button btn_logout, btn_edit_profile, btn_add_shop;
     private CircleImageView img_vendor;
+    private RecyclerView rv_shops;
+    private ShopAdapter shopAdapter;
+    private List<Shop> shops;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        initializeViews();
 
+        initializeViews();
         initialize();
 
+    }
+
+    private void loadShopList() {
+        shops.clear();
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                shops.add(new Shop(document.get("shop_image_url").toString(),
+                                        document.get("shop_name").toString(),
+                                        document.get("shop_status").toString(),
+                                        document.get("shop_id").toString()));
+                            }
+                            shopAdapter.setShops(shops);
+                        } else {
+                            Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadShopList();
     }
 
     private void initialize() {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         ImageLoader.getInstance().init(new UniversalImageLoader(this).getConfig());
+
+        shopAdapter = new ShopAdapter(this);
+        rv_shops.setAdapter(shopAdapter);
+        shops = new ArrayList<>();
 
         vendorRef = db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3));
         vendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -79,7 +124,7 @@ public class HomeActivity extends AppCompatActivity
                         tv_phone.setText(vendor.get("phone").toString());
                         tv_pan.setText(vendor.get("pan_number").toString());
                         tv_aadhar.setText(vendor.get("aadhar_number").toString());
-                        if ((boolean)vendor.get("verified")) {
+                        if ((boolean) vendor.get("verified")) {
                             tv_verified.setText("Verified Vendor");
                         } else {
                             tv_verified.setText("Not Verified");
@@ -120,6 +165,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void initializeViews() {
+        rv_shops = (RecyclerView) findViewById(R.id.rv_shops);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -136,7 +183,7 @@ public class HomeActivity extends AppCompatActivity
         tv_aadhar = (TextView) header.findViewById(R.id.tv_aadhar);
         tv_name = (TextView) header.findViewById(R.id.tv_vendor_name);
         tv_email = (TextView) header.findViewById(R.id.tv_email);
-        tv_phone= (TextView) header.findViewById(R.id.tv_phone);
+        tv_phone = (TextView) header.findViewById(R.id.tv_phone);
         tv_pan = (TextView) header.findViewById(R.id.tv_pan);
         tv_verified = (TextView) header.findViewById(R.id.tv_verified);
         img_vendor = (CircleImageView) header.findViewById(R.id.img_vendor);
@@ -150,6 +197,8 @@ public class HomeActivity extends AppCompatActivity
                 overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
             }
         });
+        tv_status = (TextView) findViewById(R.id.tv_status);
+
     }
 
     @Override
@@ -178,7 +227,6 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            startActivity(new Intent(HomeActivity.this, ShopActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
