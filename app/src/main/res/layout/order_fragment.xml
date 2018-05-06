@@ -26,10 +26,10 @@
                 android:id="@+id/result_tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#d3d3d3"
-                app:tabIndicatorColor="@android:color/holo_red_dark"
-                app:tabMode="fixed"
-                app:tabTextColor="@color/colorPrimary">
+                android:background="@android:color/white"
+                app:tabIndicatorColor="@color/colorPrimary"
+                app:tabTextColor="@color/colorPrimary"
+                app:tabSelectedTextColor="@android:color/holo_red_dark">
 
 
                 <android.support.design.widget.TabItem
@@ -50,7 +50,7 @@
                     android:id="@+id/tabItem2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cancelled" />
+                    android:text="Rejected" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/tabItem3"

@@ -43,14 +43,12 @@ public class OrderFragment extends Fragment {
 
     private void setupViewPager(ViewPager viewPager) {
 
-
         Adapter adapter = new Adapter(getChildFragmentManager());
         adapter.addFragment(new NewOrdersFragment(), "New");
         adapter.addFragment(new AcceptedOrdersFragment(), "Accepted");
         adapter.addFragment(new CancelledOrdersFragment(), "Cancelled");
         adapter.addFragment(new DeliveredOrdersFragment(), "Delivered");
         viewPager.setAdapter(adapter);
-
 
     }
 
