@@ -68,7 +68,7 @@
             android:name=".ShopLocationActivity"
             android:label="Set Shop Location"
             android:theme="@style/AppThemeFullScreen" />
-        <activity android:name=".orders.NewOrderActivity"
+        <activity android:name=".newOrders.NewOrderActivity"
             android:label="New Order"></activity>
     </application>
 

@@ -2,6 +2,7 @@ package com.ubuyquick.vendor;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,11 +25,24 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ubuyquick.vendor.shop.AnalysisFragment;
 import com.ubuyquick.vendor.shop.OrderFragment;
 import com.ubuyquick.vendor.shop.ProfileFragment;
 
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ShopActivity extends AppCompatActivity {
+
+    private static final String TAG = "ShopActivity";
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -68,12 +82,28 @@ public class ShopActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(final View view) {
+                Map<String, Object> newOrder = new HashMap<>();
+                newOrder.put("customer_name", "Ajay Srinivas");
+                newOrder.put("customer_id", "124124124");
+                newOrder.put("delivery_address", "Hegganahalli, Peenya");
+                newOrder.put("order_id", new Timestamp(System.currentTimeMillis()).getTime() + "");
+                newOrder.put("ordered_at", new Timestamp(System.currentTimeMillis()).getTime());
+                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                        .collection("new_orders").document(new Timestamp(System.currentTimeMillis()).getTime() + "")
+                        .set(newOrder)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Snackbar.make(view, "Added one new .order", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
+                        });
             }
         });
 

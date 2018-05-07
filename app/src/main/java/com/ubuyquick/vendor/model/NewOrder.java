@@ -1,6 +1,6 @@
 package com.ubuyquick.vendor.model;
 
-public class Order {
+public class NewOrder {
 
     private String order_id;
     private String customer_name;
@@ -8,7 +8,7 @@ public class Order {
     private String address;
     private String ordered_at;
 
-    public Order(String order_id, String customer_name, String customer_id, String address, String ordered_at) {
+    public NewOrder(String order_id, String customer_name, String customer_id, String address, String ordered_at) {
         this.order_id = order_id;
         this.customer_name = customer_name;
         this.customer_id = customer_id;
