@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -166,6 +167,26 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                     cancelledOrder.put("ordered_at", clickedNewOrder.getOrderedAt());
                                     cancelledOrder.put("customer_id", clickedNewOrder.getCustomerId());
                                     cancelledOrder.put("delivery_address", clickedNewOrder.getAddress());
+
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("new_orders").document(clickedNewOrder.getOrderId()).collection("products")
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                                                        for (DocumentSnapshot document : documents) {
+                                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                    .collection("cancelled_orders").document(clickedNewOrder.getOrderId())
+                                                                    .collection("products").document(document.getId()).set(document.getData());
+                                                        }
+                                                    } else {
+                                                        Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
+
                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                             .collection("cancelled_orders")
                                             .document(clickedNewOrder.getOrderId())
@@ -196,6 +217,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                                     }
                                                 }
                                             });
+
                                 }
                             })
                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -234,7 +256,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                                         for (QueryDocumentSnapshot document : task.getResult()) {
                                                             CollectionReference collectionReference =
                                                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                            .collection("new_orders").document(clickedNewOrder.getOrderId()).collection("products");
+                                                                            .collection("accepted_orders").document(clickedNewOrder.getOrderId()).collection("products");
                                                             Map<String, Object> product = document.getData();
                                                             collectionReference.add(product);
                                                         }

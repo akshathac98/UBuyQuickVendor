@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AcceptedOrderActivity extends AppCompatActivity {
+public class CancelledOrderActivity extends AppCompatActivity {
 
-    private static final String TAG = "NewOrderActivity";
+    private static final String TAG = "CancelledOrderActivity";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -72,7 +72,7 @@ public class AcceptedOrderActivity extends AppCompatActivity {
         rv_order_products.setAdapter(orderProductAdapter);
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                .collection("accepted_orders").document(order_id).collection("products")
+                .collection("cancelled_orders").document(order_id).collection("products")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -90,7 +90,7 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                 });
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                .collection("accepted_orders").document(order_id)
+                .collection("cancelled_orders").document(order_id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
