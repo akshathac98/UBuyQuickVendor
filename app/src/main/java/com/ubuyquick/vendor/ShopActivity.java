@@ -36,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.shop.AnalysisFragment;
+import com.ubuyquick.vendor.shop.CreditFragment;
 import com.ubuyquick.vendor.shop.OrderFragment;
 import com.ubuyquick.vendor.shop.ProfileFragment;
 
@@ -177,6 +178,8 @@ public class ShopActivity extends AppCompatActivity {
                     return new ProfileFragment();
                 case 1:
                     return new OrderFragment();
+                case 2:
+                    return new CreditFragment();
                 default:
                     return new AnalysisFragment();
             }
