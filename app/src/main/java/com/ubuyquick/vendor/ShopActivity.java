@@ -24,11 +24,17 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.shop.AnalysisFragment;
 import com.ubuyquick.vendor.shop.OrderFragment;
 import com.ubuyquick.vendor.shop.ProfileFragment;
@@ -89,21 +95,21 @@ public class ShopActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 Map<String, Object> newOrder = new HashMap<>();
+                final String timestamp = new Timestamp(System.currentTimeMillis()).getTime() + "";
                 newOrder.put("customer_name", "Ajay Srinivas");
                 newOrder.put("customer_id", "124124124");
                 newOrder.put("delivery_address", "Hegganahalli, Peenya");
-                newOrder.put("order_id", new Timestamp(System.currentTimeMillis()).getTime() + "");
-                newOrder.put("ordered_at", new Timestamp(System.currentTimeMillis()).getTime());
+                newOrder.put("order_id", timestamp);
+                newOrder.put("ordered_at", timestamp);
                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                        .collection("new_orders").document(new Timestamp(System.currentTimeMillis()).getTime() + "")
+                        .collection("new_orders").document(timestamp)
                         .set(newOrder)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                Snackbar.make(view, "Added one new .order", Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
                             }
                         });
+
             }
         });
 

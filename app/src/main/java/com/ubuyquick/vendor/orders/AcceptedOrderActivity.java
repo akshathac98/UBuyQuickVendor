@@ -1,19 +1,16 @@
 package com.ubuyquick.vendor.orders;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -23,11 +20,10 @@ import com.ubuyquick.vendor.adapter.OrderProductAdapter;
 import com.ubuyquick.vendor.model.OrderProduct;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NewOrderActivity extends AppCompatActivity {
+public class AcceptedOrderActivity extends AppCompatActivity {
 
     private static final String TAG = "NewOrderActivity";
 
@@ -73,25 +69,25 @@ public class NewOrderActivity extends AppCompatActivity {
 
         orderProductAdapter = new OrderProductAdapter(this);
         orderProducts = new ArrayList<>();
-            rv_order_products.setAdapter(orderProductAdapter);
+        rv_order_products.setAdapter(orderProductAdapter);
 
-            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                    .collection("new_orders").document(order_id).collection("products")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Map<String, Object> product = document.getData();
-                                    orderProducts.add(new OrderProduct(product.get("name").toString(),
-                                            Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
-                                            , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
-                                }
-                                orderProductAdapter.setOrderProducts(orderProducts);
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("new_orders").document(order_id).collection("products")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> product = document.getData();
+                                orderProducts.add(new OrderProduct(product.get("name").toString(),
+                                        Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
+                                        , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
                             }
+                            orderProductAdapter.setOrderProducts(orderProducts);
                         }
-                    });
+                    }
+                });
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                 .collection("new_orders").document(order_id)

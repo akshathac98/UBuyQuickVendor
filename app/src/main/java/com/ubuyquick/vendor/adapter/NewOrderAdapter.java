@@ -20,9 +20,14 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.model.NewOrder;
+import com.ubuyquick.vendor.model.OrderProduct;
 import com.ubuyquick.vendor.orders.NewOrderActivity;
 
 import java.util.ArrayList;
@@ -36,13 +41,20 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private CollectionReference newOrderRef;
+    private CollectionReference cancelledOrderRef;
 
     private Context context;
     private List<NewOrder> newOrders;
 
+    private NewOrder clickedOrder;
+    Map<String, Object> cancelledOrder;
+
     public NewOrderAdapter(Context context) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        newOrderRef = db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("new_orders");
+        cancelledOrderRef = db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("cancelled_orders");
         this.context = context;
         newOrders = new ArrayList<>();
     }
@@ -87,8 +99,57 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
         public void bind(final NewOrder newOrder) {
             this.tv_customer.setText(newOrder.getCustomerName());
             this.tv_address.setText(newOrder.getAddress());
-            this.tv_order_id.setText("NewOrder ID: " + newOrder.getOrderId());
+            this.tv_order_id.setText("Order ID: " + newOrder.getOrderId());
             this.tv_ordered_at.setText(newOrder.getOrderedAt());
+
+//            this.btn_cancel.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+//                    builder.setMessage("Cancel order?")
+//                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    clickedOrder = newOrders.get(getAdapterPosition());
+//                                    cancelledOrder = new HashMap<>();
+//                                    cancelledOrder.put("customer_id", clickedOrder.getCustomerId());
+//                                    cancelledOrder.put("customer_name", clickedOrder.getCustomerName());
+//                                    cancelledOrder.put("delivery_address", clickedOrder.getAddress());
+//                                    cancelledOrder.put("order_id", clickedOrder.getOrderId());
+//                                    cancelledOrder.put("ordered_at", clickedOrder.getOrderedAt());
+//
+//                                    Log.d(TAG, "onClick: clickedOrder: " + clickedOrder.getOrderId());
+//                                    newOrderRef.document(clickedOrder.getOrderId()).delete()
+//                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                @Override
+//                                                public void onComplete(@NonNull Task<Void> task) {
+//                                                    if (task.isSuccessful()) {
+//                                                        newOrders.remove(getAdapterPosition());
+//                                                        notifyItemRemoved(getAdapterPosition());
+//                                                    } else {
+//                                                        Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+//                                                    }
+//                                                }
+//                                            });
+//
+//                                    cancelledOrderRef.document(clickedOrder.getOrderId()).set(cancelledOrder)
+//                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                @Override
+//                                                public void onComplete(@NonNull Task<Void> task) {
+//                                                    Toast.makeText(context, "Cancelled order", Toast.LENGTH_SHORT).show();
+//                                                }
+//                                            });
+//
+//                                }
+//                            })
+//                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                                }
+//                            }).show();
+//                }
+//            });
 
             this.btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -104,14 +165,16 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                     cancelledOrder.put("order_id", clickedNewOrder.getOrderId());
                                     cancelledOrder.put("ordered_at", clickedNewOrder.getOrderedAt());
                                     cancelledOrder.put("customer_id", clickedNewOrder.getCustomerId());
+                                    cancelledOrder.put("delivery_address", clickedNewOrder.getAddress());
                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                             .collection("cancelled_orders")
-                                            .document(newOrder.getOrderId())
+                                            .document(clickedNewOrder.getOrderId())
                                             .set(cancelledOrder)
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
+                                                        Log.d(TAG, "onComplete: " + clickedNewOrder.getOrderId());
                                                         db.collection("vendors").document(mAuth.getCurrentUser()
                                                                 .getPhoneNumber().substring(3)).collection("new_orders")
                                                                 .document(clickedNewOrder.getOrderId()).delete()
@@ -158,6 +221,27 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                     acceptedOrder.put("order_id", clickedNewOrder.getOrderId());
                                     acceptedOrder.put("ordered_at", clickedNewOrder.getOrderedAt());
                                     acceptedOrder.put("customer_id", clickedNewOrder.getCustomerId());
+                                    acceptedOrder.put("delivery_address", clickedNewOrder.getAddress());
+
+
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("new_orders").document(clickedNewOrder.getOrderId()).collection("products")
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                                            CollectionReference collectionReference =
+                                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                            .collection("new_orders").document(clickedNewOrder.getOrderId()).collection("products");
+                                                            Map<String, Object> product = document.getData();
+                                                            collectionReference.add(product);
+                                                        }
+                                                    }
+                                                }
+                                            });
+
                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                             .collection("accepted_orders")
                                             .document(clickedNewOrder.getOrderId())

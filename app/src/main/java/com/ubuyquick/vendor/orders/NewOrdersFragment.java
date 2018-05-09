@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.R;
@@ -73,7 +74,7 @@ public class NewOrdersFragment extends Fragment {
                             } else {
                                 TextView no_orders = new TextView(getContext());
                                 no_orders.setLayoutParams(layoutParams);
-                                no_orders.setText("You have no new newOrders yet.");
+                                no_orders.setText("You have no new orders yet.");
                                 relativeLayout.addView(no_orders);
                             }
                         } else {
