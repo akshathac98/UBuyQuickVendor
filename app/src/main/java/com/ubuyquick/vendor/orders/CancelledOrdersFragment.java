@@ -59,7 +59,8 @@ public class CancelledOrdersFragment extends Fragment {
         orderList.setAdapter(cancelledOrderAdapter);
         cancelledOrders = new ArrayList<>();
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("cancelled_orders")
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("shops").document("BHYRAVA_PROVISIONS").collection("cancelled_orders")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

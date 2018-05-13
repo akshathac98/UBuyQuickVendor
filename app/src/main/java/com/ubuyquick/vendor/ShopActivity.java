@@ -102,7 +102,7 @@ public class ShopActivity extends AppCompatActivity {
                 newOrder.put("delivery_address", "Hegganahalli, Peenya");
                 newOrder.put("order_id", timestamp);
                 newOrder.put("ordered_at", timestamp);
-                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document("BHYRAVA_PROVISIONS")
                         .collection("new_orders").document(timestamp)
                         .set(newOrder)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -127,7 +127,7 @@ public class ShopActivity extends AppCompatActivity {
                     product.put("quantity", 15);
                     product.put("mrp", 27.0);
                     product.put("available", false);
-                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document("BHYRAVA_PROVISIONS")
                             .collection("new_orders").document(timestamp).collection("products")
                             .add(product);
                 }

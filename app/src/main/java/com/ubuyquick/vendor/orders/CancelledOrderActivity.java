@@ -72,6 +72,7 @@ public class CancelledOrderActivity extends AppCompatActivity {
         rv_order_products.setAdapter(orderProductAdapter);
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("shops").document("BHYRAVA_PROVISIONS")
                 .collection("cancelled_orders").document(order_id).collection("products")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -90,6 +91,7 @@ public class CancelledOrderActivity extends AppCompatActivity {
                 });
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("shops").document("BHYRAVA_PROVISIONS")
                 .collection("cancelled_orders").document(order_id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

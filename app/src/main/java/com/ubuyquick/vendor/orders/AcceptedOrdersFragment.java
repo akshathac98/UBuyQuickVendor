@@ -58,7 +58,8 @@ public class AcceptedOrdersFragment extends Fragment {
         orderList.setAdapter(acceptedOrderAdapter);
         acceptedOrders = new ArrayList<>();
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("accepted_orders")
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                .document("BHYRAVA_PROVISIONS").collection("accepted_orders")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

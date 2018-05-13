@@ -43,8 +43,11 @@ public class CreditFragment extends Fragment {
         rv_credits.setAdapter(creditAdapter);
 
         credits.add(new Credit("123123123", "Ajay Srinivas", "9008003968", 329.0));
+        credits.add(new Credit("124124124", "Vijay Srinivas", "7204131524", 329.0));
         creditAdapter.setCredits(credits);
 
         return view;
     }
+
+
 }

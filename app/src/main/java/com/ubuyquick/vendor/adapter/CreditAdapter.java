@@ -26,6 +26,7 @@ import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.model.AcceptedOrder;
 import com.ubuyquick.vendor.model.Credit;
 import com.ubuyquick.vendor.orders.AcceptedOrderActivity;
+import com.ubuyquick.vendor.utils.MultiChoiceHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends MultiChoiceHelper.ViewHolder {
         private TextView tv_customer_name;
         private TextView tv_mobile;
         private TextView tv_credit;
@@ -80,7 +81,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                    builder.setMessage("Cancel order?")
+                    builder.setMessage("Send message from your phone?")
                             .setPositiveButton("Send Message", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {

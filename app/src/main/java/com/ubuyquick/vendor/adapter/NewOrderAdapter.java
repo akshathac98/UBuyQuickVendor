@@ -169,6 +169,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                     cancelledOrder.put("delivery_address", clickedNewOrder.getAddress());
 
                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document("BHYRAVA_PROVISIONS")
                                             .collection("new_orders").document(clickedNewOrder.getOrderId()).collection("products")
                                             .get()
                                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -178,6 +179,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                                         List<DocumentSnapshot> documents = task.getResult().getDocuments();
                                                         for (DocumentSnapshot document : documents) {
                                                             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                    .collection("shops").document("BHYRAVA_PROVISIONS")
                                                                     .collection("cancelled_orders").document(clickedNewOrder.getOrderId())
                                                                     .collection("products").document(document.getId()).set(document.getData());
                                                         }
@@ -188,6 +190,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                             });
 
                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document("BHYRAVA_PROVISIONS")
                                             .collection("cancelled_orders")
                                             .document(clickedNewOrder.getOrderId())
                                             .set(cancelledOrder)
@@ -197,13 +200,14 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                                     if (task.isSuccessful()) {
                                                         Log.d(TAG, "onComplete: " + clickedNewOrder.getOrderId());
                                                         db.collection("vendors").document(mAuth.getCurrentUser()
-                                                                .getPhoneNumber().substring(3)).collection("new_orders")
+                                                                .getPhoneNumber().substring(3))
+                                                                .collection("shops").document("BHYRAVA_PROVISIONS").collection("new_orders")
                                                                 .document(clickedNewOrder.getOrderId()).delete()
                                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                     @Override
                                                                     public void onComplete(@NonNull Task<Void> task) {
                                                                         if (task.isSuccessful()) {
-                                                                            Toast.makeText(((Activity) context), "Cancelled newOrder", Toast.LENGTH_SHORT).show();
+                                                                            Toast.makeText(((Activity) context), "Cancelled order", Toast.LENGTH_SHORT).show();
                                                                             newOrders.remove(getAdapterPosition());
                                                                             notifyItemRemoved(getAdapterPosition());
                                                                         } else {
@@ -246,7 +250,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                     acceptedOrder.put("delivery_address", clickedNewOrder.getAddress());
 
 
-                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document("BHYRAVA_PROVISIONS")
                                             .collection("new_orders").document(clickedNewOrder.getOrderId()).collection("products")
                                             .get()
                                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -256,6 +260,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                                         for (QueryDocumentSnapshot document : task.getResult()) {
                                                             CollectionReference collectionReference =
                                                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                            .collection("shops").document("BHYRAVA_PROVISIONS")
                                                                             .collection("accepted_orders").document(clickedNewOrder.getOrderId()).collection("products");
                                                             Map<String, Object> product = document.getData();
                                                             collectionReference.add(product);
@@ -265,6 +270,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                             });
 
                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document("BHYRAVA_PROVISIONS")
                                             .collection("accepted_orders")
                                             .document(clickedNewOrder.getOrderId())
                                             .set(acceptedOrder)
@@ -273,7 +279,8 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                                 public void onSuccess(Void aVoid) {
                                                     Log.d(TAG, "onComplete: remove id: " + clickedNewOrder.getOrderId());
                                                     db.collection("vendors").document(mAuth.getCurrentUser()
-                                                            .getPhoneNumber().substring(3)).collection("new_orders")
+                                                            .getPhoneNumber().substring(3)).collection("shops")
+                                                            .document("BHYRAVA_PROVISIONS").collection("new_orders")
                                                             .document(clickedNewOrder.getOrderId()).delete()
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override

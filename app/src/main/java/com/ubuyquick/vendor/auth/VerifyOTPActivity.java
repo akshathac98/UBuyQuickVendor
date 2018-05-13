@@ -83,6 +83,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                         vendor.put("uid", task.getResult().getUser().getUid());
                                         vendor.put("phone", mobile_number);
                                         vendor.put("pan_number", "NA");
+                                        vendor.put("user_role", "OWNER");
                                         vendor.put("photo_url", "NA");
                                         vendor.put("aadhar_number", "NA");
                                         vendor.put("aadhar_image_url", "NA");

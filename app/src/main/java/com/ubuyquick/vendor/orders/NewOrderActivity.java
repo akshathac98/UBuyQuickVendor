@@ -75,7 +75,7 @@ public class NewOrderActivity extends AppCompatActivity {
         orderProducts = new ArrayList<>();
             rv_order_products.setAdapter(orderProductAdapter);
 
-            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document("BHYRAVA_PROVISIONS")
                     .collection("new_orders").document(order_id).collection("products")
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -94,6 +94,7 @@ public class NewOrderActivity extends AppCompatActivity {
                     });
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("shops").document("BHYRAVA_PROVISIONS")
                 .collection("new_orders").document(order_id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

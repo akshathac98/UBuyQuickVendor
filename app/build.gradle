@@ -55,6 +55,9 @@ dependencies {
     // Google Play Services Location
     implementation 'com.google.android.gms:play-services-location:15.0.0'
 
+    // RecyclerView Multi-select
+    compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
+
 }
 
 
