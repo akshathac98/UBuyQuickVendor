@@ -70,6 +70,13 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
             btn_send = (Button) itemView.findViewById(R.id.btn_send);
             btn_edit = (Button) itemView.findViewById(R.id.btn_edit);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+
         }
 
         public void bind(Credit credit) {

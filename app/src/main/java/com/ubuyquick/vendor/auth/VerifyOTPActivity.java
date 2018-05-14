@@ -89,6 +89,12 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                         vendor.put("aadhar_image_url", "NA");
                                         vendor.put("pan_image_url", "NA");
 
+                                        Map<String, Object> user = new HashMap<>();
+                                        user.put("user_role", "VENDOR");
+                                        user.put("user_id", mobile_number);
+
+                                        db.collection("users").document(mobile_number).set(user);
+
                                         db.collection("vendors")
                                                 .document(mobile_number).set(vendor)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {

@@ -164,18 +164,30 @@ public class EditProfileActivity extends AppCompatActivity {
                 til_email.setErrorEnabled(false);
 
                 if (validateForm()) {
-                    storageRef = storage.getReference().child(mobile_number).child("aadhar_image.jpg");
+                    storageRef = storage.getReference().child(mobile_number);
                     img_vendor.setDrawingCacheEnabled(true);
-                    Bitmap bitmap = img_vendor.getDrawingCache();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] data = baos.toByteArray();
+                    img_pan.setDrawingCacheEnabled(true);
+                    img_aadhar.setDrawingCacheEnabled(true);
+                    Bitmap vendor = img_vendor.getDrawingCache();
+                    Bitmap pan = img_pan.getDrawingCache();
+                    Bitmap aadhar = img_aadhar.getDrawingCache();
+                    ByteArrayOutputStream os_vendor = new ByteArrayOutputStream();
+                    ByteArrayOutputStream os_pan = new ByteArrayOutputStream();
+                    ByteArrayOutputStream os_aadhar = new ByteArrayOutputStream();
+                    vendor.compress(Bitmap.CompressFormat.JPEG, 100, os_vendor);
+                    pan.compress(Bitmap.CompressFormat.JPEG, 100, os_pan);
+                    aadhar.compress(Bitmap.CompressFormat.JPEG, 100, os_aadhar);
+                    byte[] dataVendor = os_vendor.toByteArray();
+                    byte[] dataPan = os_pan.toByteArray();
+                    byte[] dataAadhar = os_aadhar.toByteArray();
 
-                    UploadTask uploadTask = storageRef.putBytes(data);
+                    UploadTask uploadTask = storageRef.child("vendor_image.jpg").putBytes(dataVendor);
                     uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            
+                            String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    .update("photo_url", downloadUrl);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -184,15 +196,45 @@ public class EditProfileActivity extends AppCompatActivity {
                         }
                     });
 
-                    Map<String, Object> vendor = new HashMap<>();
-                    vendor.put("name", vendor_name);
-                    vendor.put("phone", mobile_number);
-                    vendor.put("pan_number", pan_card_number);
-                    vendor.put("aadhar_number", aadhar_card_number);
-                    vendor.put("email", email);
+                    UploadTask uploadTask2 = storageRef.child("aadhar_image.jpg").putBytes(dataAadhar);
+                    uploadTask2.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    .update("aadhar_image_url", downloadUrl);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+
+                    UploadTask uploadTask3 = storageRef.child("pan_image.jpg").putBytes(dataPan);
+                    uploadTask3.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    .update("pan_image_url", downloadUrl);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+
+                    Map<String, Object> vendorInfo = new HashMap<>();
+                    vendorInfo.put("name", vendor_name);
+                    vendorInfo.put("phone", mobile_number);
+                    vendorInfo.put("pan_number", pan_card_number);
+                    vendorInfo.put("aadhar_number", aadhar_card_number);
+                    vendorInfo.put("email", email);
 
                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                            .update(vendor)
+                            .update(vendorInfo)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
