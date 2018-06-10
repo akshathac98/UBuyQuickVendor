@@ -37,6 +37,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.shop.AnalysisFragment;
 import com.ubuyquick.vendor.shop.CreditFragment;
+import com.ubuyquick.vendor.shop.InventoryFragment;
 import com.ubuyquick.vendor.shop.OrderFragment;
 import com.ubuyquick.vendor.shop.ProfileFragment;
 
@@ -50,6 +51,8 @@ public class ShopActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+
+    private String shop_id;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -89,51 +92,10 @@ public class ShopActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
+        shop_id = getIntent().getStringExtra("shop_id");
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                Map<String, Object> newOrder = new HashMap<>();
-                final String timestamp = new Timestamp(System.currentTimeMillis()).getTime() + "";
-                newOrder.put("customer_name", "Ajay Srinivas");
-                newOrder.put("customer_id", "124124124");
-                newOrder.put("delivery_address", "Hegganahalli, Peenya");
-                newOrder.put("order_id", timestamp);
-                newOrder.put("ordered_at", timestamp);
-                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document("BHYRAVA_PROVISIONS")
-                        .collection("new_orders").document(timestamp)
-                        .set(newOrder)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                            }
-                        });
-
-                String[] product_names = {"India Gate Basmati Rice", "Colgate Active Salt", "Dairy Milk Silk", "Eggs - Farm Fresh", "Tata Salt (Crystal)", "Goldwinner Oil 5L", "Colgate Active Salt"};
-                String[] product_images = {"https://www.bigbasket.com/media/uploads/p/l/220612_2-india-gate-basmati-rice-dubar.jpg",
-                        "http://www.wilko.com/content/ebiz/wilkinsonplus/invt/0274546/0274546_l.jpg",
-                        "http://www.avdeal.in/media/catalog/product/cache/1/thumbnail/960x/17f82f742ffe127f42dca9de82fb58b1/8/9/8901233021430.jpg",
-                        "https://img1.etsystatic.com/190/1/11623135/il_570xN.1490551059_ghnx.jpg",
-                        "https://www.hi5mart.com/image/cache/catalog/Grocery%20Staples/sugarandsalt/Tata%20Salt%20-%20Iodized,%201%20kg%20Pouch-750x750.jpg",
-                        "https://5.imimg.com/data5/MP/RX/MY-9290782/goldwinner-oil-wholesale-in-chennai-500x500.jpg",
-                        "http://www.wilko.com/content/ebiz/wilkinsonplus/invt/0274546/0274546_l.jpg"};
-
-                for (int i = 0; i < product_images.length; i++) {
-                    Map<String, Object> product = new HashMap<>();
-                    product.put("name", product_names[i]);
-                    product.put("image_url", product_images[i]);
-                    product.put("quantity", 15);
-                    product.put("mrp", 27.0);
-                    product.put("available", false);
-                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document("BHYRAVA_PROVISIONS")
-                            .collection("new_orders").document(timestamp).collection("products")
-                            .add(product);
-                }
-
-            }
-        });
 
     }
 
@@ -180,6 +142,12 @@ public class ShopActivity extends AppCompatActivity {
                     return new OrderFragment();
                 case 2:
                     return new CreditFragment();
+                case 3:
+                    Fragment fragment = new InventoryFragment();
+                    Bundle args = new Bundle();
+                    args.putString("shop_id", shop_id);
+                    fragment.setArguments(args);
+                    return fragment;
                 default:
                     return new AnalysisFragment();
             }

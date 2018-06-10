@@ -30,4 +30,15 @@
     <string name="tab_text_5">Sales Analysis</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_add_shop">AddShopActivity</string>
+
+    <string-array name="categories">
+        <item>Rice &amp; Rice Products</item>
+        <item>Atta, Flours &amp; Sooji</item>
+        <item>Dals &amp; Pulses</item>
+        <item>Salt, Sugar &amp; Jaggery</item>
+        <item>Edible Oils &amp; Ghee</item>
+        <item>Organic Staples</item>
+        <item>Dry Fruits</item>
+        <item>Masala &amp; Spices</item>
+    </string-array>
 </resources>

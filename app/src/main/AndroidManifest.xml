@@ -69,12 +69,17 @@
             android:name=".ShopLocationActivity"
             android:label="Set Shop Location"
             android:theme="@style/AppThemeFullScreen" />
-        <activity android:name=".orders.NewOrderActivity"
-            android:label="New Order"></activity>
-        <activity android:name=".orders.AcceptedOrderActivity"
-            android:label="Accepted Order"></activity>
-        <activity android:name=".orders.CancelledOrderActivity"
-            android:label="Cancelled Order"></activity>
+        <activity
+            android:name=".orders.NewOrderActivity"
+            android:label="New Order" />
+        <activity
+            android:name=".orders.AcceptedOrderActivity"
+            android:label="Accepted Order" />
+        <activity
+            android:name=".orders.CancelledOrderActivity"
+            android:label="Cancelled Order" />
+        <activity android:name=".CategoryActivity" />
+        <activity android:name=".AddProductActivity"></activity>
     </application>
 
 </manifest>
