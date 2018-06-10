@@ -1,11 +1,24 @@
 package com.ubuyquick.vendor;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.ubuyquick.vendor.adapter.AddProductAdapter;
+import com.ubuyquick.vendor.model.AddProduct;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -15,6 +28,10 @@ public class AddProductActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
     private String shop_id;
+    private String category;
+    private List<AddProduct> addProducts;
+    private RecyclerView rv_products;
+    private AddProductAdapter addProductAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,19 +42,41 @@ public class AddProductActivity extends AppCompatActivity {
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         shop_id = getIntent().getStringExtra("shop_id");
+        category = getIntent().getStringExtra("category");
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
         initializeViews();
         initialize();
     }
 
     private void initializeViews() {
+        rv_products = (RecyclerView) findViewById(R.id.rv_products);
 
     }
 
     private void initialize() {
+        addProductAdapter = new AddProductAdapter(this);
+        addProducts = new ArrayList<>();
+        rv_products.setAdapter(addProductAdapter);
 
+        db.collection("products").document("categories").collection(category).get()
+        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                    for (DocumentSnapshot document : documents) {
+                        Map<String, Object> product = document.getData();
+                        addProducts.add(new AddProduct(product.get("product_name").toString(), Double.parseDouble(product.get("product_mrp").toString())));
+                    }
+                    addProductAdapter.setAddProducts(addProducts);
+                } else {
+                    Toast.makeText(AddProductActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override

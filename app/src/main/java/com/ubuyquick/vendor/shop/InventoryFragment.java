@@ -34,6 +34,7 @@ public class InventoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.inventory_fragment, container, false);
 
         shop_id = getArguments().getString("shop_id");
+        btn_add_product = view.findViewById(R.id.btn_add_product);
 
         btn_add_product.setOnClickListener(new View.OnClickListener() {
             @Override
