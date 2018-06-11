@@ -29,6 +29,7 @@ public class AddProductActivity extends AppCompatActivity {
 
     private String shop_id;
     private String category;
+    private String sub_category;
     private List<AddProduct> addProducts;
     private RecyclerView rv_products;
     private AddProductAdapter addProductAdapter;
@@ -43,6 +44,7 @@ public class AddProductActivity extends AppCompatActivity {
 
         shop_id = getIntent().getStringExtra("shop_id");
         category = getIntent().getStringExtra("category");
+        sub_category = getIntent().getStringExtra("sub_category");
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -53,15 +55,14 @@ public class AddProductActivity extends AppCompatActivity {
 
     private void initializeViews() {
         rv_products = (RecyclerView) findViewById(R.id.rv_products);
-
     }
 
     private void initialize() {
-        addProductAdapter = new AddProductAdapter(this);
+        addProductAdapter = new AddProductAdapter(this, shop_id, category, sub_category);
         addProducts = new ArrayList<>();
         rv_products.setAdapter(addProductAdapter);
 
-        db.collection("products").document("categories").collection(category).get()
+        db.collection("product_categories").document(category).collection(sub_category).get()
         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -69,7 +70,7 @@ public class AddProductActivity extends AppCompatActivity {
                     List<DocumentSnapshot> documents = task.getResult().getDocuments();
                     for (DocumentSnapshot document : documents) {
                         Map<String, Object> product = document.getData();
-                        addProducts.add(new AddProduct(product.get("product_name").toString(), Double.parseDouble(product.get("product_mrp").toString())));
+                        addProducts.add(new AddProduct(product.get("product_name").toString(), Double.parseDouble(product.get("product_mrp").toString()), product.get("product_id").toString(), product.get("image_url").toString()));
                     }
                     addProductAdapter.setAddProducts(addProducts);
                 } else {

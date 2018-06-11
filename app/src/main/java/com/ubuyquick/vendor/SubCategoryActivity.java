@@ -1,44 +1,60 @@
 package com.ubuyquick.vendor;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class CategoryActivity extends AppCompatActivity {
+import java.util.HashMap;
+
+public class SubCategoryActivity extends AppCompatActivity {
 
     private static final String TAG = "CategoryActivity";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
-    private ListView list_categories;
+    private ListView list_subcategories;
 
     private String shop_id;
+    private String category;
+    private String[] sub;
+    private HashMap<String, String[]> subcategories;
+    private ArrayAdapter<String> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
+        setContentView(R.layout.activity_sub_category);
 
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_up);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         shop_id = getIntent().getStringExtra("shop_id");
+        category = getIntent().getStringExtra("category");
 
-        list_categories = (ListView) findViewById(R.id.list_categories);
-        list_categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        subcategories = new HashMap<>();
+        subcategories.put("dry_fruits", new String[]{"sub_category_1", "sub_category_2"});
+
+        sub = subcategories.get(category);
+
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, sub);
+        list_subcategories = (ListView) findViewById(R.id.list_subcategories);
+        list_subcategories.setAdapter(arrayAdapter);
+        list_subcategories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(CategoryActivity.this, SubCategoryActivity.class);
+                Intent i = new Intent(SubCategoryActivity.this, AddProductActivity.class);
                 i.putExtra("shop_id", shop_id);
                 i.putExtra("category", "dry_fruits");
+                i.putExtra("sub_category", sub[position]);
                 startActivity(i);
             }
         });

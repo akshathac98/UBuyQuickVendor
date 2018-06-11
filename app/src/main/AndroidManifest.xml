@@ -80,6 +80,7 @@
             android:label="Cancelled Order" />
         <activity android:name=".CategoryActivity" />
         <activity android:name=".AddProductActivity"></activity>
+        <activity android:name=".SubCategoryActivity"></activity>
     </application>
 
 </manifest>
