@@ -53,6 +53,7 @@ public class ShopActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
     private String shop_id;
+    private String shop_name;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -93,6 +94,7 @@ public class ShopActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
         shop_id = getIntent().getStringExtra("shop_id");
+        shop_name = getIntent().getStringExtra("shop_name");
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -137,7 +139,12 @@ public class ShopActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new ProfileFragment();
+                    Fragment profileFragment = new ProfileFragment();
+                    Bundle profileArgs = new Bundle();
+                    profileArgs.putString("shop_id", shop_id);
+                    profileArgs.putString("shop_name", shop_name);
+                    profileFragment.setArguments(profileArgs);
+                    return profileFragment;
                 case 1:
                     return new OrderFragment();
                 case 2:

@@ -25,6 +25,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ubuyquick.vendor.R;
@@ -43,6 +45,8 @@ public class ProfileFragment extends Fragment {
     private EditText input;
 
     private String vendor_number;
+    private String shop_id;
+    private String shop_name;
 
     private Button btn_delivery_agent;
     private Button btn_manager;
@@ -54,6 +58,9 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.profile_fragment, container, false);
+
+        shop_id = getArguments().getString("shop_id");
+        shop_name = getArguments().getString("shop_name");
 
         initializeViews();
         initialize();
@@ -79,21 +86,39 @@ public class ProfileFragment extends Fragment {
                 builder.setPositiveButton("Add Agent", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Map<String, Object> agent = new HashMap<>();
+                        final Map<String, Object> agent = new HashMap<>();
                         agent.put("user_id", input.getText().toString());
-                        agent.put("user_role", "DELIVERY");
-                        agent.put("vendor_id", vendor_number);
-                        agent.put("shop", "Bhyrava Provisions");
-                        agent.put("shop_id", "BHYRAVA_PROVISIONS");
+                        agent.put("user_role", "DELIVERY_AGENT");
 
-                        db.collection("users").document(input.getText().toString())
-                                .set(agent)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        db.collection("delivery_agents").document(input.getText().toString()).get()
+                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        Toast.makeText(getContext(), "Agent added successfully", Toast.LENGTH_SHORT).show();
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.getResult().exists()) {
+                                            Map<String, Object> shop = new HashMap<>();
+                                            shop.put("shop_name", shop_name);
+                                            shop.put("vendor_id", vendor_number);
+                                            shop.put("shop_id", shop_id);
+                                            db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                    .set(shop);
+                                        } else {
+                                            db.collection("delivery_agents").document(input.getText().toString()).set(agent)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            Map<String, Object> shop = new HashMap<>();
+                                                            shop.put("shop_name", shop_name);
+                                                            shop.put("vendor_id", vendor_number);
+                                                            shop.put("shop_id", shop_id);
+                                                            db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                                    .set(shop);
+                                                        }
+                                                    });
+                                        }
                                     }
                                 });
+
+
                     }
                 });
                 builder.show();
@@ -114,21 +139,39 @@ public class ProfileFragment extends Fragment {
                 builder.setPositiveButton("Add Manager", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Map<String, Object> agent = new HashMap<>();
+                        final Map<String, Object> agent = new HashMap<>();
                         agent.put("user_id", input.getText().toString());
                         agent.put("user_role", "MANAGER");
-                        agent.put("vendor_id", vendor_number);
-                        agent.put("shop", "Bhyrava Provisions");
-                        agent.put("shop_id", "BHYRAVA_PROVISIONS");
 
-                        db.collection("users").document(input.getText().toString())
-                                .set(agent)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        db.collection("managers").document(input.getText().toString()).get()
+                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        Toast.makeText(getContext(), "Manager added successfully", Toast.LENGTH_SHORT).show();
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.getResult().exists()) {
+                                            Map<String, Object> shop = new HashMap<>();
+                                            shop.put("shop_name", shop_name);
+                                            shop.put("vendor_id", vendor_number);
+                                            shop.put("shop_id", shop_id);
+                                            db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                    .set(shop);
+                                        } else {
+                                            db.collection("managers").document(input.getText().toString()).set(agent)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            Map<String, Object> shop = new HashMap<>();
+                                                            shop.put("shop_name", shop_name);
+                                                            shop.put("vendor_id", vendor_number);
+                                                            shop.put("shop_id", shop_id);
+                                                            db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                                    .set(shop);
+                                                        }
+                                                    });
+                                        }
                                     }
                                 });
+
+
                     }
                 });
                 builder.show();
