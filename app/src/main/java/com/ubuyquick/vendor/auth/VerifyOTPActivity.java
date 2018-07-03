@@ -1,6 +1,7 @@
 package com.ubuyquick.vendor.auth;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
     private static final String TAG = "VerifyOTPActivity";
 
     private String mobile_number, mVerificationId, verification_type;
+    private int LOGIN_MODE;
 
     private TextView tv_code;
     private Button btn_verify;
@@ -55,6 +57,12 @@ public class VerifyOTPActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         mobile_number = getIntent().getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+
+        LOGIN_MODE = getIntent().getIntExtra("LOGIN_MODE", 0);
+        SharedPreferences.Editor editor = getSharedPreferences("LOGIN_MODE", MODE_PRIVATE).edit();
+        editor.putInt("LOGIN_MODE", LOGIN_MODE);
+        editor.apply();
+
         verification_type = getIntent().getStringExtra("VERIFICATION_TYPE");
 
         tv_code = (TextView) findViewById(R.id.tv_code);
@@ -74,6 +82,99 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     Log.d(TAG, "onComplete: sign in success");
                                     final Intent i = new Intent(VerifyOTPActivity.this, HomeActivity.class);
+                                    i.putExtra("LOGIN_MODE", LOGIN_MODE);
+                                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    if (LOGIN_MODE == 0) {
+                                        if (verification_type.equals("REGISTER") || task.getResult().getAdditionalUserInfo().isNewUser()) {
+                                            Map<String, Object> vendor = new HashMap<>();
+                                            vendor.put("email", "NA");
+                                            vendor.put("name", "NA");
+                                            vendor.put("verified", false);
+                                            vendor.put("uid", task.getResult().getUser().getUid());
+                                            vendor.put("phone", mobile_number);
+                                            vendor.put("pan_number", "NA");
+                                            vendor.put("user_role", "OWNER");
+                                            vendor.put("photo_url", "NA");
+                                            vendor.put("aadhar_number", "NA");
+                                            vendor.put("aadhar_image_url", "NA");
+                                            vendor.put("pan_image_url", "NA");
+
+                                            Map<String, Object> user = new HashMap<>();
+                                            user.put("user_role", "VENDOR");
+                                            user.put("user_id", mobile_number);
+
+                                            db.collection("users").document(mobile_number).set(user);
+
+                                            db.collection("vendors")
+                                                    .document(mobile_number).set(vendor)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            startActivity(i);
+                                                            finish();
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Toast.makeText(VerifyOTPActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                        } else {
+                                            startActivity(i);
+                                            finish();
+                                        }
+                                    } else {
+                                        startActivity(i);
+                                        finish();
+                                    }
+
+                                } else {
+                                    Log.d(TAG, "onComplete: failure: " + task.getException());
+                                    if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                        Toast.makeText(VerifyOTPActivity.this, "Invalid OTP", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "onFailure: " + e.getLocalizedMessage());
+                                Toast.makeText(VerifyOTPActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        });
+
+        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            @Override
+            public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                mVerificationId = s;
+                token = forceResendingToken;
+                Toast.makeText(VerifyOTPActivity.this, "OTP verification code sent", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onCodeSent: " + s);
+            }
+
+            @Override
+            public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+                Log.d(TAG, "onVerificationCompleted: " + phoneAuthCredential.getSmsCode());
+                try {
+                    pinView.setText(phoneAuthCredential.getSmsCode());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                btn_verify.setOnClickListener(null);
+
+                mAuth.signInWithCredential(phoneAuthCredential)
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "onComplete: sign in success");
+                                    final Intent i = new Intent(VerifyOTPActivity.this, HomeActivity.class);
+                                    i.putExtra("LOGIN_MODE", LOGIN_MODE);
                                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     if (verification_type.equals("REGISTER") || task.getResult().getAdditionalUserInfo().isNewUser()) {
                                         Map<String, Object> vendor = new HashMap<>();
@@ -129,22 +230,6 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                 Toast.makeText(VerifyOTPActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
-            }
-        });
-
-        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            @Override
-            public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                mVerificationId = s;
-                token = forceResendingToken;
-                Toast.makeText(VerifyOTPActivity.this, "OTP verification code sent", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "onCodeSent: " + s);
-            }
-
-            @Override
-            public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-                Log.d(TAG, "onVerificationCompleted: " + phoneAuthCredential.getSmsCode());
-                pinView.setText(phoneAuthCredential.getSmsCode());
                 Toast.makeText(VerifyOTPActivity.this, "Verified successfully.", Toast.LENGTH_SHORT).show();
             }
 

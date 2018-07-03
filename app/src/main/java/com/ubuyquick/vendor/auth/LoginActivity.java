@@ -98,14 +98,10 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String mobile_number = et_mobile_number.getText().toString();
                 if (mobile_number.length() == 10) {
-
-                    if (LOGIN_MODE == 1) {
-
-                    }
-
                     Intent i = new Intent(LoginActivity.this, VerifyOTPActivity.class);
                     i.putExtra("VERIFICATION_TYPE", "LOGIN");
                     i.putExtra(Intent.EXTRA_PHONE_NUMBER, mobile_number);
+                    i.putExtra("LOGIN_MODE", LOGIN_MODE);
                     startActivity(i);
                 } else {
                     Toast.makeText(LoginActivity.this, "Enter valid mobile number", Toast.LENGTH_SHORT).show();
