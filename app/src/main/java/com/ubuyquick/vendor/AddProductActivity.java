@@ -70,7 +70,8 @@ public class AddProductActivity extends AppCompatActivity {
                     List<DocumentSnapshot> documents = task.getResult().getDocuments();
                     for (DocumentSnapshot document : documents) {
                         Map<String, Object> product = document.getData();
-                        addProducts.add(new AddProduct(product.get("product_name").toString(), Double.parseDouble(product.get("product_mrp").toString()), product.get("product_id").toString(), product.get("image_url").toString()));
+                        addProducts.add(new AddProduct(product.get("product_name").toString(), Double.parseDouble(product.get("product_mrp").toString()), product.get("product_id").toString(), product.get("image_url").toString()
+                        , category, sub_category));
                     }
                     addProductAdapter.setAddProducts(addProducts);
                 } else {

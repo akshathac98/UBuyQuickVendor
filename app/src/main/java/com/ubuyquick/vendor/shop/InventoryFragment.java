@@ -5,13 +5,27 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.CategoryActivity;
 import com.ubuyquick.vendor.R;
+import com.ubuyquick.vendor.adapter.InventoryProductAdapter;
+import com.ubuyquick.vendor.model.InventoryProduct;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class InventoryFragment extends Fragment {
 
@@ -20,12 +34,20 @@ public class InventoryFragment extends Fragment {
     private Button btn_add_product;
 
     private String shop_id;
+    private RecyclerView rv_products;
+    private List<InventoryProduct> inventoryProducts;
+    private InventoryProductAdapter inventoryProductAdapter;
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         shop_id = getArguments().getString("shop_id");
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
     @Nullable
@@ -35,6 +57,10 @@ public class InventoryFragment extends Fragment {
 
         shop_id = getArguments().getString("shop_id");
         btn_add_product = view.findViewById(R.id.btn_add_product);
+        rv_products = (RecyclerView) view.findViewById(R.id.rv_products) ;
+        inventoryProductAdapter = new InventoryProductAdapter(getContext(), shop_id);
+        inventoryProducts = new ArrayList<>();
+        rv_products.setAdapter(inventoryProductAdapter);
 
         btn_add_product.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +70,25 @@ public class InventoryFragment extends Fragment {
                 startActivity(i);
             }
         });
+
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("shops").document(shop_id).collection("inventory").get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                        for (DocumentSnapshot document : documents) {
+                            Map<String, Object> product = document.getData();
+                            inventoryProducts.add(new InventoryProduct(product.get("product_name").toString(),
+                                    Integer.parseInt(product.get("product_quantity").toString()),
+                                    Double.parseDouble(product.get("product_quantity").toString()),
+                                    product.get("image_url").toString(),
+                                    true, document.getId(), product.get("category").toString(),
+                                    product.get("sub_category").toString()));
+                        }
+                        inventoryProductAdapter.setInventoryProducts(inventoryProducts);
+                    }
+                });
 
         return view;
     }
