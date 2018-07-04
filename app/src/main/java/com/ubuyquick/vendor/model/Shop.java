@@ -6,12 +6,22 @@ public class Shop {
     private String shop_name;
     private String shop_status;
     private String shop_id;
+    private String vendor_id;
 
-    public Shop(String image_url, String shop_name, String shop_status, String shop_id) {
+    public Shop(String image_url, String shop_name, String shop_status, String shop_id, String vendor_id) {
         this.image_url = image_url;
         this.shop_name = shop_name;
         this.shop_status = shop_status;
         this.shop_id = shop_id;
+        this.vendor_id = vendor_id;
+    }
+
+    public String getVendorId() {
+        return vendor_id;
+    }
+
+    public void setVendorId(String vendor_id) {
+        this.vendor_id = vendor_id;
     }
 
     public String getImageUrl() {

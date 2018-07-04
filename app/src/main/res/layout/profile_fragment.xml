@@ -64,12 +64,12 @@
 
             <TextView
                 android:id="@+id/tv_shop_address"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/rb_shop_rating"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:text="#191, Cambridge layout, Sai Baba Temple road, Halasuru, Someshwarapura layout, Jogupaiya, Bangalore - 560091"
+                android:text="Shop_Address"
                 android:textAlignment="center"
                 android:textSize="12sp" />
 

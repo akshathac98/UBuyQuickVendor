@@ -54,6 +54,7 @@ public class ShopActivity extends AppCompatActivity {
 
     private String shop_id;
     private String shop_name;
+    private String vendor_id;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -95,6 +96,7 @@ public class ShopActivity extends AppCompatActivity {
 
         shop_id = getIntent().getStringExtra("shop_id");
         shop_name = getIntent().getStringExtra("shop_name");
+        vendor_id = getIntent().getStringExtra("vendor_id");
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -143,6 +145,7 @@ public class ShopActivity extends AppCompatActivity {
                     Bundle profileArgs = new Bundle();
                     profileArgs.putString("shop_id", shop_id);
                     profileArgs.putString("shop_name", shop_name);
+                    profileArgs.putString("vendor_id", vendor_id);
                     profileFragment.setArguments(profileArgs);
                     return profileFragment;
                 case 1:

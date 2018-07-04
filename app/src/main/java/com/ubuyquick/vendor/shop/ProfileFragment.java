@@ -1,7 +1,9 @@
 package com.ubuyquick.vendor.shop;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,10 +46,15 @@ public class ProfileFragment extends Fragment {
     private View view;
     private ImageView img_shop;
     private EditText input;
+    private TextView tv_shop_name, tv_shop_location, tv_shop_timings;
 
     private String vendor_number;
     private String shop_id;
     private String shop_name;
+    private String vendor_id;
+    private String image_url;
+
+    private int LOGIN_MODE;
 
     private Button btn_delivery_agent;
     private Button btn_manager;
@@ -61,6 +69,7 @@ public class ProfileFragment extends Fragment {
 
         shop_id = getArguments().getString("shop_id");
         shop_name = getArguments().getString("shop_name");
+        vendor_id = getArguments().getString("vendor_id");
 
         initializeViews();
         initialize();
@@ -70,9 +79,23 @@ public class ProfileFragment extends Fragment {
 
     private void initializeViews() {
         img_shop = (ImageView) view.findViewById(R.id.img_shop);
+        tv_shop_location = (TextView) view.findViewById(R.id.tv_shop_address);
+        tv_shop_name = (TextView) view.findViewById(R.id.tv_shop_name);
+        tv_shop_timings = (TextView) view.findViewById(R.id.tv_shop_timings);
 
         btn_delivery_agent = (Button) view.findViewById(R.id.btn_delivery_agent);
         btn_manager = (Button) view.findViewById(R.id.btn_manager);
+
+        SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
+        if (LOGIN_MODE == 1) {
+            btn_manager.setVisibility(View.GONE);
+        } else if (LOGIN_MODE == 2) {
+            btn_manager.setVisibility(View.GONE);
+            btn_delivery_agent.setVisibility(View.GONE);
+        }
+
         btn_delivery_agent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -182,9 +205,24 @@ public class ProfileFragment extends Fragment {
 
     private void initialize() {
         mAuth = FirebaseAuth.getInstance();
-        vendor_number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+
+        vendor_number = vendor_id;
         db = FirebaseFirestore.getInstance();
         ImageLoader.getInstance().init(new UniversalImageLoader(getContext()).getConfig());
-        UniversalImageLoader.setImage("https://firebasestorage.googleapis.com/v0/b/ubuyquick-d4121.appspot.com/o/9008003968%2FBhyrava%20Provisions%2Fshop_image.jpg?alt=media&token=8592f84e-42c3-4e6a-a522-54bddc907ec6", img_shop);
+
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        .collection("shops").document(shop_id).get()
+        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Map<String, Object> shop = task.getResult().getData();
+                UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
+                tv_shop_location.setText(shop.get("shop_address").toString());
+                tv_shop_name.setText(shop.get("shop_name").toString());
+                tv_shop_timings.setText(shop.get("shop_timings").toString());
+
+            }
+        });
+
     }
 }

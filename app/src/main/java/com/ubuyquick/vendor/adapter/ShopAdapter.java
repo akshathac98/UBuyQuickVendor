@@ -55,6 +55,8 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                         Intent i = new Intent(v.getContext(), ShopActivity.class);
                         i.putExtra("shop_id", clickedShop.getShopId());
                         i.putExtra("shop_name", clickedShop.getShopName());
+                        i.putExtra("vendor_id", clickedShop.getVendorId());
+
                         v.getContext().startActivity(i);
                         ((Activity) context).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
                     }

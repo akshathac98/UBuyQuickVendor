@@ -207,7 +207,7 @@ public class AddShopActivity extends AppCompatActivity {
                         shop.put("shop_rating", 0.0);
                         shop.put("shop_status", "OFFLINE");
                         shop.put("shop_id", shop_id);
-                        shop.put("shop_image_url", url.substring(0, url.indexOf(".jpg")+4));
+                        shop.put("shop_image_url", url);
 
                         db.collection("vendors").document(mobile_number).collection("shops").document(shop_id).set(shop)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {

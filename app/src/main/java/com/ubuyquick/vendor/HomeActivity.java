@@ -66,6 +66,8 @@ public class HomeActivity extends AppCompatActivity
     private ShopAdapter shopAdapter;
     private List<Shop> shops;
 
+    private String vendor_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +92,7 @@ public class HomeActivity extends AppCompatActivity
                                     shops.add(new Shop(document.get("shop_image_url").toString(),
                                             document.get("shop_name").toString(),
                                             document.get("shop_status").toString(),
-                                            document.get("shop_id").toString()));
+                                            document.get("shop_id").toString(), mAuth.getCurrentUser().getPhoneNumber().substring(3)));
                                 }
                                 shopAdapter.setShops(shops);
                             } else {
@@ -109,7 +111,8 @@ public class HomeActivity extends AppCompatActivity
                                     shops.add(new Shop(null,
                                             document.get("shop_name").toString(),
                                             "ONLINE",
-                                            document.get("shop_id").toString()));
+                                            document.get("shop_id").toString(),
+                                            document.get("vendor_id").toString()));
                                 }
                                 shopAdapter.setShops(shops);
                             } else {
@@ -128,7 +131,8 @@ public class HomeActivity extends AppCompatActivity
                                     shops.add(new Shop(null,
                                             document.get("shop_name").toString(),
                                             "ONLINE",
-                                            document.get("shop_id").toString()));
+                                            document.get("shop_id").toString(),
+                                            document.get("vendor_id").toString()));
                                 }
                                 shopAdapter.setShops(shops);
                             } else {
