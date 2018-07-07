@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +33,8 @@ import com.ubuyquick.vendor.utils.MultiChoiceHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder> implements ActivityCompat.OnRequestPermissionsResultCallback{
+public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder> implements ActivityCompat.OnRequestPermissionsResultCallback,
+        Filterable{
 
     private static final String TAG = "CreditAdapter";
 
@@ -40,12 +43,14 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
 
     private Context context;
     private List<Credit> credits;
+    private List<Credit> creditsFiltered;
 
     public CreditAdapter(Context context) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
         credits = new ArrayList<>();
+        creditsFiltered = new ArrayList<>();
     }
 
     public void setCredits(List<Credit> credits) {
@@ -116,6 +121,39 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                 }
             });
         }
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String charString = constraint.toString();
+                if (charString.isEmpty()) {
+                    creditsFiltered = credits;
+                } else {
+                    List<Credit> filteredCredits = new ArrayList<>();
+                    for (Credit credit : credits) {
+                        if (credit.getCustomerName().toLowerCase().contains(charString.toLowerCase()) || credit.getCustomerMobile().contains(constraint)) {
+                            filteredCredits.add(credit);
+                        }
+                    }
+
+                    creditsFiltered = filteredCredits;
+
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = creditsFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                creditsFiltered = (ArrayList<Credit>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     @Override
