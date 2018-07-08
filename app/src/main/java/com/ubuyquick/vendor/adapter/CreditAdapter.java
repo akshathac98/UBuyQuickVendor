@@ -23,7 +23,10 @@ import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ubuyquick.vendor.Manifest;
 import com.ubuyquick.vendor.R;
@@ -109,8 +112,16 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                                         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
                                             ((Activity) context).requestPermissions(new String[]{android.Manifest.permission.SEND_SMS}, 1);
                                         } else {
-                                            SmsManager smsManager = SmsManager.getDefault();
-                                            smsManager.sendTextMessage("+919008003968", null, "Credit balance pending for Bhyrava provisions", null, null);
+                                            final SmsManager smsManager = SmsManager.getDefault();
+                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                    .collection("shops").document(shop_id).get()
+                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    Map<String, Object> vendor = task.getResult().getData();
+                                                    smsManager.sendTextMessage("+91" + credits.get(getAdapterPosition()).getCustomerMobile(), null, vendor.get("credit_message").toString(), null, null);
+                                                }
+                                            });
                                         }
                                     }
 

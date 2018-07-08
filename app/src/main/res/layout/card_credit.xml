@@ -65,7 +65,7 @@
             android:layout_marginStart="8dp"
             android:text="Credit Balance : 329/-"
             android:textColor="@color/colorTextPrimary"
-            android:textSize="26sp"
+            android:textSize="22sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

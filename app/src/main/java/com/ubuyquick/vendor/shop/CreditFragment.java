@@ -44,7 +44,7 @@ public class CreditFragment extends Fragment {
     private CreditAdapter creditAdapter;
     private List<Credit> credits;
     private EditText et_search;
-    private Button btn_add;
+    private Button btn_add, btn_message;
 
     private String shop_id;
 
@@ -64,6 +64,7 @@ public class CreditFragment extends Fragment {
         creditAdapter = new CreditAdapter(view.getContext(), shop_id);
         rv_credits.setAdapter(creditAdapter);
         btn_add = (Button) view.findViewById(R.id.btn_add);
+        btn_message = (Button) view.findViewById(R.id.btn_message);
 
         et_search.addTextChangedListener(new TextWatcher() {
             @Override
@@ -79,6 +80,42 @@ public class CreditFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 filter(s.toString());
+            }
+        });
+
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("shops").document(shop_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull final Task<DocumentSnapshot> task) {
+                btn_message.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_credit_message, null, false);
+                        final TextInputEditText message = (TextInputEditText) viewInflated.findViewById(R.id.et_message);
+                        message.setText(task.getResult().getData().get("credit_message").toString());
+
+                        builder.setTitle("Enter credit remainder message:");
+                        builder.setView(viewInflated)
+                                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        if (TextUtils.isEmpty(message.getText().toString()))
+                                            Toast.makeText(getContext(), "Message cannot be empty", Toast.LENGTH_SHORT).show();
+                                        else {
+                                            Map<String, Object> msg = new HashMap<>();
+                                            msg.put("credit_message", message.getText().toString());
+                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                    .collection("shops").document(shop_id).update(msg);
+                                            Toast.makeText(getContext(), "Credit remainder message saved.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null);
+                        builder.show();
+                    }
+                });
             }
         });
 
