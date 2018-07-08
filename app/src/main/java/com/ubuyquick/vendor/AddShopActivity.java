@@ -59,10 +59,9 @@ public class AddShopActivity extends AppCompatActivity {
 
     private Button btn_from, btn_to, btn_location, btn_add_shop;
     private TextView tv_location, tv_delivery_radius, tv_upload;
-    private CheckBox cb_groceries, cb_provisions, cb_livestock, cb_vegetables;
     private ImageView img_shop;
-    private EditText et_shop_name, et_address, et_pincode;
-    private TextInputLayout til_shop_name, til_address, til_pincode;
+    private EditText et_shop_name, et_address, et_pincode, et_gstin;
+    private TextInputLayout til_shop_name, til_address, til_pincode, til_gstin;
     private FloatingActionButton btn_upload;
 
     private int GALLERY = 2, CAMERA = 3;
@@ -168,6 +167,10 @@ public class AddShopActivity extends AppCompatActivity {
                     til_address.setError("Enter shop address.");
                     et_address.requestFocus();
                     return;
+                } else if (TextUtils.isEmpty(et_gstin.getText())) {
+                    til_gstin.setError("Enter shop GSTIN.");
+                    et_gstin.requestFocus();
+                    return;
                 } else if (TextUtils.isEmpty(et_pincode.getText())) {
                     til_pincode.setError("Pincode can't be empty.");
                     et_pincode.requestFocus();
@@ -199,6 +202,7 @@ public class AddShopActivity extends AppCompatActivity {
                         Map<String, Object> shop = new HashMap<>();
                         shop.put("shop_name", et_shop_name.getText().toString());
                         shop.put("shop_address", et_address.getText().toString());
+                        shop.put("shop_gstin", et_gstin.getText().toString());
                         shop.put("shop_pincode", et_pincode.getText().toString());
                         shop.put("shop_timings", btn_from.getText() + " to " + btn_to.getText());
                         shop.put("shop_location", lat + "," + lng);
@@ -321,6 +325,7 @@ public class AddShopActivity extends AppCompatActivity {
         til_shop_name = (TextInputLayout) findViewById(R.id.textInputLayout4);
         til_address = (TextInputLayout) findViewById(R.id.textInputLayout5);
         til_pincode = (TextInputLayout) findViewById(R.id.textInputLayout7);
+        til_gstin = (TextInputLayout) findViewById(R.id.textInputLayout8);
 
         tv_upload = (TextView) findViewById(R.id.tv_upload);
         btn_upload = (FloatingActionButton) findViewById(R.id.btn_upload);
@@ -335,11 +340,7 @@ public class AddShopActivity extends AppCompatActivity {
         et_shop_name = (EditText) findViewById(R.id.et_shop_name);
         et_address = (EditText) findViewById(R.id.et_shop_address);
         et_pincode = (EditText) findViewById(R.id.et_shop_pincode);
-
-        cb_groceries = (CheckBox) findViewById(R.id.checkBox2);
-        cb_vegetables = (CheckBox) findViewById(R.id.checkBox3);
-        cb_livestock = (CheckBox) findViewById(R.id.checkBox4);
-        cb_provisions = (CheckBox) findViewById(R.id.checkBox5);
+        et_gstin = (EditText) findViewById(R.id.et_shop_gstin);
     }
 
     @Override
