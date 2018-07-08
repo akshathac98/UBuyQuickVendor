@@ -8,10 +8,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +33,9 @@ import com.ubuyquick.vendor.orders.AcceptedOrderActivity;
 import com.ubuyquick.vendor.utils.MultiChoiceHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder> implements ActivityCompat.OnRequestPermissionsResultCallback,
         Filterable{
@@ -45,10 +49,13 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
     private List<Credit> credits;
     private List<Credit> creditsFiltered;
 
-    public CreditAdapter(Context context) {
+    private String shop_id;
+
+    public CreditAdapter(Context context, String shop_id) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
+        this.shop_id = shop_id;
         credits = new ArrayList<>();
         creditsFiltered = new ArrayList<>();
     }
@@ -84,7 +91,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
 
         }
 
-        public void bind(Credit credit) {
+        public void bind(final Credit credit) {
             this.tv_customer_name.setText(credit.getCustomerName());
             this.tv_mobile.setText(credit.getCustomerMobile());
             this.tv_credit.setText("Credit balance: " + credit.getCredit() + "/-");
@@ -117,7 +124,46 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
             btn_edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
+                    View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_credit, null, false);
+                    final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
+                    final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
+                    final TextInputEditText balance = (TextInputEditText) viewInflated.findViewById(R.id.et_balance);
+
+                    Credit credit1 = credits.get(getAdapterPosition());
+                    name.setText(credit1.getCustomerName());
+                    number.setText(credit1.getCustomerMobile());
+                    balance.setText(credit1.getCredit() + "");
+
+                    builder.setTitle("Enter credit holder info:");
+                    builder.setView(viewInflated)
+                            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    if (TextUtils.isEmpty(name.getText().toString()) || TextUtils.isEmpty(number.getText().toString()) || TextUtils.isEmpty(balance.getText().toString()))
+                                        Toast.makeText(context, "Please check your info", Toast.LENGTH_SHORT).show();
+                                    else {
+                                        Map<String, Object> creditInfo = new HashMap<>();
+                                        creditInfo.put("name", name.getText().toString());
+                                        creditInfo.put("number", number.getText().toString());
+                                        creditInfo.put("balance", Double.parseDouble(balance.getText().toString()));
+
+                                        Credit credit2 = credits.get(getAdapterPosition());
+                                        credit2.setCustomerName(name.getText().toString());
+                                        credit2.setCustomerMobile(number.getText().toString());
+                                        credit2.setCredit(Double.parseDouble(balance.getText().toString()));
+                                        notifyItemChanged(getAdapterPosition());
+
+                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                                                .document(shop_id).collection("credits").document(credits.get(getAdapterPosition()).getCustomerId())
+                                                .set(creditInfo);
+                                        Toast.makeText(context, "Saved credit holder info.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Cancel", null);
+                    builder.show();
                 }
             });
         }

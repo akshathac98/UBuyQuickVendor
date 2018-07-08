@@ -151,7 +151,11 @@ public class ShopActivity extends AppCompatActivity {
                 case 1:
                     return new OrderFragment();
                 case 2:
-                    return new CreditFragment();
+                    Fragment creditFragment = new CreditFragment();
+                    Bundle creditArgs = new Bundle();
+                    creditArgs.putString("shop_id", shop_id);
+                    creditFragment.setArguments(creditArgs);
+                    return creditFragment;
                 case 3:
                     Fragment fragment = new InventoryFragment();
                     Bundle args = new Bundle();

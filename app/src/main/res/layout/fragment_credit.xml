@@ -29,11 +29,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/btn_add"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorAccent"
+        android:text="Add Credit"
+        android:layout_below="@id/et_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_credits"
-        android:layout_below="@id/et_search"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/btn_add"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+
 </RelativeLayout>
