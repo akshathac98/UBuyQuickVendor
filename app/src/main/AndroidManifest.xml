@@ -79,8 +79,11 @@
             android:name=".orders.CancelledOrderActivity"
             android:label="Cancelled Order" />
         <activity android:name=".CategoryActivity" />
-        <activity android:name=".AddProductActivity"></activity>
-        <activity android:name=".SubCategoryActivity"></activity>
+        <activity android:name=".AddProductActivity" />
+        <activity android:name=".SubCategoryActivity" />
+        <activity
+            android:name=".shop.EditShopProfileActivity"
+            android:label="Edit Shop Profile" />
     </application>
 
 </manifest>

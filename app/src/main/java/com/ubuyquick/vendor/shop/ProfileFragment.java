@@ -3,6 +3,7 @@ package com.ubuyquick.vendor.shop;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -58,6 +59,7 @@ public class ProfileFragment extends Fragment {
 
     private Button btn_delivery_agent;
     private Button btn_manager;
+    private Button btn_edit_profile;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -85,6 +87,7 @@ public class ProfileFragment extends Fragment {
 
         btn_delivery_agent = (Button) view.findViewById(R.id.btn_delivery_agent);
         btn_manager = (Button) view.findViewById(R.id.btn_manager);
+        btn_edit_profile = (Button) view.findViewById(R.id.btn_edit_profile);
 
         SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
         LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
@@ -199,6 +202,15 @@ public class ProfileFragment extends Fragment {
                 });
                 builder.show();
 
+            }
+        });
+
+        btn_edit_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), EditShopProfileActivity.class);
+                i.putExtra("shop_id", shop_id);
+                startActivity(i);
             }
         });
     }
