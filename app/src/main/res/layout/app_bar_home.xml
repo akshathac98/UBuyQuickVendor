@@ -24,10 +24,12 @@
 
     <Button
         android:id="@+id/btn_add_shop"
+        android:text="+ Add Shop"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorAccent"
         android:layout_margin="20dp"
-        android:layout_width="64sp"
-        android:layout_height="64sp"
-        android:layout_gravity="bottom|end"
-        android:background="@drawable/ic_add_shop" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>
