@@ -208,9 +208,10 @@ public class AddShopActivity extends AppCompatActivity {
                         shop.put("shop_location", lat + "," + lng);
                         shop.put("delivery_radius", radius);
                         shop.put("verified", false);
+                        shop.put("quick_delivery", false);
                         shop.put("shop_rating", 0.0);
                         shop.put("credit_message", "Credit balance pending on UBuyQuick");
-                        shop.put("shop_status", "OFFLINE");
+                        shop.put("shop_status", true);
                         shop.put("shop_id", shop_id);
                         shop.put("shop_image_url", url);
 

@@ -16,10 +16,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -60,6 +63,8 @@ public class ProfileFragment extends Fragment {
     private Button btn_delivery_agent;
     private Button btn_manager;
     private Button btn_edit_profile;
+    private Switch btn_shop_status;
+    private ToggleButton btn_quick_delivery;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -88,6 +93,8 @@ public class ProfileFragment extends Fragment {
         btn_delivery_agent = (Button) view.findViewById(R.id.btn_delivery_agent);
         btn_manager = (Button) view.findViewById(R.id.btn_manager);
         btn_edit_profile = (Button) view.findViewById(R.id.btn_edit_profile);
+        btn_quick_delivery = (ToggleButton) view.findViewById(R.id.btn_quick_delivery);
+        btn_shop_status = (Switch) view.findViewById(R.id.btn_status);
 
         SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
         LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
@@ -213,6 +220,40 @@ public class ProfileFragment extends Fragment {
                 startActivity(i);
             }
         });
+
+        btn_quick_delivery.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Map<String, Object> shop = new HashMap<>();
+                if (isChecked) {
+                    shop.put("quick_delivery", true);
+                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                            .collection("shops").document(shop_id).update(shop);
+                } else {
+                    shop.put("quick_delivery", false);
+                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                            .collection("shops").document(shop_id).update(shop);
+                }
+            }
+        });
+
+        btn_shop_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Map<String, Object> shop = new HashMap<>();
+                if (isChecked) {
+                    shop.put("shop_status", true);
+                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                            .collection("shops").document(shop_id).update(shop);
+                    btn_shop_status.setText("Online");
+                } else {
+                    shop.put("shop_status", false);
+                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                            .collection("shops").document(shop_id).update(shop);
+                    btn_shop_status.setText("Offline");
+                }
+            }
+        });
     }
 
     private void initialize() {
@@ -223,18 +264,29 @@ public class ProfileFragment extends Fragment {
         ImageLoader.getInstance().init(new UniversalImageLoader(getContext()).getConfig());
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-        .collection("shops").document(shop_id).get()
-        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                Map<String, Object> shop = task.getResult().getData();
-                UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
-                tv_shop_location.setText(shop.get("shop_address").toString());
-                tv_shop_name.setText(shop.get("shop_name").toString());
-                tv_shop_timings.setText(shop.get("shop_timings").toString());
+                .collection("shops").document(shop_id).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        Map<String, Object> shop = task.getResult().getData();
+                        UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
+                        tv_shop_location.setText(shop.get("shop_address").toString());
+                        tv_shop_name.setText(shop.get("shop_name").toString());
+                        tv_shop_timings.setText(shop.get("shop_timings").toString());
 
-            }
-        });
+                        btn_quick_delivery.setChecked(Boolean.parseBoolean(shop.get("quick_delivery").toString()));
+
+                        if (Boolean.parseBoolean(shop.get("shop_status").toString())) {
+                            btn_shop_status.setChecked(true);
+                            btn_shop_status.setText("Online");
+                        } else {
+                            btn_shop_status.setChecked(false);
+                            btn_shop_status.setText("Offline");
+                        }
+
+
+                    }
+                });
 
     }
 }
