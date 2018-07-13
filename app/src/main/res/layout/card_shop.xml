@@ -14,8 +14,10 @@
 
         <ImageView
             android:id="@+id/img_shop"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
             android:src="@drawable/ic_shop"
-            android:layout_width="120dp"
+            android:layout_width="150dp"
             android:layout_height="120dp" />
 
         <TextView
@@ -23,18 +25,35 @@
             android:layout_toEndOf="@id/img_shop"
             android:text="Shop Name Here"
             android:layout_marginTop="15dp"
-            android:textSize="22sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
+            android:textSize="18sp"
             android:textColor="@color/colorTextPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tv_status"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
             android:text="Online"
+            android:layout_marginEnd="4dp"
             android:layout_toEndOf="@id/img_shop"
             android:layout_below="@id/tv_shop_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/tv_quickdelivery"
+            android:textSize="15sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:text="Quick Delivery : ON"
+            android:layout_marginEnd="4dp"
+            android:layout_toEndOf="@id/img_shop"
+            android:layout_below="@id/tv_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

@@ -20,6 +20,7 @@
             android:layout_marginStart="5dp"
             android:textSize="14sp"
             android:layout_marginTop="4dp"
+            android:layout_toStartOf="@id/btn_edit"
             android:textColor="@android:color/black"
             android:text="TATA Salt Iodized 5KG"
             android:layout_toEndOf="@id/img_product"
@@ -49,6 +50,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <Button
+            android:id="@+id/btn_edit"
+            android:text="Edit"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_toStartOf="@id/btn_remove"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
 
         <Button
             android:id="@+id/btn_remove"

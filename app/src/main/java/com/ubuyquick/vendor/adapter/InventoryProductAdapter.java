@@ -6,12 +6,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ubuyquick.vendor.HomeActivity;
@@ -29,7 +34,9 @@ import com.ubuyquick.vendor.model.OrderProduct;
 import com.ubuyquick.vendor.utils.UniversalImageLoader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -63,7 +70,7 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
         private TextView tv_product_name;
         private TextView tv_product_quantity;
         private TextView tv_product_mrp;
-        private Button btn_remove;
+        private Button btn_remove, btn_edit;
         private CheckBox cb_product;
 
         public ViewHolder(View itemView) {
@@ -74,6 +81,7 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
             this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
             this.btn_remove = (Button) itemView.findViewById(R.id.btn_remove);
+            this.btn_edit = (Button) itemView.findViewById(R.id.btn_edit);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -82,6 +90,57 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
                         InventoryProduct clickedProduct = inventoryProducts.get(getAdapterPosition());
                         Toast.makeText(v.getContext(), "Clicked " + clickedProduct.getProductName(), Toast.LENGTH_SHORT).show();
                     }
+                }
+            });
+
+            btn_edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_product_info, null, false);
+                    final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
+                    final TextInputEditText price = (TextInputEditText) viewInflated.findViewById(R.id.et_price);
+                    final TextInputEditText stock = (TextInputEditText) viewInflated.findViewById(R.id.et_stock);
+
+                    final InventoryProduct inventoryProduct = inventoryProducts.get(getAdapterPosition());
+                    name.setText(inventoryProduct.getProductName());
+                    price.setText(inventoryProduct.getProductMrp() + "");
+                    stock.setText(inventoryProduct.getProductQuantity() + "");
+
+                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(v.getContext());
+                    builder.setTitle("Edit product info:");
+                    builder.setView(viewInflated);
+                    builder.setNegativeButton("Cancel", null);
+
+                    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (TextUtils.isEmpty(name.getText().toString()) || TextUtils.isEmpty(price.getText().toString()) || TextUtils.isEmpty(stock.getText().toString()))
+                                Toast.makeText(context, "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                            else {
+                                Map<String, Object> product = new HashMap<>();
+                                product.put("product_name", name.getText().toString());
+                                product.put("product_mrp", Double.parseDouble(price.getText().toString()));
+                                product.put("product_quantity", Integer.parseInt(stock.getText().toString()));
+
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).collection("product_categories")
+                                        .document(inventoryProduct.getProductCategory()).collection(inventoryProduct.getProductSubcategory()).document(inventoryProduct.getProductId()).update(product)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Toast.makeText(context, "Update success.", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).collection("inventory").document(inventoryProduct.getProductId())
+                                        .update(product);
+
+                            }
+                        }
+                    });
+                    builder.show();
                 }
             });
 

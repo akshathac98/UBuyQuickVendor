@@ -39,7 +39,7 @@
                 android:backgroundTint="@color/colorPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Vendor's Name" />
+                android:hint="Vendor's Name *" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -57,7 +57,7 @@
                 android:inputType="phone"
                 android:backgroundTint="@color/colorPrimary"
                 android:layout_height="wrap_content"
-                android:hint="Mobile No (without +91)" />
+                android:hint="Mobile No (without +91) *" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -93,7 +93,7 @@
                 android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Aadhar Card No" />
+                android:hint="Aadhar Card No *" />
         </android.support.design.widget.TextInputLayout>
 
         <Button

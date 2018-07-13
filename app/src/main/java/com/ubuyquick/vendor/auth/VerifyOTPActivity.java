@@ -38,7 +38,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
     private String mobile_number, mVerificationId, verification_type;
     private int LOGIN_MODE;
 
-    private TextView tv_code;
+    private TextView tv_code, tv_resend;
     private Button btn_verify;
     private PinView pinView;
 
@@ -66,10 +66,19 @@ public class VerifyOTPActivity extends AppCompatActivity {
         verification_type = getIntent().getStringExtra("VERIFICATION_TYPE");
 
         tv_code = (TextView) findViewById(R.id.tv_code);
+        tv_resend = (TextView) findViewById(R.id.tv_resend);
         btn_verify = (Button) findViewById(R.id.btn_verify);
         pinView = (PinView) findViewById(R.id.pinView);
 
         tv_code.setText(getString(R.string.verification_code_sent) + mobile_number);
+
+        tv_resend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PhoneAuthProvider.getInstance().verifyPhoneNumber("+91" + mobile_number,
+                        60, TimeUnit.SECONDS, VerifyOTPActivity.this, mCallbacks);
+            }
+        });
 
         btn_verify.setOnClickListener(new View.OnClickListener() {
             @Override

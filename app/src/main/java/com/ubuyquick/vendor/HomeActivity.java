@@ -91,8 +91,9 @@ public class HomeActivity extends AppCompatActivity
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     shops.add(new Shop(document.get("shop_image_url").toString(),
                                             document.get("shop_name").toString(),
-                                            document.get("shop_status").toString(),
-                                            document.get("shop_id").toString(), mAuth.getCurrentUser().getPhoneNumber().substring(3)));
+                                            Boolean.parseBoolean(document.get("shop_status").toString()),
+                                            document.get("shop_id").toString(), mAuth.getCurrentUser().getPhoneNumber().substring(3),
+                                            Boolean.parseBoolean(document.get("quick_delivery").toString())));
                                 }
                                 shopAdapter.setShops(shops);
                             } else {
@@ -110,9 +111,10 @@ public class HomeActivity extends AppCompatActivity
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     shops.add(new Shop(null,
                                             document.get("shop_name").toString(),
-                                            "ONLINE",
+                                            Boolean.parseBoolean(document.get("shop_status").toString()),
                                             document.get("shop_id").toString(),
-                                            document.get("vendor_id").toString()));
+                                            document.get("vendor_id").toString(),
+                                            Boolean.parseBoolean(document.get("quick_delivery").toString())));
                                 }
                                 shopAdapter.setShops(shops);
                             } else {
@@ -130,9 +132,10 @@ public class HomeActivity extends AppCompatActivity
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     shops.add(new Shop(null,
                                             document.get("shop_name").toString(),
-                                            "ONLINE",
+                                            Boolean.parseBoolean(document.get("shop_status").toString()),
                                             document.get("shop_id").toString(),
-                                            document.get("vendor_id").toString()));
+                                            document.get("vendor_id").toString(),
+                                            Boolean.parseBoolean(document.get("quick_delivery").toString())));
                                 }
                                 shopAdapter.setShops(shops);
                             } else {
@@ -278,13 +281,6 @@ public class HomeActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
     }
 
     @Override

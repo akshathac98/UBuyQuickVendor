@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -40,12 +41,16 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_shop_name;
         private TextView tv_shop_status;
+        private TextView tv_quickdelivery;
+        private ImageView img_shop;
 
         public ViewHolder(final View itemView) {
             super(itemView);
 
             this.tv_shop_name = (TextView) itemView.findViewById(R.id.tv_shop_name);
             this.tv_shop_status = (TextView) itemView.findViewById(R.id.tv_status);
+            this.tv_quickdelivery = (TextView) itemView.findViewById(R.id.tv_quickdelivery);
+            this.img_shop = (ImageView) itemView.findViewById(R.id.img_shop);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -67,8 +72,20 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
 
 
         public void bind(Shop shop) {
-            this.tv_shop_status.setText(shop.getShopStatus());
+
+            if (!shop.getImageUrl().equals("NA"))
+                UniversalImageLoader.setImage(shop.getImageUrl(), img_shop);
+
+            if (shop.getShopStatus())
+                this.tv_shop_status.setText("Online");
+            else
+                this.tv_shop_status.setText("Offline");
+
             this.tv_shop_name.setText(shop.getShopName());
+
+            if (!shop.isQuickDelivery())
+                tv_quickdelivery.setVisibility(View.GONE);
+
         }
     }
 

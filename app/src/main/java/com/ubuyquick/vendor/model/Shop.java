@@ -4,16 +4,26 @@ public class Shop {
 
     private String image_url;
     private String shop_name;
-    private String shop_status;
+    private boolean quick_delivery;
+    private boolean shop_status;
     private String shop_id;
     private String vendor_id;
 
-    public Shop(String image_url, String shop_name, String shop_status, String shop_id, String vendor_id) {
+    public Shop(String image_url, String shop_name, boolean shop_status, String shop_id, String vendor_id, boolean quick_delivery) {
         this.image_url = image_url;
         this.shop_name = shop_name;
         this.shop_status = shop_status;
         this.shop_id = shop_id;
         this.vendor_id = vendor_id;
+        this.quick_delivery = quick_delivery;
+    }
+
+    public boolean isQuickDelivery() {
+        return quick_delivery;
+    }
+
+    public void setQuickDelivery(boolean quick_delivery) {
+        this.quick_delivery = quick_delivery;
     }
 
     public String getVendorId() {
@@ -40,11 +50,11 @@ public class Shop {
         this.shop_name = shop_name;
     }
 
-    public String getShopStatus() {
+    public boolean getShopStatus() {
         return shop_status;
     }
 
-    public void setShopStatus(String shop_status) {
+    public void setShopStatus(boolean shop_status) {
         this.shop_status = shop_status;
     }
 
