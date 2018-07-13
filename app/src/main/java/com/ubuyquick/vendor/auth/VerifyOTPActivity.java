@@ -56,7 +56,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        mobile_number = getIntent().getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+        mobile_number = getIntent().getStringExtra("phone");
 
         LOGIN_MODE = getIntent().getIntExtra("LOGIN_MODE", 0);
         SharedPreferences.Editor editor = getSharedPreferences("LOGIN_MODE", MODE_PRIVATE).edit();
@@ -87,15 +87,15 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                     if (LOGIN_MODE == 0) {
                                         if (verification_type.equals("REGISTER") || task.getResult().getAdditionalUserInfo().isNewUser()) {
                                             Map<String, Object> vendor = new HashMap<>();
-                                            vendor.put("email", "NA");
-                                            vendor.put("name", "NA");
+                                            vendor.put("email", getIntent().getStringExtra("email"));
+                                            vendor.put("name", getIntent().getStringExtra("name"));
                                             vendor.put("verified", false);
                                             vendor.put("uid", task.getResult().getUser().getUid());
-                                            vendor.put("phone", mobile_number);
+                                            vendor.put("phone", getIntent().getStringExtra("phone"));
                                             vendor.put("pan_number", "NA");
                                             vendor.put("user_role", "OWNER");
                                             vendor.put("photo_url", "NA");
-                                            vendor.put("aadhar_number", "NA");
+                                            vendor.put("aadhar_number", getIntent().getStringExtra("aadhar"));
                                             vendor.put("aadhar_image_url", "NA");
                                             vendor.put("pan_image_url", "NA");
 
@@ -178,15 +178,15 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     if (verification_type.equals("REGISTER") || task.getResult().getAdditionalUserInfo().isNewUser()) {
                                         Map<String, Object> vendor = new HashMap<>();
-                                        vendor.put("email", "NA");
-                                        vendor.put("name", "NA");
+                                        vendor.put("email", getIntent().getStringExtra("email"));
+                                        vendor.put("name", getIntent().getStringExtra("name"));
                                         vendor.put("verified", false);
                                         vendor.put("uid", task.getResult().getUser().getUid());
-                                        vendor.put("phone", mobile_number);
+                                        vendor.put("phone", getIntent().getStringExtra("phone"));
                                         vendor.put("pan_number", "NA");
                                         vendor.put("user_role", "OWNER");
                                         vendor.put("photo_url", "NA");
-                                        vendor.put("aadhar_number", "NA");
+                                        vendor.put("aadhar_number", getIntent().getStringExtra("aadhar"));
                                         vendor.put("aadhar_image_url", "NA");
                                         vendor.put("pan_image_url", "NA");
 

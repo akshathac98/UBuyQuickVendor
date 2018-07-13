@@ -81,15 +81,8 @@ public class LoginActivity extends AppCompatActivity {
         btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String mobile_number = et_mobile_number.getText().toString();
-                if (mobile_number.length() == 10) {
-                    Intent i = new Intent(LoginActivity.this, VerifyOTPActivity.class);
-                    i.putExtra(Intent.EXTRA_PHONE_NUMBER, mobile_number);
-                    i.putExtra("VERIFICATION_TYPE", "REGISTER");
-                    startActivity(i);
-                } else {
-                    Toast.makeText(LoginActivity.this, "Enter valid mobile number", Toast.LENGTH_SHORT).show();
-                }
+                Intent i = new Intent(LoginActivity.this, SignupActivity.class);
+                startActivity(i);
             }
         });
 
@@ -117,8 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                 builder.setSingleChoiceItems(login_modes, LOGIN_MODE, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        switch (which)
-                        {
+                        switch (which) {
                             case 0:
                                 login_mode = login_modes[0];
                                 LOGIN_MODE = 0;
