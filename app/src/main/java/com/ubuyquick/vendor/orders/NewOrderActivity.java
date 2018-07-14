@@ -132,13 +132,12 @@ public class NewOrderActivity extends AppCompatActivity {
                                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                                    Map<String, Object> acceptedOrder = new HashMap<>();
+                                                    final Map<String, Object> acceptedOrder = new HashMap<>();
                                                     acceptedOrder.put("customer_name", order.get("customer_name").toString());
                                                     acceptedOrder.put("order_id", order.get("order_id").toString());
                                                     acceptedOrder.put("ordered_at", order.get("ordered_at").toString());
                                                     acceptedOrder.put("customer_id", order.get("customer_id").toString());
                                                     acceptedOrder.put("delivery_address", order.get("delivery_address").toString());
-
 
                                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
                                                             .collection("new_orders").document(order.get("order_id").toString()).collection("products")
@@ -147,12 +146,14 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                                     if (task.isSuccessful()) {
+                                                                        int available_products = 0;
                                                                         CollectionReference collectionReference =
                                                                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                                                         .collection("shops").document(shop_id)
                                                                                         .collection("accepted_orders").document(order.get("order_id").toString()).collection("products");
                                                                         for (OrderProduct orderProduct : orderProducts) {
                                                                             if (orderProduct.isAvailable()) {
+                                                                                available_products++;
                                                                                 Map<String, Object> product = new HashMap<>();
                                                                                 product.put("name", orderProduct.getProductName());
                                                                                 product.put("mrp", orderProduct.getProductMrp());
@@ -161,6 +162,12 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                                 collectionReference.add(product);
                                                                             }
                                                                         }
+                                                                        acceptedOrder.put("product_count", available_products);
+                                                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                .collection("shops").document(shop_id)
+                                                                                .collection("accepted_orders")
+                                                                                .document(order.get("order_id").toString())
+                                                                                .update(acceptedOrder);
                                                                     }
                                                                 }
                                                             });
