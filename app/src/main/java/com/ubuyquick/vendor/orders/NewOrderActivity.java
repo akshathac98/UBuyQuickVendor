@@ -147,13 +147,19 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                                     if (task.isSuccessful()) {
-                                                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                                                            CollectionReference collectionReference =
-                                                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                                            .collection("shops").document(shop_id)
-                                                                                            .collection("accepted_orders").document(order.get("order_id").toString()).collection("products");
-                                                                            Map<String, Object> product = document.getData();
-                                                                            collectionReference.add(product);
+                                                                        CollectionReference collectionReference =
+                                                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                        .collection("shops").document(shop_id)
+                                                                                        .collection("accepted_orders").document(order.get("order_id").toString()).collection("products");
+                                                                        for (OrderProduct orderProduct : orderProducts) {
+                                                                            if (orderProduct.isAvailable()) {
+                                                                                Map<String, Object> product = new HashMap<>();
+                                                                                product.put("name", orderProduct.getProductName());
+                                                                                product.put("mrp", orderProduct.getProductMrp());
+                                                                                product.put("quantity", orderProduct.getProductQuantity());
+                                                                                product.put("image_url", orderProduct.getProductImageUrl());
+                                                                                collectionReference.add(product);
+                                                                            }
                                                                         }
                                                                     }
                                                                 }

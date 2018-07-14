@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,18 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
             this.tv_product_name = (TextView) itemView.findViewById(R.id.tv_product_name);
             this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
+            this.cb_product = (CheckBox) itemView.findViewById(R.id.cb_product);
+
+            cb_product.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        orderProducts.get(getAdapterPosition()).setAvailable(true);
+                    } else {
+                        orderProducts.get(getAdapterPosition()).setAvailable(false);
+                    }
+                }
+            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
