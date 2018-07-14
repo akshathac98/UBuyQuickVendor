@@ -69,7 +69,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginBottom="66dp"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginTop="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </RelativeLayout>

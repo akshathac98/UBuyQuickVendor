@@ -10,16 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="65dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/img_product"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_centerVertical="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:src="@color/colorPrimary" />
-
         <TextView
             android:id="@+id/tv_product_name"
             android:layout_width="match_parent"

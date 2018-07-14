@@ -1,5 +1,8 @@
 package com.ubuyquick.vendor.orders;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -9,13 +12,17 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,6 +30,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.adapter.OrderProductAdapter;
+import com.ubuyquick.vendor.model.NewOrder;
 import com.ubuyquick.vendor.model.OrderProduct;
 
 import java.util.ArrayList;
@@ -37,12 +45,13 @@ public class NewOrderActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
-    private String order_id;
+    private String order_id, shop_id;
 
     private TextView tv_customer, tv_address, tv_order_id, tv_ordered_at, tv_order_total;
     private RecyclerView rv_order_products;
     private OrderProductAdapter orderProductAdapter;
     private List<OrderProduct> orderProducts;
+    private TextView btn_accept, btn_cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +71,12 @@ public class NewOrderActivity extends AppCompatActivity {
         tv_order_id = (TextView) findViewById(R.id.tv_order_id);
         tv_ordered_at = (TextView) findViewById(R.id.tv_ordered_at);
         tv_order_total = (TextView) findViewById(R.id.tv_order_total);
+        btn_cancel = (TextView) findViewById(R.id.btn_cancel);
+        btn_accept = (TextView) findViewById(R.id.btn_accept);
 
         rv_order_products = (RecyclerView) findViewById(R.id.rv_order_products);
+
+
     }
 
     private void initialize() {
@@ -71,44 +84,203 @@ public class NewOrderActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         order_id = getIntent().getStringExtra("ORDER_ID");
+        shop_id = getIntent().getStringExtra("shop_id");
 
         Log.d(TAG, "initialize: order id: " + order_id);
 
         orderProductAdapter = new OrderProductAdapter(this);
         orderProducts = new ArrayList<>();
-            rv_order_products.setAdapter(orderProductAdapter);
+        rv_order_products.setAdapter(orderProductAdapter);
 
-            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document("BHYRAVA_PROVISIONS")
-                    .collection("new_orders").document(order_id).collection("products")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Map<String, Object> product = document.getData();
-                                    orderProducts.add(new OrderProduct(product.get("name").toString(),
-                                            Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
-                                            , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
-                                }
-                                orderProductAdapter.setOrderProducts(orderProducts);
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
+                .collection("new_orders").document(order_id).collection("products")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> product = document.getData();
+                                orderProducts.add(new OrderProduct(product.get("name").toString(),
+                                        Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
+                                        , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
                             }
+                            orderProductAdapter.setOrderProducts(orderProducts);
                         }
-                    });
+                    }
+                });
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                .collection("shops").document("BHYRAVA_PROVISIONS")
+                .collection("shops").document(shop_id)
                 .collection("new_orders").document(order_id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            Map<String, Object> product = task.getResult().getData();
-                            tv_customer.setText(product.get("customer_name").toString());
-                            tv_address.setText(product.get("delivery_address").toString());
+                            final Map<String, Object> order = task.getResult().getData();
+                            tv_customer.setText(order.get("customer_name").toString());
+                            tv_address.setText(order.get("delivery_address").toString());
                             tv_order_id.setText(order_id);
-                            tv_ordered_at.setText(product.get("ordered_at").toString());
+                            tv_ordered_at.setText(order.get("ordered_at").toString());
+
+                            btn_accept.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                                    builder.setMessage("Accept order?")
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Map<String, Object> acceptedOrder = new HashMap<>();
+                                                    acceptedOrder.put("customer_name", order.get("customer_name").toString());
+                                                    acceptedOrder.put("order_id", order.get("order_id").toString());
+                                                    acceptedOrder.put("ordered_at", order.get("ordered_at").toString());
+                                                    acceptedOrder.put("customer_id", order.get("customer_id").toString());
+                                                    acceptedOrder.put("delivery_address", order.get("delivery_address").toString());
+
+
+                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
+                                                            .collection("new_orders").document(order.get("order_id").toString()).collection("products")
+                                                            .get()
+                                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                    if (task.isSuccessful()) {
+                                                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                                                            CollectionReference collectionReference =
+                                                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                            .collection("shops").document(shop_id)
+                                                                                            .collection("accepted_orders").document(order.get("order_id").toString()).collection("products");
+                                                                            Map<String, Object> product = document.getData();
+                                                                            collectionReference.add(product);
+                                                                        }
+                                                                    }
+                                                                }
+                                                            });
+
+                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                            .collection("shops").document(shop_id)
+                                                            .collection("accepted_orders")
+                                                            .document(order.get("order_id").toString())
+                                                            .set(acceptedOrder)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    Log.d(TAG, "onComplete: remove id: " + order.get("order_id").toString());
+                                                                    db.collection("vendors").document(mAuth.getCurrentUser()
+                                                                            .getPhoneNumber().substring(3)).collection("shops")
+                                                                            .document(shop_id).collection("new_orders")
+                                                                            .document(order.get("order_id").toString()).delete()
+                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    Toast.makeText(NewOrderActivity.this, "Accepted order.", Toast.LENGTH_SHORT).show();
+                                                                                    finish();
+                                                                                }
+                                                                            })
+                                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                                @Override
+                                                                                public void onFailure(@NonNull Exception e) {
+                                                                                    Toast.makeText(NewOrderActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                            });
+                                                                }
+                                                            })
+                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    Toast.makeText(NewOrderActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                }
+                                            }).show();
+                                }
+                            });
+
+                            btn_cancel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                                    builder.setMessage("Cancel order?")
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Map<String, Object> cancelledOrder = new HashMap<>();
+                                                    cancelledOrder.put("customer_name", order.get("customer_name").toString());
+                                                    cancelledOrder.put("order_id", order.get("order_id").toString());
+                                                    cancelledOrder.put("ordered_at", order.get("ordered_at").toString());
+                                                    cancelledOrder.put("customer_id", order.get("customer_id").toString());
+                                                    cancelledOrder.put("delivery_address", order.get("delivery_address").toString());
+
+                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                            .collection("shops").document(shop_id)
+                                                            .collection("new_orders").document(order.get("order_id").toString()).collection("products")
+                                                            .get()
+                                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                    if (task.isSuccessful()) {
+                                                                        List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                                                                        for (DocumentSnapshot document : documents) {
+                                                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                    .collection("shops").document(shop_id)
+                                                                                    .collection("cancelled_orders").document(order.get("order_id").toString())
+                                                                                    .collection("products").document(document.getId()).set(document.getData());
+                                                                        }
+                                                                    } else {
+                                                                        Toast.makeText(NewOrderActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                }
+                                                            });
+
+                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                            .collection("shops").document(shop_id)
+                                                            .collection("cancelled_orders")
+                                                            .document(order.get("order_id").toString())
+                                                            .set(cancelledOrder)
+                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    if (task.isSuccessful()) {
+                                                                        Log.d(TAG, "onComplete: " + order.get("order_id").toString());
+                                                                        db.collection("vendors").document(mAuth.getCurrentUser()
+                                                                                .getPhoneNumber().substring(3))
+                                                                                .collection("shops").document(shop_id).collection("new_orders")
+                                                                                .document(order.get("order_id").toString()).delete()
+                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                                        if (task.isSuccessful()) {
+                                                                                            Toast.makeText(NewOrderActivity.this, "Cancelled order", Toast.LENGTH_SHORT).show();
+                                                                                            finish();
+                                                                                        } else {
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                    } else {
+                                                                        Toast.makeText(NewOrderActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+
+                                                                    }
+                                                                }
+                                                            });
+
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                }
+                                            }).show();
+                                }
+                            });
                         }
                     }
                 });

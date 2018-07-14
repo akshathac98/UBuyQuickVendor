@@ -103,13 +103,13 @@ public class ShopActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
     }
 
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_shop, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -149,7 +149,13 @@ public class ShopActivity extends AppCompatActivity {
                     profileFragment.setArguments(profileArgs);
                     return profileFragment;
                 case 1:
-                    return new OrderFragment();
+                    Fragment orderFragment = new OrderFragment();
+                    Bundle orderArgs = new Bundle();
+                    orderArgs.putString("shop_id", shop_id);
+                    orderArgs.putString("shop_name", shop_name);
+                    orderArgs.putString("vendor_id", vendor_id);
+                    orderFragment.setArguments(orderArgs);
+                    return orderFragment;
                 case 2:
                     Fragment creditFragment = new CreditFragment();
                     Bundle creditArgs = new Bundle();

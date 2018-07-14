@@ -53,7 +53,7 @@ public class NewOrdersFragment extends Fragment {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         orderList = (RecyclerView) view.findViewById(R.id.rv_orders);
-        newOrderAdapter = new NewOrderAdapter(view.getContext());
+        newOrderAdapter = new NewOrderAdapter(view.getContext(), getArguments().getString("shop_id"));
         orderList.setAdapter(newOrderAdapter);
         newOrders = new ArrayList<>();
 

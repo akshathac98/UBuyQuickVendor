@@ -102,7 +102,14 @@ public class OrderFragment extends Fragment {
     private void setupViewPager(ViewPager viewPager) {
 
         Adapter adapter = new Adapter(getChildFragmentManager());
-        adapter.addFragment(new NewOrdersFragment(), "New");
+        Fragment orderFragment = new NewOrdersFragment();
+        Bundle orderArgs = new Bundle();
+        orderArgs.putString("shop_id", getArguments().getString("shop_id"));
+        orderArgs.putString("shop_name", getArguments().getString("shop_name"));
+        orderArgs.putString("vendor_id", getArguments().getString("vendor_id"));
+        orderFragment.setArguments(orderArgs);
+
+        adapter.addFragment(orderFragment, "New");
         adapter.addFragment(new AcceptedOrdersFragment(), "Accepted");
         adapter.addFragment(new CancelledOrdersFragment(), "Cancelled");
         adapter.addFragment(new DeliveredOrdersFragment(), "Delivered");

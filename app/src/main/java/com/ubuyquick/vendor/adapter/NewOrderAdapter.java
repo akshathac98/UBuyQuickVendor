@@ -47,13 +47,15 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
 
     private Context context;
     private List<NewOrder> newOrders;
+    private String shop_id;
 
     private NewOrder clickedOrder;
     Map<String, Object> cancelledOrder;
 
-    public NewOrderAdapter(Context context) {
+    public NewOrderAdapter(Context context, String shop_id) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        this.shop_id = shop_id;
         newOrderRef = db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("new_orders");
         cancelledOrderRef = db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("cancelled_orders");
         this.context = context;
@@ -90,6 +92,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                         NewOrder clickedNewOrder = newOrders.get(getAdapterPosition());
                         Intent i = new Intent(v.getContext(), NewOrderActivity.class);
                         i.putExtra("ORDER_ID", clickedNewOrder.getOrderId());
+                        i.putExtra("shop_id", shop_id);
                         v.getContext().startActivity(i);
                         ((Activity) v.getContext()).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
                     }
@@ -152,7 +155,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
 //                }
 //            });
 
-            this.btn_cancel.setOnClickListener(new View.OnClickListener() {
+            /*this.btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -313,7 +316,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
                                 }
                             }).show();
                 }
-            });
+            });*/
         }
     }
 

@@ -39,7 +39,6 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private CircleImageView img_product;
         private TextView tv_product_name;
         private TextView tv_product_quantity;
         private TextView tv_product_mrp;
@@ -48,7 +47,6 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
         public ViewHolder(View itemView) {
             super(itemView);
 
-            this.img_product = (CircleImageView) itemView.findViewById(R.id.img_product);
             this.tv_product_name = (TextView) itemView.findViewById(R.id.tv_product_name);
             this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
@@ -65,7 +63,6 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
         }
 
         public void bind(OrderProduct orderProduct) {
-            UniversalImageLoader.setImage(orderProduct.getProductImageUrl(), this.img_product);
             this.tv_product_name.setText(orderProduct.getProductName());
             this.tv_product_mrp.setText("MRP\n" + orderProduct.getProductMrp());
             this.tv_product_quantity.setText("QTY\n" + orderProduct.getProductQuantity());
