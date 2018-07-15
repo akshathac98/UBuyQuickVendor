@@ -78,6 +78,9 @@
         <activity
             android:name=".orders.CancelledOrderActivity"
             android:label="Cancelled Order" />
+        <activity
+            android:name=".orders.DeliveredOrderActivity"
+            android:label="Delivered Order" />
         <activity android:name=".CategoryActivity" />
         <activity android:name=".AddProductActivity" />
         <activity android:name=".SubCategoryActivity" />

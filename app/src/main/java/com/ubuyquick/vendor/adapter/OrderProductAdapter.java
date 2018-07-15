@@ -55,7 +55,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
             this.cb_product = (CheckBox) itemView.findViewById(R.id.cb_product);
 
-            if (order_type.equals("ACCEPTED")) {
+            if (order_type.equals("ACCEPTED") || order_type.equals("CANCELLED") || order_type.equals("DELIVERED")) {
                 cb_product.setVisibility(View.INVISIBLE);
             } else {
                 cb_product.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

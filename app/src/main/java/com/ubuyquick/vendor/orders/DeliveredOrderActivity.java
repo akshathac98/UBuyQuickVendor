@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CancelledOrderActivity extends AppCompatActivity {
+public class DeliveredOrderActivity extends AppCompatActivity {
 
-    private static final String TAG = "CancelledOrderActivity";
+    private static final String TAG = "DeliveredOrderActivity";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -66,13 +66,13 @@ public class CancelledOrderActivity extends AppCompatActivity {
         order_id = getIntent().getStringExtra("ORDER_ID");
         shop_id = getIntent().getStringExtra("shop_id");
 
-        orderProductAdapter = new OrderProductAdapter(this, "CANCELLED");
+        orderProductAdapter = new OrderProductAdapter(this, "DELIVERED");
         orderProducts = new ArrayList<>();
         rv_order_products.setAdapter(orderProductAdapter);
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                 .collection("shops").document(shop_id)
-                .collection("cancelled_orders").document(order_id).collection("products")
+                .collection("delivered_orders").document(order_id).collection("products")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -82,7 +82,7 @@ public class CancelledOrderActivity extends AppCompatActivity {
                                 Map<String, Object> product = document.getData();
                                 orderProducts.add(new OrderProduct(product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
-                                        , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
+                                        , product.get("image_url").toString(), true));
                             }
                             orderProductAdapter.setOrderProducts(orderProducts);
                         }
@@ -91,7 +91,7 @@ public class CancelledOrderActivity extends AppCompatActivity {
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                 .collection("shops").document(shop_id)
-                .collection("cancelled_orders").document(order_id)
+                .collection("delivered_orders").document(order_id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override

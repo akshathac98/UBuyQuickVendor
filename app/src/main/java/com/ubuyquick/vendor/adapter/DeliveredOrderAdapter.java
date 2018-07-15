@@ -13,35 +13,35 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ubuyquick.vendor.R;
-import com.ubuyquick.vendor.model.AcceptedOrder;
 import com.ubuyquick.vendor.model.CancelledOrder;
-import com.ubuyquick.vendor.orders.AcceptedOrderActivity;
+import com.ubuyquick.vendor.model.DeliveredOrder;
 import com.ubuyquick.vendor.orders.CancelledOrderActivity;
+import com.ubuyquick.vendor.orders.DeliveredOrderActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CancelledOrderAdapter extends RecyclerView.Adapter<CancelledOrderAdapter.ViewHolder> {
+public class DeliveredOrderAdapter extends RecyclerView.Adapter<DeliveredOrderAdapter.ViewHolder> {
 
-    private static final String TAG = "CancelledOrderAdapter";
+    private static final String TAG = "DeliveredOrderAdapter";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
     private Context context;
-    private List<CancelledOrder> cancelledOrders;
+    private List<DeliveredOrder> deliveredOrders;
     private String shop_id;
 
-    public CancelledOrderAdapter(Context context, String shop_id) {
+    public DeliveredOrderAdapter(Context context, String shop_id) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
         this.shop_id = shop_id;
-        cancelledOrders = new ArrayList<>();
+        deliveredOrders = new ArrayList<>();
     }
 
-    public void setCancelledOrders(List<CancelledOrder> cancelledOrders) {
-        this.cancelledOrders = cancelledOrders;
+    public void setDeliveredOrders(List<DeliveredOrder> deliveredOrders) {
+        this.deliveredOrders = deliveredOrders;
         notifyDataSetChanged();
     }
 
@@ -63,9 +63,9 @@ public class CancelledOrderAdapter extends RecyclerView.Adapter<CancelledOrderAd
                 @Override
                 public void onClick(View v) {
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        CancelledOrder clickedCancelledOrder = cancelledOrders.get(getAdapterPosition());
-                        Intent i = new Intent(v.getContext(), CancelledOrderActivity.class);
-                        i.putExtra("ORDER_ID", clickedCancelledOrder.getOrderId());
+                        DeliveredOrder clickedDeliveredOrder = deliveredOrders.get(getAdapterPosition());
+                        Intent i = new Intent(v.getContext(), DeliveredOrderActivity.class);
+                        i.putExtra("ORDER_ID", clickedDeliveredOrder.getOrderId());
                         i.putExtra("shop_id", shop_id);
                         v.getContext().startActivity(i);
                         ((Activity) v.getContext()).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
@@ -74,11 +74,11 @@ public class CancelledOrderAdapter extends RecyclerView.Adapter<CancelledOrderAd
             });
         }
 
-        public void bind(final CancelledOrder cancelledOrder) {
-            this.tv_customer.setText(cancelledOrder.getCustomerName());
-            this.tv_address.setText(cancelledOrder.getAddress());
-            this.tv_order_id.setText("Order ID: " + cancelledOrder.getOrderId());
-            this.tv_ordered_at.setText(cancelledOrder.getOrderedAt());
+        public void bind(final DeliveredOrder deliveredOrder) {
+            this.tv_customer.setText(deliveredOrder.getCustomerName());
+            this.tv_address.setText(deliveredOrder.getAddress());
+            this.tv_order_id.setText("Order ID: " + deliveredOrder.getOrderId());
+            this.tv_ordered_at.setText(deliveredOrder.getOrderedAt());
         }
     }
 
@@ -91,11 +91,11 @@ public class CancelledOrderAdapter extends RecyclerView.Adapter<CancelledOrderAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(this.cancelledOrders.get(position));
+        holder.bind(this.deliveredOrders.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return cancelledOrders.size();
+        return deliveredOrders.size();
     }
 }

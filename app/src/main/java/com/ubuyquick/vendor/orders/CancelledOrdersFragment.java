@@ -55,7 +55,7 @@ public class CancelledOrdersFragment extends Fragment {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         orderList = (RecyclerView) view.findViewById(R.id.rv_orders);
-        cancelledOrderAdapter = new CancelledOrderAdapter(view.getContext());
+        cancelledOrderAdapter = new CancelledOrderAdapter(view.getContext(), getArguments().getString("shop_id"));
         orderList.setAdapter(cancelledOrderAdapter);
         cancelledOrders = new ArrayList<>();
 
