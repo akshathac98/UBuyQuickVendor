@@ -27,9 +27,11 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
 
     private Context context;
     private List<OrderProduct> orderProducts;
+    private String order_type;
 
-    public OrderProductAdapter(Context context) {
+    public OrderProductAdapter(Context context, String order_type) {
         this.context = context;
+        this.order_type = order_type;
         orderProducts = new ArrayList<>();
         ImageLoader.getInstance().init(new UniversalImageLoader(context).getConfig());
     }
@@ -53,16 +55,20 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
             this.cb_product = (CheckBox) itemView.findViewById(R.id.cb_product);
 
-            cb_product.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        orderProducts.get(getAdapterPosition()).setAvailable(true);
-                    } else {
-                        orderProducts.get(getAdapterPosition()).setAvailable(false);
+            if (order_type.equals("ACCEPTED")) {
+                cb_product.setVisibility(View.INVISIBLE);
+            } else {
+                cb_product.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            orderProducts.get(getAdapterPosition()).setAvailable(true);
+                        } else {
+                            orderProducts.get(getAdapterPosition()).setAvailable(false);
+                        }
                     }
-                }
-            });
+                });
+            }
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

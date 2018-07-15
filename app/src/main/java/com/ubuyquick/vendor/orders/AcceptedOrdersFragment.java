@@ -54,12 +54,12 @@ public class AcceptedOrdersFragment extends Fragment {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         orderList = (RecyclerView) view.findViewById(R.id.rv_orders);
-        acceptedOrderAdapter = new AcceptedOrderAdapter(view.getContext());
+        acceptedOrderAdapter = new AcceptedOrderAdapter(view.getContext(), getArguments().getString("shop_id"));
         orderList.setAdapter(acceptedOrderAdapter);
         acceptedOrders = new ArrayList<>();
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
-                .document("BHYRAVA_PROVISIONS").collection("accepted_orders")
+                .document(getArguments().getString("shop_id")).collection("accepted_orders")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -41,11 +42,13 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
 
     private Context context;
     private List<AcceptedOrder> acceptedOrders;
+    private String shop_id;
 
-    public AcceptedOrderAdapter(Context context) {
+    public AcceptedOrderAdapter(Context context, String shop_id) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
+        this.shop_id = shop_id;
         acceptedOrders = new ArrayList<>();
     }
 
@@ -59,6 +62,7 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
         private TextView tv_address;
         private TextView tv_order_id;
         private TextView tv_ordered_at;
+        private Button btn_deliver;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -67,6 +71,17 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
             this.tv_address = (TextView) itemView.findViewById(R.id.tv_address);
             this.tv_order_id = (TextView) itemView.findViewById(R.id.tv_order_id);
             this.tv_ordered_at = (TextView) itemView.findViewById(R.id.tv_ordered_at);
+            this.btn_deliver = (Button) itemView.findViewById(R.id.btn_deliver);
+
+            btn_deliver.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Uri mapsUri = Uri.parse("google.navigation:q=Peenya+2nd+Stage,+Bangalore");
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, mapsUri);
+                    mapIntent.setPackage("com.google.android.apps.maps");
+                    context.startActivity(mapIntent);
+                }
+            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -75,6 +90,7 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
                         AcceptedOrder clickedAcceptedOrder = acceptedOrders.get(getAdapterPosition());
                         Intent i = new Intent(v.getContext(), AcceptedOrderActivity.class);
                         i.putExtra("ORDER_ID", clickedAcceptedOrder.getOrderId());
+                        i.putExtra("shop_id", shop_id);
                         v.getContext().startActivity(i);
                         ((Activity) v.getContext()).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
                     }

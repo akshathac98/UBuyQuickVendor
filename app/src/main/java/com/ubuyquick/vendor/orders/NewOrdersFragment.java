@@ -57,7 +57,7 @@ public class NewOrdersFragment extends Fragment {
         orderList.setAdapter(newOrderAdapter);
         newOrders = new ArrayList<>();
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document("BHYRAVA_PROVISIONS").collection("new_orders")
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

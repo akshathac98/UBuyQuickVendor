@@ -88,7 +88,7 @@ public class NewOrderActivity extends AppCompatActivity {
 
         Log.d(TAG, "initialize: order id: " + order_id);
 
-        orderProductAdapter = new OrderProductAdapter(this);
+        orderProductAdapter = new OrderProductAdapter(this, "NEW");
         orderProducts = new ArrayList<>();
         rv_order_products.setAdapter(orderProductAdapter);
 

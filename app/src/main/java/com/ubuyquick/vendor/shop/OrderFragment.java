@@ -102,17 +102,24 @@ public class OrderFragment extends Fragment {
     private void setupViewPager(ViewPager viewPager) {
 
         Adapter adapter = new Adapter(getChildFragmentManager());
-        Fragment orderFragment = new NewOrdersFragment();
+        Fragment newOrderFragment = new NewOrdersFragment();
+        Fragment acceptedOrderFragment = new AcceptedOrdersFragment();
+        Fragment cancelledOrderFragment = new CancelledOrdersFragment();
+        Fragment deliveredOrderFragment = new DeliveredOrdersFragment();
+
         Bundle orderArgs = new Bundle();
         orderArgs.putString("shop_id", getArguments().getString("shop_id"));
         orderArgs.putString("shop_name", getArguments().getString("shop_name"));
         orderArgs.putString("vendor_id", getArguments().getString("vendor_id"));
-        orderFragment.setArguments(orderArgs);
+        newOrderFragment.setArguments(orderArgs);
+        acceptedOrderFragment.setArguments(orderArgs);
+        cancelledOrderFragment.setArguments(orderArgs);
+        deliveredOrderFragment.setArguments(orderArgs);
 
-        adapter.addFragment(orderFragment, "New");
-        adapter.addFragment(new AcceptedOrdersFragment(), "Accepted");
-        adapter.addFragment(new CancelledOrdersFragment(), "Cancelled");
-        adapter.addFragment(new DeliveredOrdersFragment(), "Delivered");
+        adapter.addFragment(newOrderFragment, "New");
+        adapter.addFragment(acceptedOrderFragment, "Accepted");
+        adapter.addFragment(cancelledOrderFragment, "Cancelled");
+        adapter.addFragment(deliveredOrderFragment, "Delivered");
         viewPager.setAdapter(adapter);
 
     }
