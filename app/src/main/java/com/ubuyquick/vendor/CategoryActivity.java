@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +22,7 @@ public class CategoryActivity extends AppCompatActivity {
     private ListView list_categories;
 
     private String shop_id;
+    private Button btn_add;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +35,23 @@ public class CategoryActivity extends AppCompatActivity {
         shop_id = getIntent().getStringExtra("shop_id");
 
         list_categories = (ListView) findViewById(R.id.list_categories);
+        btn_add = (Button) findViewById(R.id.btn_add_new_product);
+
         list_categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(CategoryActivity.this, SubCategoryActivity.class);
                 i.putExtra("shop_id", shop_id);
                 i.putExtra("category", "dry_fruits");
+                startActivity(i);
+            }
+        });
+
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(CategoryActivity.this, NewProductActivity.class);
+                i.putExtra("shop_id", shop_id);
                 startActivity(i);
             }
         });

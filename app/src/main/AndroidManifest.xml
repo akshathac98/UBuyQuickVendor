@@ -87,8 +87,11 @@
         <activity
             android:name=".shop.EditShopProfileActivity"
             android:label="Edit Shop Profile" />
-        <activity android:name=".auth.SignupActivity"
-            android:label="Create New Profile"></activity>
+        <activity
+            android:name=".auth.SignupActivity"
+            android:label="Create New Profile" />
+        <activity android:name=".NewProductActivity"
+            android:label="Add New Product"></activity>
     </application>
 
 </manifest>

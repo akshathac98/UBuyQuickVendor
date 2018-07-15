@@ -64,8 +64,9 @@
             android:layout_below="@id/tv_head_number"
             android:layout_marginStart="8dp"
             android:text="Credit Balance : 329/-"
+            android:layout_marginBottom="4dp"
             android:textColor="@color/colorTextPrimary"
-            android:textSize="22sp"
+            android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -87,6 +88,7 @@
             android:layout_below="@id/btn_send"
             android:layout_marginEnd="8dp"
             android:textColor="@android:color/white"
+            android:layout_marginBottom="4dp"
             android:background="@color/colorAccent"
             android:id="@+id/btn_edit"
             android:layout_width="wrap_content"

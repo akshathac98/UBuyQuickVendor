@@ -81,8 +81,8 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
             this.tv_product_name = (TextView) itemView.findViewById(R.id.tv_product_name);
             this.tv_product_quantity = (EditText) itemView.findViewById(R.id.tv_product_quantity);
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
-            this.btn_minus = (ImageButton) itemView.findViewById(R.id.btn_minus);
-            this.btn_plus = (ImageButton) itemView.findViewById(R.id.btn_plus);
+//            this.btn_minus = (ImageButton) itemView.findViewById(R.id.btn_minus);
+//            this.btn_plus = (ImageButton) itemView.findViewById(R.id.btn_plus);
             this.btn_add = (Button) itemView.findViewById(R.id.btn_add);
         }
 
@@ -147,7 +147,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
 
                 }
             });
-
+/*
             this.btn_plus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -172,7 +172,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
                         }
                     }
                 }
-            });
+            });*/
         }
     }
 
