@@ -56,7 +56,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        mobile_number = getIntent().getStringExtra("phone");
+        mobile_number = getIntent().getStringExtra(Intent.EXTRA_PHONE_NUMBER);
 
         LOGIN_MODE = getIntent().getIntExtra("LOGIN_MODE", 0);
         SharedPreferences.Editor editor = getSharedPreferences("LOGIN_MODE", MODE_PRIVATE).edit();
