@@ -33,36 +33,6 @@
         android:layout_below="@id/img_vendor"
         android:layout_gravity="center"
         android:text="loading..." />
-
-    <View
-        android:id="@+id/view1"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/tv_verified"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/white" />
-
-    <TextView
-        android:id="@+id/tv_vendor_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/view1"
-        android:layout_marginStart="10dp"
-        android:text="Email"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/tv_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_vendor_email"
-        android:layout_marginStart="16dp"
-        android:text="loading..." />
-
     <View
         android:id="@+id/view2"
         android:layout_width="match_parent"
@@ -79,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="Phone No"
+        android:text="Mobile Number"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 
@@ -91,29 +61,33 @@
         android:text="loading..." />
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/white" />
+    android:id="@+id/view1"
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_below="@id/tv_verified"
+    android:layout_marginBottom="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="10dp"
+    android:background="@android:color/white" />
 
     <TextView
-        android:id="@+id/tv_vendor_pan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="PAN Card No"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
+    android:id="@+id/tv_vendor_email"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/view1"
+    android:layout_marginStart="10dp"
+    android:text="E-mail"
+    android:textColor="@android:color/white"
+    android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/tv_pan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="loading..." />
+    android:id="@+id/tv_email"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/tv_vendor_email"
+    android:layout_marginStart="16dp"
+    android:text="loading..." />
 
     <View
         android:layout_width="match_parent"
@@ -129,7 +103,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="Aadhar Card No"
+        android:text="Aadhar Number"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 

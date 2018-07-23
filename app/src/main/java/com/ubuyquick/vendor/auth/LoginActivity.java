@@ -11,6 +11,9 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,12 +28,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
 
-    private String terms = "By logging in, you agree to the <a><u><font color='black'>Terms &amp; Conditions</font></u></a> of " +
-            "using this account and to the <a><u><font color='black'>Privacy Policy</font></u></a> of <a><u><font color='#03A9F4'>UBuyQuick.com</font></u></a>";
+    private String terms = "New to UBuyQuick? Click here to <a><font color='#03A9F4'>Sign Up</font></a>";
 
     private TextView tv_terms;
     private TextInputEditText et_mobile_number;
-    private Button btn_login, btn_signup, btn_login_mode;
+    private Button btn_login, btn_signup;
+    private RadioGroup login_group;
+    private RadioButton mode_vendor, mode_manager, mode_delivery;
 
     private CharSequence[] login_modes = {"Vendor", "Manager", "Delivery Agent"};
     private int LOGIN_MODE = 0;
@@ -70,19 +74,51 @@ public class LoginActivity extends AppCompatActivity {
         tv_terms = (TextView) findViewById(R.id.tv_terms);
         tv_terms.setText(Html.fromHtml(terms));
         et_mobile_number = (TextInputEditText) findViewById(R.id.et_mobile_number);
-        btn_signup = (Button) findViewById(R.id.btn_signup);
         btn_login = (Button) findViewById(R.id.btn_login);
-        btn_login_mode = (Button) findViewById(R.id.btn_login_mode);
-
+        login_group = (RadioGroup) findViewById(R.id.radioGroup);
+        mode_vendor = (RadioButton) findViewById(R.id.radioButton);
+        mode_manager = (RadioButton) findViewById(R.id.radioButton2);
+        mode_delivery = (RadioButton) findViewById(R.id.radioButton3);
     }
 
     private void initializeListeners() {
 
-        btn_signup.setOnClickListener(new View.OnClickListener() {
+        tv_terms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(LoginActivity.this, SignupActivity.class);
                 startActivity(i);
+            }
+        });
+
+        mode_vendor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    login_mode = login_modes[0];
+                    LOGIN_MODE = 0;
+                }
+
+            }
+        });
+
+        mode_manager.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    login_mode = login_modes[1];
+                    LOGIN_MODE = 1;
+                }
+            }
+        });
+
+        mode_delivery.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    login_mode = login_modes[2];
+                    LOGIN_MODE = 2;
+                }
             }
         });
 
@@ -101,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
+/*
         btn_login_mode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,6 +170,6 @@ public class LoginActivity extends AppCompatActivity {
                 alertDialog.show();
 
             }
-        });
+        });*/
     }
 }

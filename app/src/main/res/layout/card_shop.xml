@@ -12,10 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/img_shop"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
+            app:riv_corner_radius="10dip"
+            app:riv_border_width="1dip"
+            app:riv_border_color="#333333"
+            app:riv_mutate_background="true"
+            app:riv_tile_mode="clamp"
+            android:layout_margin="4dp"
             android:src="@drawable/ic_shop"
             android:layout_width="150dp"
             android:layout_height="120dp" />
@@ -24,7 +30,7 @@
             android:id="@+id/tv_shop_name"
             android:layout_toEndOf="@id/img_shop"
             android:text="Shop Name Here"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="4dp"
             android:textSize="18sp"
@@ -50,7 +56,7 @@
             android:textSize="15sp"
             android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
-            android:text="Quick Delivery : ON"
+            android:text="Quick Delivery : On"
             android:layout_marginEnd="4dp"
             android:layout_toEndOf="@id/img_shop"
             android:layout_below="@id/tv_status"

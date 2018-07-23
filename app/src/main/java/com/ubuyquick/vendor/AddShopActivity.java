@@ -60,8 +60,8 @@ public class AddShopActivity extends AppCompatActivity {
     private Button btn_from, btn_to, btn_location, btn_add_shop;
     private TextView tv_location, tv_delivery_radius, tv_upload;
     private ImageView img_shop;
-    private EditText et_shop_name, et_address, et_pincode, et_gstin;
-    private TextInputLayout til_shop_name, til_address, til_pincode, til_gstin;
+    private EditText et_shop_name, et_address, et_pincode, et_gstin, et_specialization, et_address2;
+    private TextInputLayout til_shop_name, til_address, til_address2, til_pincode, til_gstin, til_specialization;
     private FloatingActionButton btn_upload;
 
     private int GALLERY = 2, CAMERA = 3;
@@ -87,6 +87,7 @@ public class AddShopActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         mobile_number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+/*
 
         btn_location.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +101,8 @@ public class AddShopActivity extends AppCompatActivity {
                 }
             }
         });
+*/
+/*
 
         btn_from.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,6 +151,7 @@ public class AddShopActivity extends AppCompatActivity {
 
             }
         });
+*/
 
         btn_add_shop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,6 +167,10 @@ public class AddShopActivity extends AppCompatActivity {
                     til_shop_name.setError("Please enter the shop name.");
                     et_shop_name.requestFocus();
                     return;
+                } else if (TextUtils.isEmpty(et_specialization.getText())) {
+                    til_shop_name.setError("Please enter the shop specialization.");
+                    et_specialization.requestFocus();
+                    return;
                 } else if (TextUtils.isEmpty(et_address.getText())) {
                     til_address.setError("Enter shop address.");
                     et_address.requestFocus();
@@ -174,12 +182,6 @@ public class AddShopActivity extends AppCompatActivity {
                 } else if (TextUtils.isEmpty(et_pincode.getText())) {
                     til_pincode.setError("Pincode can't be empty.");
                     et_pincode.requestFocus();
-                    return;
-                } else if (timings_from == null || timings_to == null) {
-                    Toast.makeText(AddShopActivity.this, "Please set the shop timings", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (lat == 0.0D || lng == 0.0D || radius == 0.0D) {
-                    Toast.makeText(AddShopActivity.this, "Set your shop location to continue", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -202,13 +204,15 @@ public class AddShopActivity extends AppCompatActivity {
                         Map<String, Object> shop = new HashMap<>();
                         shop.put("shop_name", et_shop_name.getText().toString());
                         shop.put("shop_address", et_address.getText().toString());
+                        shop.put("shop_address2", et_address2.getText().toString());
                         shop.put("shop_gstin", et_gstin.getText().toString());
                         shop.put("shop_pincode", et_pincode.getText().toString());
-                        shop.put("shop_timings", btn_from.getText() + " to " + btn_to.getText());
-                        shop.put("shop_location", lat + "," + lng);
-                        shop.put("delivery_radius", radius);
+//                        shop.put("shop_timings", btn_from.getText() + " to " + btn_to.getText());
+//                        shop.put("shop_location", lat + "," + lng);
+//                        shop.put("delivery_radius", radius);
                         shop.put("verified", false);
                         shop.put("quick_delivery", false);
+                        shop.put("shop_specialization", et_specialization.getText().toString());
                         shop.put("shop_rating", 0.0);
                         shop.put("credit_message", "Credit balance pending on UBuyQuick");
                         shop.put("shop_status", true);
@@ -325,23 +329,28 @@ public class AddShopActivity extends AppCompatActivity {
     private void initializeViews() {
         til_shop_name = (TextInputLayout) findViewById(R.id.textInputLayout4);
         til_address = (TextInputLayout) findViewById(R.id.textInputLayout5);
+        til_address2 = (TextInputLayout) findViewById(R.id.textInputLayout10);
         til_pincode = (TextInputLayout) findViewById(R.id.textInputLayout7);
         til_gstin = (TextInputLayout) findViewById(R.id.textInputLayout8);
+        til_specialization = (TextInputLayout) findViewById(R.id.textInputLayout9);
+
 
         tv_upload = (TextView) findViewById(R.id.tv_upload);
         btn_upload = (FloatingActionButton) findViewById(R.id.btn_upload);
-        tv_delivery_radius = (TextView) findViewById(R.id.tv_delivery_radius);
-        tv_location = (TextView) findViewById(R.id.tv_location);
-        btn_from = (Button) findViewById(R.id.btn_from);
-        btn_to = (Button) findViewById(R.id.btn_to);
-        btn_location = (Button) findViewById(R.id.btn_location);
+//        tv_delivery_radius = (TextView) findViewById(R.id.tv_delivery_radius);
+//        tv_location = (TextView) findViewById(R.id.tv_location);
+//        btn_from = (Button) findViewById(R.id.btn_from);
+//        btn_to = (Button) findViewById(R.id.btn_to);
+//        btn_location = (Button) findViewById(R.id.btn_location);
         btn_add_shop = (Button) findViewById(R.id.btn_add_shop);
 
         img_shop = (ImageView) findViewById(R.id.img_shop);
         et_shop_name = (EditText) findViewById(R.id.et_shop_name);
         et_address = (EditText) findViewById(R.id.et_shop_address);
+        et_address2 = (EditText) findViewById(R.id.et_shop_address2);
         et_pincode = (EditText) findViewById(R.id.et_shop_pincode);
         et_gstin = (EditText) findViewById(R.id.et_shop_gstin);
+        et_specialization = (EditText) findViewById(R.id.et_shop_specialization);
     }
 
     @Override

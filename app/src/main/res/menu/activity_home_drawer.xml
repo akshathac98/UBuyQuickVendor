@@ -18,13 +18,4 @@
             android:title="MY DELIVERY AGENTS" />
     </group>
 
-    <item android:title="Control Station">
-        <menu>
-            <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Sign Out" />
-        </menu>
-    </item>
-
 </menu>

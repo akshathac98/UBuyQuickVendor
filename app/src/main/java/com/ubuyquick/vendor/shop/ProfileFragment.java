@@ -1,6 +1,7 @@
 package com.ubuyquick.vendor.shop;
 
 import android.app.Activity;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -36,7 +38,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.ubuyquick.vendor.AddShopActivity;
+import com.ubuyquick.vendor.HomeActivity;
 import com.ubuyquick.vendor.R;
+import com.ubuyquick.vendor.auth.LoginActivity;
 import com.ubuyquick.vendor.utils.UniversalImageLoader;
 
 import java.util.HashMap;
@@ -48,23 +53,29 @@ public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
 
     private View view;
-    private ImageView img_shop;
+    private com.makeramen.roundedimageview.RoundedImageView img_shop;
     private EditText input;
-    private TextView tv_shop_name, tv_shop_location, tv_shop_timings;
+    private TextView tv_shop_name, tv_shop_location, tv_shop_timings, tv_specialization, tv_gstin;
+    private TextView tv_status, tv_quick;
 
     private String vendor_number;
     private String shop_id;
     private String shop_name;
     private String vendor_id;
     private String image_url;
+    private String timings_from;
+    private String timings_to;
 
     private int LOGIN_MODE;
 
     private Button btn_delivery_agent;
     private Button btn_manager;
     private Button btn_edit_profile;
+    private Button btn_delete_shop;
+    private Button btn_to;
+    private Button btn_from;
     private Switch btn_shop_status;
-    private ToggleButton btn_quick_delivery;
+    private Switch btn_quick_delivery;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -85,15 +96,21 @@ public class ProfileFragment extends Fragment {
     }
 
     private void initializeViews() {
-        img_shop = (ImageView) view.findViewById(R.id.img_shop);
+        img_shop = (com.makeramen.roundedimageview.RoundedImageView) view.findViewById(R.id.img_shop);
         tv_shop_location = (TextView) view.findViewById(R.id.tv_shop_address);
         tv_shop_name = (TextView) view.findViewById(R.id.tv_shop_name);
-        tv_shop_timings = (TextView) view.findViewById(R.id.tv_shop_timings);
+        tv_specialization = (TextView) view.findViewById(R.id.tv_shop_spec);
+        tv_gstin = (TextView) view.findViewById(R.id.tv_gst);
+        tv_status = (TextView) view.findViewById(R.id.tv_status);
+        tv_quick = (TextView) view.findViewById(R.id.tv_quick);
 
-        btn_delivery_agent = (Button) view.findViewById(R.id.btn_delivery_agent);
-        btn_manager = (Button) view.findViewById(R.id.btn_manager);
+//        btn_delivery_agent = (Button) view.findViewById(R.id.btn_delivery_agent);
+//        btn_manager = (Button) view.findViewById(R.id.btn_manager);
         btn_edit_profile = (Button) view.findViewById(R.id.btn_edit_profile);
-        btn_quick_delivery = (ToggleButton) view.findViewById(R.id.btn_quick_delivery);
+        btn_to = (Button) view.findViewById(R.id.btn_to);
+        btn_from = (Button) view.findViewById(R.id.btn_from);
+        btn_delete_shop = (Button) view.findViewById(R.id.btn_delete_shop);
+        btn_quick_delivery = (Switch) view.findViewById(R.id.btn_quick_delivery);
         btn_shop_status = (Switch) view.findViewById(R.id.btn_status);
 
         SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
@@ -105,6 +122,31 @@ public class ProfileFragment extends Fragment {
             btn_manager.setVisibility(View.GONE);
             btn_delivery_agent.setVisibility(View.GONE);
         }
+
+        btn_delete_shop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+                builder.setMessage("Confirm Delete Shop?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).delete();
+                                Toast.makeText(getContext(), "Deleted shop successfully.", Toast.LENGTH_SHORT).show();
+                                getActivity().finish();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        }).show();
+            }
+        });
+
+/*
 
         btn_delivery_agent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +174,7 @@ public class ProfileFragment extends Fragment {
                                             shop.put("shop_name", shop_name);
                                             shop.put("vendor_id", vendor_number);
                                             shop.put("shop_id", shop_id);
+                                            shop.put("image_url", image_url);
                                             db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
                                                     .set(shop);
                                         } else {
@@ -141,6 +184,7 @@ public class ProfileFragment extends Fragment {
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             Map<String, Object> shop = new HashMap<>();
                                                             shop.put("shop_name", shop_name);
+                                                            shop.put("image_url", image_url);
                                                             shop.put("vendor_id", vendor_number);
                                                             shop.put("shop_id", shop_id);
                                                             db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
@@ -183,6 +227,7 @@ public class ProfileFragment extends Fragment {
                                         if (task.getResult().exists()) {
                                             Map<String, Object> shop = new HashMap<>();
                                             shop.put("shop_name", shop_name);
+                                            shop.put("image_url", image_url);
                                             shop.put("vendor_id", vendor_number);
                                             shop.put("shop_id", shop_id);
                                             db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
@@ -195,6 +240,7 @@ public class ProfileFragment extends Fragment {
                                                             Map<String, Object> shop = new HashMap<>();
                                                             shop.put("shop_name", shop_name);
                                                             shop.put("vendor_id", vendor_number);
+                                                            shop.put("image_url", image_url);
                                                             shop.put("shop_id", shop_id);
                                                             db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
                                                                     .set(shop);
@@ -212,6 +258,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+*/
         btn_edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -226,14 +273,64 @@ public class ProfileFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Map<String, Object> shop = new HashMap<>();
                 if (isChecked) {
+                    tv_quick.setText("On");
                     shop.put("quick_delivery", true);
                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                             .collection("shops").document(shop_id).update(shop);
                 } else {
+                    tv_quick.setText("Off");
                     shop.put("quick_delivery", false);
                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                             .collection("shops").document(shop_id).update(shop);
                 }
+            }
+        });
+
+        btn_from.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                if (hourOfDay < 12) {
+                                    timings_from = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " AM";
+                                    btn_from.setText(timings_from);
+                                } else if (hourOfDay > 12) {
+                                    timings_from = String.format("%02d", hourOfDay % 12) + ":" + String.format("%02d", minute) + " PM";
+                                    btn_from.setText(timings_from);
+                                } else {
+                                    timings_from = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " PM";
+                                    btn_from.setText(timings_from);
+                                }
+                            }
+                        }, 0, 0, false);
+                timePickerDialog.show();
+
+            }
+        });
+
+        btn_to.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                if (hourOfDay < 12) {
+                                    timings_to = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " AM";
+                                    btn_to.setText(timings_to);
+                                } else if (hourOfDay > 12) {
+                                    timings_to = String.format("%02d", hourOfDay % 12) + ":" + String.format("%02d", minute) + " PM";
+                                    btn_to.setText(timings_to);
+                                } else {
+                                    timings_to = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " PM";
+                                    btn_to.setText(timings_to);
+                                }
+                            }
+                        }, 0, 0, false);
+                timePickerDialog.show();
+
             }
         });
 
@@ -242,15 +339,15 @@ public class ProfileFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Map<String, Object> shop = new HashMap<>();
                 if (isChecked) {
+                    tv_status.setText("Online");
                     shop.put("shop_status", true);
                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                             .collection("shops").document(shop_id).update(shop);
-                    btn_shop_status.setText("Online");
                 } else {
+                    tv_status.setText("Offline");
                     shop.put("shop_status", false);
                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                             .collection("shops").document(shop_id).update(shop);
-                    btn_shop_status.setText("Offline");
                 }
             }
         });
@@ -262,7 +359,6 @@ public class ProfileFragment extends Fragment {
         vendor_number = vendor_id;
         db = FirebaseFirestore.getInstance();
         ImageLoader.getInstance().init(new UniversalImageLoader(getContext()).getConfig());
-
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                 .collection("shops").document(shop_id).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -270,18 +366,18 @@ public class ProfileFragment extends Fragment {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         Map<String, Object> shop = task.getResult().getData();
                         UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
-                        tv_shop_location.setText(shop.get("shop_address").toString());
+                        tv_shop_location.setText(shop.get("shop_address").toString() + ", " + shop.get("shop_address2").toString());
                         tv_shop_name.setText(shop.get("shop_name").toString());
-                        tv_shop_timings.setText(shop.get("shop_timings").toString());
+                        tv_gstin.setText(shop.get("shop_gstin").toString());
+                        tv_specialization.setText(shop.get("shop_specialization").toString());
+//                        tv_shop_timings.setText(shop.get("shop_timings").toString());
 
                         btn_quick_delivery.setChecked(Boolean.parseBoolean(shop.get("quick_delivery").toString()));
 
                         if (Boolean.parseBoolean(shop.get("shop_status").toString())) {
                             btn_shop_status.setChecked(true);
-                            btn_shop_status.setText("Online");
                         } else {
                             btn_shop_status.setChecked(false);
-                            btn_shop_status.setText("Offline");
                         }
 
 

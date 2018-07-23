@@ -60,8 +60,8 @@ public class EditShopProfileActivity extends AppCompatActivity {
     private Button btn_from, btn_to, btn_location, btn_save_profile;
     private TextView tv_location, tv_delivery_radius, tv_upload;
     private ImageView img_shop;
-    private EditText et_shop_name, et_address, et_pincode, et_gstin;
-    private TextInputLayout til_shop_name, til_address, til_pincode, til_gstin;
+    private EditText et_shop_name, et_address, et_address2, et_pincode, et_gstin, et_spec;
+    private TextInputLayout til_shop_name, til_address, til_pincode, til_gstin, til_spec, til_address2;
     private FloatingActionButton btn_upload;
 
     private int GALLERY = 2, CAMERA = 3;
@@ -92,15 +92,17 @@ public class EditShopProfileActivity extends AppCompatActivity {
                 et_address.setText(shop.get("shop_address").toString());
                 et_pincode.setText(shop.get("shop_pincode").toString());
                 et_gstin.setText(shop.get("shop_gstin").toString());
-                timings_from = shop.get("shop_timings").toString().substring(0, 9);
-                btn_from.setText(timings_from);
-                timings_to = shop.get("shop_timings").toString().substring(12);
-                btn_to.setText(timings_to);
-                radius = Double.parseDouble(shop.get("delivery_radius").toString());
-                tv_delivery_radius.setText("Delivery radius: " + radius + "mts.");
-                lat = Double.parseDouble(shop.get("shop_location").toString().split(",")[0]);
-                lng = Double.parseDouble(shop.get("shop_location").toString().split(",")[1]);
-                tv_location.setText("Location: " + lat + ", " + lng);
+                et_address2.setText(shop.get("shop_address2").toString());
+                et_spec.setText(shop.get("shop_specialization").toString());
+//                timings_from = shop.get("shop_timings").toString().substring(0, 9);
+//                btn_from.setText(timings_from);
+//                timings_to = shop.get("shop_timings").toString().substring(12);
+//                btn_to.setText(timings_to);
+//                radius = Double.parseDouble(shop.get("delivery_radius").toString());
+//                tv_delivery_radius.setText("Delivery radius: " + radius + "mts.");
+//                lat = Double.parseDouble(shop.get("shop_location").toString().split(",")[0]);
+//                lng = Double.parseDouble(shop.get("shop_location").toString().split(",")[1]);
+//                tv_location.setText("Location: " + lat + ", " + lng);
                 tv_upload.setVisibility(View.GONE);
             }
         });
@@ -112,67 +114,6 @@ public class EditShopProfileActivity extends AppCompatActivity {
     private void initialize() {
 
         mobile_number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
-
-        btn_location.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ActivityCompat.checkSelfPermission(EditShopProfileActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(EditShopProfileActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
-                    } else {
-                        startActivityForResult(new Intent(EditShopProfileActivity.this, ShopLocationActivity.class), 1);
-                    }
-                }
-            }
-        });
-
-        btn_from.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TimePickerDialog timePickerDialog = new TimePickerDialog(EditShopProfileActivity.this,
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                if (hourOfDay < 12) {
-                                    timings_from = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " AM";
-                                    btn_from.setText(timings_from);
-                                } else if (hourOfDay > 12) {
-                                    timings_from = String.format("%02d", hourOfDay % 12) + ":" + String.format("%02d", minute) + " PM";
-                                    btn_from.setText(timings_from);
-                                } else {
-                                    timings_from = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " PM";
-                                    btn_from.setText(timings_from);
-                                }
-                            }
-                        }, 0, 0, false);
-                timePickerDialog.show();
-
-            }
-        });
-
-        btn_to.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TimePickerDialog timePickerDialog = new TimePickerDialog(EditShopProfileActivity.this,
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                if (hourOfDay < 12) {
-                                    timings_to = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " AM";
-                                    btn_to.setText(timings_to);
-                                } else if (hourOfDay > 12) {
-                                    timings_to = String.format("%02d", hourOfDay % 12) + ":" + String.format("%02d", minute) + " PM";
-                                    btn_to.setText(timings_to);
-                                } else {
-                                    timings_to = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " PM";
-                                    btn_to.setText(timings_to);
-                                }
-                            }
-                        }, 0, 0, false);
-                timePickerDialog.show();
-
-            }
-        });
 
         btn_save_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,12 +141,6 @@ public class EditShopProfileActivity extends AppCompatActivity {
                     til_pincode.setError("Pincode can't be empty.");
                     et_pincode.requestFocus();
                     return;
-                } else if (timings_from == null || timings_to == null) {
-                    Toast.makeText(EditShopProfileActivity.this, "Please set the shop timings", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (lat == 0.0D || lng == 0.0D || radius == 0.0D) {
-                    Toast.makeText(EditShopProfileActivity.this, "Set your shop location to continue", Toast.LENGTH_SHORT).show();
-                    return;
                 }
 
                 StorageReference storageReference = storage.getReference().child(mobile_number).child(et_shop_name.getText().toString())
@@ -227,11 +162,10 @@ public class EditShopProfileActivity extends AppCompatActivity {
                         Map<String, Object> shop = new HashMap<>();
                         shop.put("shop_name", et_shop_name.getText().toString());
                         shop.put("shop_address", et_address.getText().toString());
+                        shop.put("shop_address2", et_address2.getText().toString());
+                        shop.put("shop_specialization", et_spec.getText().toString());
                         shop.put("shop_gstin", et_gstin.getText().toString());
                         shop.put("shop_pincode", et_pincode.getText().toString());
-                        shop.put("shop_timings", btn_from.getText() + " to " + btn_to.getText());
-                        shop.put("shop_location", lat + "," + lng);
-                        shop.put("delivery_radius", radius);
                         shop.put("shop_image_url", url);
 
                         db.collection("vendors").document(mobile_number).collection("shops").document(shop_id).update(shop)
@@ -375,21 +309,20 @@ public class EditShopProfileActivity extends AppCompatActivity {
         til_address = (TextInputLayout) findViewById(R.id.textInputLayout5);
         til_pincode = (TextInputLayout) findViewById(R.id.textInputLayout7);
         til_gstin = (TextInputLayout) findViewById(R.id.textInputLayout8);
+        til_spec = (TextInputLayout) findViewById(R.id.textInputLayout9);
+        til_address2 = (TextInputLayout) findViewById(R.id.textInputLayout10);
 
         tv_upload = (TextView) findViewById(R.id.tv_upload);
         btn_upload = (FloatingActionButton) findViewById(R.id.btn_upload);
-        tv_delivery_radius = (TextView) findViewById(R.id.tv_delivery_radius);
-        tv_location = (TextView) findViewById(R.id.tv_location);
-        btn_from = (Button) findViewById(R.id.btn_from);
-        btn_to = (Button) findViewById(R.id.btn_to);
-        btn_location = (Button) findViewById(R.id.btn_location);
         btn_save_profile = (Button) findViewById(R.id.btn_save_profile);
 
         img_shop = (ImageView) findViewById(R.id.img_shop);
         et_shop_name = (EditText) findViewById(R.id.et_shop_name);
         et_address = (EditText) findViewById(R.id.et_shop_address);
+        et_address2 = (EditText) findViewById(R.id.et_shop_address2);
         et_pincode = (EditText) findViewById(R.id.et_shop_pincode);
         et_gstin = (EditText) findViewById(R.id.et_shop_gstin);
+        et_spec = (EditText) findViewById(R.id.et_shop_specialization);
     }
 
     @Override

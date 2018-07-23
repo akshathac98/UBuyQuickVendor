@@ -38,8 +38,8 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_up);
-        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_up);
+//        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         til_vendor_name = (TextInputLayout) findViewById(R.id.til_vendor_name);
         til_email = (TextInputLayout) findViewById(R.id.til_email);
@@ -72,7 +72,7 @@ public class SignupActivity extends AppCompatActivity {
                 if (validateForm()) {
                     Intent i = new Intent(SignupActivity.this, VerifyOTPActivity.class);
                     i.putExtra("name", vendor_name);
-                    i.putExtra("phone", mobile_number);
+                    i.putExtra(Intent.EXTRA_PHONE_NUMBER, et_mobile_number.getText().toString());
                     i.putExtra("VERIFICATION_TYPE", "REGISTER");
                     i.putExtra("email", email);
                     i.putExtra("aadhar", aadhar_card_number);
@@ -136,10 +136,10 @@ public class SignupActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == android.R.id.home) {
-            finish();
-            overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
-        }
+//        if (id == android.R.id.home) {
+//            finish();
+//            overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+//        }
 
         return super.onOptionsItemSelected(item);
     }

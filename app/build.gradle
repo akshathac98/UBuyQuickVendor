@@ -58,6 +58,9 @@ dependencies {
     // RecyclerView Multi-select
     implementation 'com.bignerdranch.android:recyclerview-multiselect:0.2'
 
+    // Rounded ImageView
+    implementation 'com.makeramen:roundedimageview:2.3.0'
+
 }
 
 

@@ -18,11 +18,14 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:text="Sign Up"
+            android:layout_marginTop="24dp"
+            android:text="@string/signup"
             android:textColor="@color/colorTextPrimary"
-            android:textSize="24sp"
-            android:layout_centerHorizontal="true"/>
+            android:textSize="35sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_vendor_name"
@@ -30,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="24dp"
             android:layout_below="@id/textView3">
 
             <android.support.design.widget.TextInputEditText
@@ -38,8 +41,9 @@
                 android:textColor="@color/colorTextPrimary"
                 android:backgroundTint="@color/colorPrimary"
                 android:layout_width="match_parent"
+                android:inputType="textEmailAddress"
                 android:layout_height="wrap_content"
-                android:hint="Vendor's Name *" />
+                android:hint="Name*" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -57,7 +61,7 @@
                 android:inputType="phone"
                 android:backgroundTint="@color/colorPrimary"
                 android:layout_height="wrap_content"
-                android:hint="Mobile No (without +91) *" />
+                android:hint="Mobile Number*" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -75,7 +79,7 @@
                 android:inputType="textEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email" />
+                android:hint="E-mail" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -83,6 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="28dp"
             android:layout_marginStart="8dp"
             android:layout_below="@id/til_email">
 
@@ -93,7 +98,7 @@
                 android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Aadhar Card No *" />
+                android:hint="Aadhar Number*" />
         </android.support.design.widget.TextInputLayout>
 
         <Button
@@ -101,28 +106,60 @@
             android:textColor="@android:color/white"
             android:textAllCaps="false"
             android:textSize="18sp"
-            android:layout_below="@id/til_aadhar_number"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@id/view"
             android:background="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="18dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Register" />
+            android:text="Sign Up" />
+
+        <View
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/til_aadhar_number"
+            android:id="@+id/view"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
 
         <Button
             android:id="@+id/btn_cancel"
-            android:background="@android:color/white"
-            android:textColor="@color/colorTextPrimary"
+            android:background="@color/colorAccent"
+            android:textColor="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginBottom="18dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@id/view"
+            android:textSize="18sp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:textAllCaps="false"
-            android:text="Cancel"
-            android:layout_below="@id/btn_signup"/>
+            android:text="Cancel" />
+
+        <TextView
+            android:layout_below="@id/til_aadhar_number"
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:textStyle="italic"
+            android:text="Note: Only Shop Owners Can Sign-Up"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_above="@id/btn_signup"
+            android:id="@+id/textView7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/login_terms"
+            android:textSize="14sp" />
 
     </RelativeLayout>
 </ScrollView>

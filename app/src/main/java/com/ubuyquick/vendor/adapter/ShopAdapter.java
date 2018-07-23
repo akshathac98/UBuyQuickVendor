@@ -3,6 +3,9 @@ package com.ubuyquick.vendor.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,7 +45,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
         private TextView tv_shop_name;
         private TextView tv_shop_status;
         private TextView tv_quickdelivery;
-        private ImageView img_shop;
+        private com.makeramen.roundedimageview.RoundedImageView img_shop;
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -50,7 +53,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
             this.tv_shop_name = (TextView) itemView.findViewById(R.id.tv_shop_name);
             this.tv_shop_status = (TextView) itemView.findViewById(R.id.tv_status);
             this.tv_quickdelivery = (TextView) itemView.findViewById(R.id.tv_quickdelivery);
-            this.img_shop = (ImageView) itemView.findViewById(R.id.img_shop);
+            this.img_shop = (com.makeramen.roundedimageview.RoundedImageView) itemView.findViewById(R.id.img_shop);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -61,6 +64,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                         i.putExtra("shop_id", clickedShop.getShopId());
                         i.putExtra("shop_name", clickedShop.getShopName());
                         i.putExtra("vendor_id", clickedShop.getVendorId());
+                        i.putExtra("image_url", clickedShop.getImageUrl());
 
                         v.getContext().startActivity(i);
                         ((Activity) context).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
@@ -73,18 +77,21 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
 
         public void bind(Shop shop) {
 
-            if (!shop.getImageUrl().equals("NA"))
+            if (!shop.getImageUrl().equals("NA")) {
                 UniversalImageLoader.setImage(shop.getImageUrl(), img_shop);
 
+            }
             if (shop.getShopStatus())
-                this.tv_shop_status.setText("Online");
+                this.tv_shop_status.setText("Shop Status: Online");
             else
-                this.tv_shop_status.setText("Offline");
+                this.tv_shop_status.setText("Shop Status: Offline");
 
             this.tv_shop_name.setText(shop.getShopName());
 
             if (!shop.isQuickDelivery())
-                tv_quickdelivery.setVisibility(View.GONE);
+                tv_quickdelivery.setText("Quick Delivery: Off");
+            else
+                tv_quickdelivery.setText("Quick Delivery: On");
 
         }
     }

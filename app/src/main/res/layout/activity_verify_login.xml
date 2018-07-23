@@ -12,12 +12,12 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="36dp"
-        android:text="Verification Code"
-        android:textColor="@color/colorAccent"
-        android:textSize="24sp"
+        android:layout_marginTop="24dp"
+        android:text="Verification"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="35sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,8 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="150dp"
         android:text="@string/verification_code_sent"
+        android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.483"
@@ -62,23 +63,6 @@
         app:lineWidth="2dp"
         app:viewType="rectangle" />
 
-    <Button
-        android:id="@+id/btn_verify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="156dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="Verify"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_resend"
-        app:layout_constraintVertical_bias="0.03" />
-
     <TextView
         android:id="@+id/tv_resend"
         android:layout_width="wrap_content"
@@ -90,4 +74,44 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pinView" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_resend"
+        app:layout_constraintVertical_bias="0.0">
+
+        <Button
+            android:id="@+id/btn_verify"
+            android:text="Verify"
+            android:layout_toStartOf="@id/view"
+            android:textColor="@android:color/white"
+            android:background="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true" />
+
+
+        <Button
+            android:id="@+id/btn_back"
+            android:text="Back"
+            android:layout_toEndOf="@id/view"
+            android:textColor="@android:color/white"
+            android:background="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>

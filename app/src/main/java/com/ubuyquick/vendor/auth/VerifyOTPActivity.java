@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,11 +36,13 @@ public class VerifyOTPActivity extends AppCompatActivity {
 
     private static final String TAG = "VerifyOTPActivity";
 
+    private String resend = "Didn't receive OTP? Click here to <a><font color='#03A9F4'>Re-Send</font></a>";
+
     private String mobile_number, mVerificationId, verification_type;
     private int LOGIN_MODE;
 
     private TextView tv_code, tv_resend;
-    private Button btn_verify;
+    private Button btn_verify, btn_back;
     private PinView pinView;
 
     private FirebaseAuth mAuth;
@@ -67,8 +70,17 @@ public class VerifyOTPActivity extends AppCompatActivity {
 
         tv_code = (TextView) findViewById(R.id.tv_code);
         tv_resend = (TextView) findViewById(R.id.tv_resend);
+        tv_resend.setText(Html.fromHtml(resend));
         btn_verify = (Button) findViewById(R.id.btn_verify);
+        btn_back = (Button) findViewById(R.id.btn_back);
         pinView = (PinView) findViewById(R.id.pinView);
+
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         tv_code.setText(getString(R.string.verification_code_sent) + mobile_number);
 
@@ -100,7 +112,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                             vendor.put("name", getIntent().getStringExtra("name"));
                                             vendor.put("verified", false);
                                             vendor.put("uid", task.getResult().getUser().getUid());
-                                            vendor.put("phone", getIntent().getStringExtra("phone"));
+                                            vendor.put("phone", getIntent().getStringExtra(Intent.EXTRA_PHONE_NUMBER));
                                             vendor.put("pan_number", "NA");
                                             vendor.put("user_role", "OWNER");
                                             vendor.put("photo_url", "NA");
@@ -191,7 +203,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                         vendor.put("name", getIntent().getStringExtra("name"));
                                         vendor.put("verified", false);
                                         vendor.put("uid", task.getResult().getUser().getUid());
-                                        vendor.put("phone", getIntent().getStringExtra("phone"));
+                                        vendor.put("phone", getIntent().getStringExtra(Intent.EXTRA_PHONE_NUMBER));
                                         vendor.put("pan_number", "NA");
                                         vendor.put("user_role", "OWNER");
                                         vendor.put("photo_url", "NA");

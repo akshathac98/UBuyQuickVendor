@@ -89,6 +89,7 @@
             android:label="Edit Shop Profile" />
         <activity
             android:name=".auth.SignupActivity"
+            android:theme="@style/AppThemeFullScreen"
             android:label="Create New Profile" />
         <activity android:name=".NewProductActivity"
             android:label="Add New Product"></activity>

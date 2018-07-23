@@ -109,12 +109,12 @@ public class HomeActivity extends AppCompatActivity
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    shops.add(new Shop(null,
+                                    shops.add(new Shop(document.get("image_url").toString(),
                                             document.get("shop_name").toString(),
-                                            Boolean.parseBoolean(document.get("shop_status").toString()),
+                                            true,
                                             document.get("shop_id").toString(),
                                             document.get("vendor_id").toString(),
-                                            Boolean.parseBoolean(document.get("quick_delivery").toString())));
+                                            true));
                                 }
                                 shopAdapter.setShops(shops);
                             } else {
@@ -130,7 +130,7 @@ public class HomeActivity extends AppCompatActivity
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    shops.add(new Shop(null,
+                                    shops.add(new Shop(document.get("image_url").toString(),
                                             document.get("shop_name").toString(),
                                             Boolean.parseBoolean(document.get("shop_status").toString()),
                                             document.get("shop_id").toString(),
@@ -175,7 +175,6 @@ public class HomeActivity extends AppCompatActivity
                             tv_email.setText(vendor.get("email").toString());
                             tv_name.setText(vendor.get("name").toString());
                             tv_phone.setText(vendor.get("phone").toString());
-                            tv_pan.setText(vendor.get("pan_number").toString());
                             tv_aadhar.setText(vendor.get("aadhar_number").toString());
                             if ((boolean) vendor.get("verified")) {
                                 tv_verified.setText("Verified Vendor");
@@ -190,14 +189,12 @@ public class HomeActivity extends AppCompatActivity
             tv_email.setText(not_available);
             tv_name.setText(not_available);
             tv_phone.setText(not_available);
-            tv_pan.setText(not_available);
             tv_aadhar.setText(not_available);
             tv_verified.setText("Logged in as Manager");
         } else {
             tv_email.setText(not_available);
             tv_name.setText(not_available);
             tv_phone.setText(not_available);
-            tv_pan.setText(not_available);
             tv_aadhar.setText(not_available);
             tv_verified.setText("Delivery Agent");
         }
@@ -253,7 +250,6 @@ public class HomeActivity extends AppCompatActivity
         tv_name = (TextView) header.findViewById(R.id.tv_vendor_name);
         tv_email = (TextView) header.findViewById(R.id.tv_email);
         tv_phone = (TextView) header.findViewById(R.id.tv_phone);
-        tv_pan = (TextView) header.findViewById(R.id.tv_pan);
         tv_verified = (TextView) header.findViewById(R.id.tv_verified);
         img_vendor = (CircleImageView) header.findViewById(R.id.img_vendor);
         btn_edit_profile = (Button) header.findViewById(R.id.btn_edit_profile);
@@ -302,12 +298,6 @@ public class HomeActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_logout) {
-            FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(HomeActivity.this, LoginActivity.class));
-            finish();
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
