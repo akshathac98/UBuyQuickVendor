@@ -216,7 +216,7 @@ public class HomeActivity extends AppCompatActivity
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
+                                dialogInterface.cancel();
                             }
                         }).show();
             }
