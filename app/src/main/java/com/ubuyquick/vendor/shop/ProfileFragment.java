@@ -39,7 +39,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ubuyquick.vendor.AddShopActivity;
+import com.ubuyquick.vendor.DeliveryAgentsActivity;
 import com.ubuyquick.vendor.HomeActivity;
+import com.ubuyquick.vendor.ManagersActivity;
 import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.auth.LoginActivity;
 import com.ubuyquick.vendor.utils.UniversalImageLoader;
@@ -67,6 +69,7 @@ public class ProfileFragment extends Fragment {
     private String timings_to;
 
     private int LOGIN_MODE;
+    private int manager_count = 0, deliveryagent_count = 0;
 
     private Button btn_delivery_agent;
     private Button btn_manager;
@@ -89,6 +92,22 @@ public class ProfileFragment extends Fragment {
         shop_name = getArguments().getString("shop_name");
         vendor_id = getArguments().getString("vendor_id");
 
+        mAuth = FirebaseAuth.getInstance();
+
+        vendor_number = vendor_id;
+        db = FirebaseFirestore.getInstance();
+        ImageLoader.getInstance().init(new UniversalImageLoader(getContext()).getConfig());
+
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("shops").document(shop_id).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        manager_count = Integer.parseInt(task.getResult().getData().get("manager_count").toString());
+                        deliveryagent_count = Integer.parseInt(task.getResult().getData().get("deliveryagent_count").toString());
+                    }
+                });
+
         initializeViews();
         initialize();
 
@@ -108,10 +127,12 @@ public class ProfileFragment extends Fragment {
 //        btn_manager = (Button) view.findViewById(R.id.btn_manager);
         btn_edit_profile = (Button) view.findViewById(R.id.btn_edit_profile);
         btn_to = (Button) view.findViewById(R.id.btn_to);
-        btn_from = (Button) view.findViewById(R.id.btn_from);
-        btn_delete_shop = (Button) view.findViewById(R.id.btn_delete_shop);
         btn_quick_delivery = (Switch) view.findViewById(R.id.btn_quick_delivery);
         btn_shop_status = (Switch) view.findViewById(R.id.btn_status);
+        btn_from = (Button) view.findViewById(R.id.btn_from);
+        btn_delete_shop = (Button) view.findViewById(R.id.btn_delete_shop);
+        btn_delivery_agent = (Button) view.findViewById(R.id.btn_add_delivery);
+        btn_manager = (Button) view.findViewById(R.id.btn_add_manager);
 
         SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
         LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
@@ -146,59 +167,75 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-/*
-
         btn_delivery_agent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setTitle("Delivery Agent mobile number:");
-                input = new EditText(v.getContext());
-                input.setInputType(InputType.TYPE_CLASS_PHONE);
-                builder.setView(input);
-                builder.setNegativeButton("Cancel", null);
 
-                builder.setPositiveButton("Add Agent", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        final Map<String, Object> agent = new HashMap<>();
-                        agent.put("user_id", input.getText().toString());
-                        agent.put("user_role", "DELIVERY_AGENT");
+                if (deliveryagent_count == 0) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    builder.setTitle("Delivery Agent mobile number:");
+                    input = new EditText(v.getContext());
+                    input.setInputType(InputType.TYPE_CLASS_PHONE);
+                    builder.setView(input);
+                    builder.setNegativeButton("Cancel", null);
 
-                        db.collection("delivery_agents").document(input.getText().toString()).get()
-                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                        if (task.getResult().exists()) {
-                                            Map<String, Object> shop = new HashMap<>();
-                                            shop.put("shop_name", shop_name);
-                                            shop.put("vendor_id", vendor_number);
-                                            shop.put("shop_id", shop_id);
-                                            shop.put("image_url", image_url);
-                                            db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
-                                                    .set(shop);
-                                        } else {
-                                            db.collection("delivery_agents").document(input.getText().toString()).set(agent)
-                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            Map<String, Object> shop = new HashMap<>();
-                                                            shop.put("shop_name", shop_name);
-                                                            shop.put("image_url", image_url);
-                                                            shop.put("vendor_id", vendor_number);
-                                                            shop.put("shop_id", shop_id);
-                                                            db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
-                                                                    .set(shop);
-                                                        }
-                                                    });
+                    builder.setPositiveButton("Add Agent", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            final Map<String, Object> agent = new HashMap<>();
+                            agent.put("user_id", input.getText().toString());
+                            agent.put("user_role", "DELIVERY_AGENT");
+
+                            db.collection("delivery_agents").document(input.getText().toString()).get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            if (task.getResult().exists()) {
+                                                Map<String, Object> shop = new HashMap<>();
+                                                shop.put("shop_name", shop_name);
+                                                shop.put("vendor_id", vendor_number);
+                                                shop.put("shop_id", shop_id);
+                                                shop.put("image_url", image_url);
+
+                                                Map<String, Object> agentInfo = new HashMap<>();
+                                                agentInfo.put("deliveryagent_count", 1);
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).update(agentInfo);
+                                                deliveryagent_count++;
+                                                db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                        .set(shop);
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).collection("delivery_agents")
+                                                        .document(input.getText().toString()).set(agent);
+                                            } else {
+                                                db.collection("delivery_agents").document(input.getText().toString()).set(agent)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                Map<String, Object> shop = new HashMap<>();
+                                                                shop.put("shop_name", shop_name);
+                                                                shop.put("image_url", image_url);
+                                                                shop.put("vendor_id", vendor_number);
+                                                                shop.put("shop_id", shop_id);
+                                                                db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                                        .set(shop);
+                                                            }
+                                                        });
+                                            }
                                         }
-                                    }
-                                });
+                                    });
 
 
-                    }
-                });
-                builder.show();
+                        }
+                    });
+                    builder.show();
+                } else {
+                    Intent i = new Intent(getContext(), DeliveryAgentsActivity.class);
+                    i.putExtra("shop_id", shop_id);
+                    i.putExtra("vendor_id", vendor_number);
+                    i.putExtra("shop_name", shop_name);
+                    startActivity(i);
+                }
 
             }
         });
@@ -206,59 +243,79 @@ public class ProfileFragment extends Fragment {
         btn_manager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setTitle("Manager mobile number:");
-                input = new EditText(v.getContext());
-                input.setInputType(InputType.TYPE_CLASS_PHONE);
-                builder.setView(input);
-                builder.setNegativeButton("Cancel", null);
 
-                builder.setPositiveButton("Add Manager", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        final Map<String, Object> agent = new HashMap<>();
-                        agent.put("user_id", input.getText().toString());
-                        agent.put("user_role", "MANAGER");
+                if (manager_count == 0) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    builder.setTitle("Manager mobile number:");
+                    input = new EditText(v.getContext());
+                    input.setInputType(InputType.TYPE_CLASS_PHONE);
+                    builder.setView(input);
+                    builder.setNegativeButton("Cancel", null);
 
-                        db.collection("managers").document(input.getText().toString()).get()
-                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                        if (task.getResult().exists()) {
-                                            Map<String, Object> shop = new HashMap<>();
-                                            shop.put("shop_name", shop_name);
-                                            shop.put("image_url", image_url);
-                                            shop.put("vendor_id", vendor_number);
-                                            shop.put("shop_id", shop_id);
-                                            db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
-                                                    .set(shop);
-                                        } else {
-                                            db.collection("managers").document(input.getText().toString()).set(agent)
-                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            Map<String, Object> shop = new HashMap<>();
-                                                            shop.put("shop_name", shop_name);
-                                                            shop.put("vendor_id", vendor_number);
-                                                            shop.put("image_url", image_url);
-                                                            shop.put("shop_id", shop_id);
-                                                            db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
-                                                                    .set(shop);
-                                                        }
-                                                    });
+                    builder.setPositiveButton("Add Manager", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            final Map<String, Object> agent = new HashMap<>();
+                            agent.put("user_id", input.getText().toString());
+                            agent.put("user_role", "MANAGER");
+
+                            db.collection("managers").document(input.getText().toString()).get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            if (task.getResult().exists()) {
+                                                Map<String, Object> shop = new HashMap<>();
+                                                shop.put("shop_name", shop_name);
+                                                shop.put("image_url", image_url);
+                                                shop.put("vendor_id", vendor_number);
+                                                shop.put("shop_id", shop_id);
+
+                                                Map<String, Object> managerInfo = new HashMap<>();
+                                                managerInfo.put("manager_count", 1);
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).update(managerInfo);
+                                                manager_count++;
+
+                                                db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                        .set(shop);
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).collection("managers")
+                                                        .document(input.getText().toString()).set(agent);
+                                            } else {
+                                                db.collection("managers").document(input.getText().toString()).set(agent)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                Map<String, Object> shop = new HashMap<>();
+                                                                shop.put("shop_name", shop_name);
+                                                                shop.put("vendor_id", vendor_number);
+                                                                shop.put("image_url", image_url);
+                                                                shop.put("shop_id", shop_id);
+                                                                db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                                        .set(shop);
+                                                            }
+                                                        });
+                                            }
                                         }
-                                    }
-                                });
+                                    });
 
 
-                    }
-                });
-                builder.show();
+                        }
+                    });
+                    builder.show();
+                } else {
+                    Intent i = new Intent(getContext(), ManagersActivity.class);
+                    i.putExtra("shop_id", shop_id);
+                    i.putExtra("vendor_id", vendor_number);
+                    i.putExtra("shop_name", shop_name);
+                    startActivity(i);
+                }
+
 
             }
         });
 
-*/
+
         btn_edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -296,12 +353,24 @@ public class ProfileFragment extends Fragment {
                                 if (hourOfDay < 12) {
                                     timings_from = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " AM";
                                     btn_from.setText(timings_from);
+                                    Map<String, Object> shop = new HashMap<>();
+                                    shop.put("shop_timings_from", timings_from);
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document(shop_id).update(shop);
                                 } else if (hourOfDay > 12) {
                                     timings_from = String.format("%02d", hourOfDay % 12) + ":" + String.format("%02d", minute) + " PM";
                                     btn_from.setText(timings_from);
+                                    Map<String, Object> shop = new HashMap<>();
+                                    shop.put("shop_timings_from", timings_from);
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document(shop_id).update(shop);
                                 } else {
                                     timings_from = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " PM";
                                     btn_from.setText(timings_from);
+                                    Map<String, Object> shop = new HashMap<>();
+                                    shop.put("shop_timings_from", timings_from);
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document(shop_id).update(shop);
                                 }
                             }
                         }, 0, 0, false);
@@ -320,12 +389,24 @@ public class ProfileFragment extends Fragment {
                                 if (hourOfDay < 12) {
                                     timings_to = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " AM";
                                     btn_to.setText(timings_to);
+                                    Map<String, Object> shop = new HashMap<>();
+                                    shop.put("shop_timings_to", timings_to);
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document(shop_id).update(shop);
                                 } else if (hourOfDay > 12) {
                                     timings_to = String.format("%02d", hourOfDay % 12) + ":" + String.format("%02d", minute) + " PM";
                                     btn_to.setText(timings_to);
+                                    Map<String, Object> shop = new HashMap<>();
+                                    shop.put("shop_timings_to", timings_to);
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document(shop_id).update(shop);
                                 } else {
                                     timings_to = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + " PM";
                                     btn_to.setText(timings_to);
+                                    Map<String, Object> shop = new HashMap<>();
+                                    shop.put("shop_timings_to", timings_to);
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document(shop_id).update(shop);
                                 }
                             }
                         }, 0, 0, false);
@@ -354,11 +435,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void initialize() {
-        mAuth = FirebaseAuth.getInstance();
 
-        vendor_number = vendor_id;
-        db = FirebaseFirestore.getInstance();
-        ImageLoader.getInstance().init(new UniversalImageLoader(getContext()).getConfig());
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                 .collection("shops").document(shop_id).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -370,6 +447,8 @@ public class ProfileFragment extends Fragment {
                         tv_shop_name.setText(shop.get("shop_name").toString());
                         tv_gstin.setText(shop.get("shop_gstin").toString());
                         tv_specialization.setText(shop.get("shop_specialization").toString());
+                        btn_from.setText(shop.get("shop_timings_from").toString());
+                        btn_to.setText(shop.get("shop_timings_to").toString());
 //                        tv_shop_timings.setText(shop.get("shop_timings").toString());
 
                         btn_quick_delivery.setChecked(Boolean.parseBoolean(shop.get("quick_delivery").toString()));

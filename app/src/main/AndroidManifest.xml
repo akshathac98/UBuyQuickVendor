@@ -89,10 +89,15 @@
             android:label="Edit Shop Profile" />
         <activity
             android:name=".auth.SignupActivity"
-            android:theme="@style/AppThemeFullScreen"
-            android:label="Create New Profile" />
-        <activity android:name=".NewProductActivity"
-            android:label="Add New Product"></activity>
+            android:label="Create New Profile"
+            android:theme="@style/AppThemeFullScreen" />
+        <activity
+            android:name=".NewProductActivity"
+            android:label="Add New Product" />
+        <activity android:name=".ManagersActivity"
+            android:label="Managers"/>
+        <activity android:name=".DeliveryAgentsActivity"
+            android:label="Delivery Agents"></activity>
     </application>
 
 </manifest>

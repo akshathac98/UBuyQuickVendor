@@ -205,6 +205,10 @@ public class AddShopActivity extends AppCompatActivity {
                         shop.put("shop_name", et_shop_name.getText().toString());
                         shop.put("shop_address", et_address.getText().toString());
                         shop.put("shop_address2", et_address2.getText().toString());
+                        shop.put("shop_timings_from", "FROM");
+                        shop.put("shop_timings_to", "TO");
+                        shop.put("manager_count", 0);
+                        shop.put("deliveryagent_count", 0);
                         shop.put("shop_gstin", et_gstin.getText().toString());
                         shop.put("shop_pincode", et_pincode.getText().toString());
 //                        shop.put("shop_timings", btn_from.getText() + " to " + btn_to.getText());
