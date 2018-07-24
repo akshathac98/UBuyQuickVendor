@@ -194,14 +194,20 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         final Map<String, Object> agent = new HashMap<>();
-                        agent.put("user_id", input.getText().toString());
+                        agent.put("user_id", number.getText().toString());
                         agent.put("user_role", "DELIVERY_AGENT");
                         agent.put("name", name.getText().toString());
 
+                        String previousNumber = agents.get(info.position);
+
                         db.collection("delivery_agents").document(agents.get(info.position)).delete();
-                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                .collection("shops").document(shop_id).collection("delivery_agents")
-                                .document(agents.get(info.position)).delete();
+
+                        if (!previousNumber.equals(number.getText().toString())) {
+                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    .collection("shops").document(shop_id).collection("delivery_agents")
+                                    .document(agents.get(info.position)).delete();
+                        }
+
 
                         db.collection("delivery_agents").document(number.getText().toString()).get()
                                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -218,7 +224,7 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
                                                     .set(shop);
                                             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                     .collection("shops").document(shop_id).collection("delivery_agents")
-                                                    .document(number.getText().toString()).set(agent);
+                                                    .document(number.getText().toString()).update(agent);
                                         } else {
                                             db.collection("delivery_agents").document(number.getText().toString()).set(agent)
                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -231,6 +237,9 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
                                                             shop.put("shop_id", shop_id);
                                                             db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
                                                                     .set(shop);
+                                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                    .collection("shops").document(shop_id).collection("delivery_agents")
+                                                                    .document(number.getText().toString()).update(agent);
                                                         }
                                                     });
                                         }

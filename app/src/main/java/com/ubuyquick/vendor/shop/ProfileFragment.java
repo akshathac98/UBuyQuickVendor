@@ -209,7 +209,7 @@ public class ProfileFragment extends Fragment {
                             agent.put("user_role", "DELIVERY_AGENT");
                             agent.put("name", name.getText().toString());
 
-                            db.collection("delivery_agents").document(input.getText().toString()).get()
+                            db.collection("delivery_agents").document(number.getText().toString()).get()
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -225,13 +225,13 @@ public class ProfileFragment extends Fragment {
                                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                         .collection("shops").document(shop_id).update(agentInfo);
                                                 deliveryagent_count++;
-                                                db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
                                                         .set(shop);
                                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                         .collection("shops").document(shop_id).collection("delivery_agents")
-                                                        .document(input.getText().toString()).set(agent);
+                                                        .document(number.getText().toString()).set(agent);
                                             } else {
-                                                db.collection("delivery_agents").document(input.getText().toString()).set(agent)
+                                                db.collection("delivery_agents").document(number.getText().toString()).set(agent)
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
@@ -240,7 +240,7 @@ public class ProfileFragment extends Fragment {
                                                                 shop.put("image_url", image_url);
                                                                 shop.put("vendor_id", vendor_number);
                                                                 shop.put("shop_id", shop_id);
-                                                                db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                                db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
                                                                         .set(shop);
                                                             }
                                                         });
