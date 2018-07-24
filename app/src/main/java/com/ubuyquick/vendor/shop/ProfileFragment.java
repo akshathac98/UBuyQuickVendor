@@ -221,15 +221,17 @@ public class ProfileFragment extends Fragment {
                                                 shop.put("image_url", image_url);
 
                                                 Map<String, Object> agentInfo = new HashMap<>();
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).collection("delivery_agents")
+                                                        .document(number.getText().toString()).set(agent);
                                                 agentInfo.put("deliveryagent_count", 1);
                                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                         .collection("shops").document(shop_id).update(agentInfo);
                                                 deliveryagent_count++;
+
                                                 db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
                                                         .set(shop);
-                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                        .collection("shops").document(shop_id).collection("delivery_agents")
-                                                        .document(number.getText().toString()).set(agent);
+
                                             } else {
                                                 db.collection("delivery_agents").document(number.getText().toString()).set(agent)
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -299,6 +301,9 @@ public class ProfileFragment extends Fragment {
                                                 shop.put("shop_id", shop_id);
 
                                                 Map<String, Object> managerInfo = new HashMap<>();
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).collection("managers")
+                                                        .document(number.getText().toString()).set(agent);
                                                 managerInfo.put("manager_count", 1);
                                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                         .collection("shops").document(shop_id).update(managerInfo);
@@ -306,10 +311,12 @@ public class ProfileFragment extends Fragment {
 
                                                 db.collection("managers").document(number.getText().toString()).collection("shops").document(shop_id)
                                                         .set(shop);
-                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                        .collection("shops").document(shop_id).collection("managers")
-                                                        .document(number.getText().toString()).set(agent);
                                             } else {
+                                                Map<String, Object> managerInfo = new HashMap<>();
+                                                managerInfo.put("manager_count", 1);
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).update(managerInfo);
+                                                manager_count++;
                                                 db.collection("managers").document(number.getText().toString()).set(agent)
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
@@ -323,6 +330,9 @@ public class ProfileFragment extends Fragment {
                                                                         .set(shop);
                                                             }
                                                         });
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).collection("managers")
+                                                        .document(number.getText().toString()).set(agent);
                                             }
                                         }
                                     });
