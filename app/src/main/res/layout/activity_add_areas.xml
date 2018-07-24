@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddAreasActivity">
+
+    <EditText
+        android:id="@+id/et_search"
+        android:hint="Search area"
+        android:drawablePadding="5dp"
+        android:layout_toStartOf="@id/btn_search"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="2dp"
+        android:drawableStart="@drawable/ic_search"
+        android:layout_below="@id/btn_add_product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_search"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@android:color/white"
+        android:text="Search"
+        android:layout_alignBottom="@id/et_search"
+        android:layout_below="@id/btn_add_product"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_areas"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/btn_search"
+        android:orientation="vertical"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

@@ -2,12 +2,14 @@ package com.ubuyquick.vendor;
 
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,7 +41,7 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
     private EditText input;
     private ListView list_agents;
 
-    private String shop_id, vendor_number, shop_name;
+    private String shop_id, vendor_number, shop_name, image_url;
     private List<String> agents;
     private RelativeLayout btn_add_delivery;
     private ArrayAdapter<String> arrayAdapter;
@@ -57,6 +59,7 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
         shop_id = getIntent().getStringExtra("shop_id");
         shop_name = getIntent().getStringExtra("shop_name");
         vendor_number = getIntent().getStringExtra("vendor_id");
+        image_url = getIntent().getStringExtra("image_url");
 
         btn_add_delivery = (RelativeLayout) findViewById(R.id.btn_add_delivery);
 
@@ -90,31 +93,37 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
                         btn_add_delivery.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+
+                                View viewInflated = LayoutInflater.from(DeliveryAgentsActivity.this).inflate(R.layout.dialog_name_phone, null, false);
+
+                                final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
+                                final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
+
                                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                                 builder.setTitle("Agent mobile number:");
-                                input = new EditText(v.getContext());
-                                input.setInputType(InputType.TYPE_CLASS_PHONE);
-                                builder.setView(input);
+                                builder.setView(viewInflated);
                                 builder.setNegativeButton("Cancel", null);
 
                                 builder.setPositiveButton("Add Delivery Agent", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         final Map<String, Object> agent = new HashMap<>();
-                                        agent.put("user_id", input.getText().toString());
+                                        agent.put("user_id", number.getText().toString());
+                                        agent.put("name", name.getText().toString());
                                         agent.put("user_role", "DELIVERY_AGENT");
 
-                                        db.collection("delivery_agents").document(input.getText().toString()).get()
+                                        db.collection("delivery_agents").document(number.getText().toString()).get()
                                                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                         if (task.getResult().exists()) {
                                                             Map<String, Object> shop = new HashMap<>();
                                                             shop.put("shop_name", shop_name);
+                                                            shop.put("image_url", image_url);
                                                             shop.put("vendor_id", vendor_number);
                                                             shop.put("shop_id", shop_id);
 
-                                                            agents.add(input.getText().toString());
+                                                            agents.add(number.getText().toString());
                                                             arrayAdapter.notifyDataSetChanged();
 
                                                             Map<String, Object> managerInfo = new HashMap<>();
@@ -122,21 +131,22 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
                                                             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                                     .collection("shops").document(shop_id).update(managerInfo);
 
-                                                            db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                            db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
                                                                     .set(shop);
                                                             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                                     .collection("shops").document(shop_id).collection("delivery_agents")
-                                                                    .document(input.getText().toString()).set(agent);
+                                                                    .document(number.getText().toString()).set(agent);
                                                         } else {
-                                                            db.collection("delivery_agents").document(input.getText().toString()).set(agent)
+                                                            db.collection("delivery_agents").document(number.getText().toString()).set(agent)
                                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                         @Override
                                                                         public void onComplete(@NonNull Task<Void> task) {
                                                                             Map<String, Object> shop = new HashMap<>();
                                                                             shop.put("shop_name", shop_name);
+                                                                            shop.put("image_url", image_url);
                                                                             shop.put("vendor_id", vendor_number);
                                                                             shop.put("shop_id", shop_id);
-                                                                            db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                                            db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
                                                                                     .set(shop);
                                                                         }
                                                                     });
@@ -168,12 +178,16 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.action_edit:
+                View viewInflated = LayoutInflater.from(DeliveryAgentsActivity.this).inflate(R.layout.dialog_name_phone, null, false);
+
+                final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
+                final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
+
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(DeliveryAgentsActivity.this);
                 builder.setTitle("Agent mobile number:");
-                input = new EditText(DeliveryAgentsActivity.this);
-                input.setText(agents.get(info.position));
-                input.setInputType(InputType.TYPE_CLASS_PHONE);
-                builder.setView(input);
+                number.setText(agents.get(info.position));
+                builder.setView(viewInflated);
                 builder.setNegativeButton("Cancel", null);
 
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
@@ -182,42 +196,45 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
                         final Map<String, Object> agent = new HashMap<>();
                         agent.put("user_id", input.getText().toString());
                         agent.put("user_role", "DELIVERY_AGENT");
+                        agent.put("name", name.getText().toString());
 
                         db.collection("delivery_agents").document(agents.get(info.position)).delete();
                         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                 .collection("shops").document(shop_id).collection("delivery_agents")
                                 .document(agents.get(info.position)).delete();
 
-                        db.collection("delivery_agents").document(input.getText().toString()).get()
+                        db.collection("delivery_agents").document(number.getText().toString()).get()
                                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                         if (task.getResult().exists()) {
                                             Map<String, Object> shop = new HashMap<>();
                                             shop.put("shop_name", shop_name);
+                                            shop.put("image_url", image_url);
                                             shop.put("vendor_id", vendor_number);
                                             shop.put("shop_id", shop_id);
 
-                                            db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                            db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
                                                     .set(shop);
                                             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                     .collection("shops").document(shop_id).collection("delivery_agents")
-                                                    .document(input.getText().toString()).set(agent);
+                                                    .document(number.getText().toString()).set(agent);
                                         } else {
-                                            db.collection("delivery_agents").document(input.getText().toString()).set(agent)
+                                            db.collection("delivery_agents").document(number.getText().toString()).set(agent)
                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             Map<String, Object> shop = new HashMap<>();
                                                             shop.put("shop_name", shop_name);
+                                                            shop.put("image_url", image_url);
                                                             shop.put("vendor_id", vendor_number);
                                                             shop.put("shop_id", shop_id);
-                                                            db.collection("delivery_agents").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                            db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
                                                                     .set(shop);
                                                         }
                                                     });
                                         }
-                                        agents.set(info.position, input.getText().toString());
+                                        agents.set(info.position, number.getText().toString());
                                         arrayAdapter.notifyDataSetChanged();
                                     }
                                 });

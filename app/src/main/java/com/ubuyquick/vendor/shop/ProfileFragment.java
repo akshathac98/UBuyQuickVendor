@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -38,6 +39,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.ubuyquick.vendor.AddAreasActivity;
 import com.ubuyquick.vendor.AddShopActivity;
 import com.ubuyquick.vendor.DeliveryAgentsActivity;
 import com.ubuyquick.vendor.HomeActivity;
@@ -75,6 +77,8 @@ public class ProfileFragment extends Fragment {
     private Button btn_manager;
     private Button btn_edit_profile;
     private Button btn_delete_shop;
+    private Button btn_add_area;
+    private Button btn_add_slot;
     private Button btn_to;
     private Button btn_from;
     private Switch btn_shop_status;
@@ -91,6 +95,7 @@ public class ProfileFragment extends Fragment {
         shop_id = getArguments().getString("shop_id");
         shop_name = getArguments().getString("shop_name");
         vendor_id = getArguments().getString("vendor_id");
+        image_url = getArguments().getString("image_url");
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -133,6 +138,19 @@ public class ProfileFragment extends Fragment {
         btn_delete_shop = (Button) view.findViewById(R.id.btn_delete_shop);
         btn_delivery_agent = (Button) view.findViewById(R.id.btn_add_delivery);
         btn_manager = (Button) view.findViewById(R.id.btn_add_manager);
+        btn_add_area = (Button) view.findViewById(R.id.btn_add_area);
+        btn_add_slot = (Button) view.findViewById(R.id.btn_add_slot);
+
+        btn_add_area.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), AddAreasActivity.class);
+                i.putExtra("shop_id", shop_id);
+                i.putExtra("vendor_id", vendor_number);
+                i.putExtra("shop_name", shop_name);
+                startActivity(i);
+            }
+        });
 
         SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
         LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
@@ -172,19 +190,24 @@ public class ProfileFragment extends Fragment {
             public void onClick(final View v) {
 
                 if (deliveryagent_count == 0) {
+                    View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_name_phone, null, false);
+
+                    final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
+                    final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
+
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                     builder.setTitle("Delivery Agent mobile number:");
-                    input = new EditText(v.getContext());
-                    input.setInputType(InputType.TYPE_CLASS_PHONE);
-                    builder.setView(input);
+                    builder.setView(viewInflated);
                     builder.setNegativeButton("Cancel", null);
 
                     builder.setPositiveButton("Add Agent", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             final Map<String, Object> agent = new HashMap<>();
-                            agent.put("user_id", input.getText().toString());
+                            agent.put("user_id", number.getText().toString());
                             agent.put("user_role", "DELIVERY_AGENT");
+                            agent.put("name", name.getText().toString());
 
                             db.collection("delivery_agents").document(input.getText().toString()).get()
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -233,6 +256,7 @@ public class ProfileFragment extends Fragment {
                     Intent i = new Intent(getContext(), DeliveryAgentsActivity.class);
                     i.putExtra("shop_id", shop_id);
                     i.putExtra("vendor_id", vendor_number);
+                    i.putExtra("image_url", image_url);
                     i.putExtra("shop_name", shop_name);
                     startActivity(i);
                 }
@@ -245,21 +269,25 @@ public class ProfileFragment extends Fragment {
             public void onClick(final View v) {
 
                 if (manager_count == 0) {
+                    View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_name_phone, null, false);
+
+                    final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
+                    final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                     builder.setTitle("Manager mobile number:");
-                    input = new EditText(v.getContext());
-                    input.setInputType(InputType.TYPE_CLASS_PHONE);
-                    builder.setView(input);
+                    builder.setView(viewInflated);
                     builder.setNegativeButton("Cancel", null);
 
                     builder.setPositiveButton("Add Manager", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             final Map<String, Object> agent = new HashMap<>();
-                            agent.put("user_id", input.getText().toString());
+                            agent.put("user_id", number.getText().toString());
                             agent.put("user_role", "MANAGER");
+                            agent.put("name", name.getText().toString());
 
-                            db.collection("managers").document(input.getText().toString()).get()
+                            db.collection("managers").document(number.getText().toString()).get()
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -276,13 +304,13 @@ public class ProfileFragment extends Fragment {
                                                         .collection("shops").document(shop_id).update(managerInfo);
                                                 manager_count++;
 
-                                                db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                db.collection("managers").document(number.getText().toString()).collection("shops").document(shop_id)
                                                         .set(shop);
                                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                         .collection("shops").document(shop_id).collection("managers")
-                                                        .document(input.getText().toString()).set(agent);
+                                                        .document(number.getText().toString()).set(agent);
                                             } else {
-                                                db.collection("managers").document(input.getText().toString()).set(agent)
+                                                db.collection("managers").document(number.getText().toString()).set(agent)
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
@@ -291,7 +319,7 @@ public class ProfileFragment extends Fragment {
                                                                 shop.put("vendor_id", vendor_number);
                                                                 shop.put("image_url", image_url);
                                                                 shop.put("shop_id", shop_id);
-                                                                db.collection("managers").document(input.getText().toString()).collection("shops").document(shop_id)
+                                                                db.collection("managers").document(number.getText().toString()).collection("shops").document(shop_id)
                                                                         .set(shop);
                                                             }
                                                         });
@@ -306,12 +334,11 @@ public class ProfileFragment extends Fragment {
                 } else {
                     Intent i = new Intent(getContext(), ManagersActivity.class);
                     i.putExtra("shop_id", shop_id);
+                    i.putExtra("image_url", image_url);
                     i.putExtra("vendor_id", vendor_number);
                     i.putExtra("shop_name", shop_name);
                     startActivity(i);
                 }
-
-
             }
         });
 
@@ -442,7 +469,7 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         Map<String, Object> shop = task.getResult().getData();
-                        UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
+                        UniversalImageLoader.setImage(image_url, img_shop);
                         tv_shop_location.setText(shop.get("shop_address").toString() + ", " + shop.get("shop_address2").toString());
                         tv_shop_name.setText(shop.get("shop_name").toString());
                         tv_gstin.setText(shop.get("shop_gstin").toString());
