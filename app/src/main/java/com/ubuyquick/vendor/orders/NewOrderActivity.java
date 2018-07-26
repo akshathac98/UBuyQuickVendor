@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +58,7 @@ public class NewOrderActivity extends AppCompatActivity {
     private OrderProductAdapter orderProductAdapter;
     private List<OrderProduct> orderProducts;
     private TextView btn_accept, btn_cancel;
+    private CheckBox cb_all;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +83,7 @@ public class NewOrderActivity extends AppCompatActivity {
         tv_available = (TextView) findViewById(R.id.tv_available);
         btn_cancel = (TextView) findViewById(R.id.btn_cancel);
         btn_accept = (TextView) findViewById(R.id.btn_accept);
+        cb_all = (CheckBox) findViewById(R.id.cb_product);
 
         rv_order_products = (RecyclerView) findViewById(R.id.rv_order_products);
 
@@ -109,6 +113,15 @@ public class NewOrderActivity extends AppCompatActivity {
         });
         orderProducts = new ArrayList<>();
         rv_order_products.setAdapter(orderProductAdapter);
+        cb_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    orderProductAdapter.selectAll(true);
+                else
+                    orderProductAdapter.deselectAll();
+            }
+        });
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
                 .collection("new_orders").document(order_id).collection("products")

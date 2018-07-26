@@ -8,8 +8,8 @@
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="dummy_button">Dummy Button</string>
-    <string name="qty">QTY\n2</string>
-    <string name="mrp">MRP\n37.8</string>
+    <string name="qty">QTY</string>
+    <string name="mrp">MRP</string>
 
     <string name="set_location_radius">Set Delivery Radius</string>
 

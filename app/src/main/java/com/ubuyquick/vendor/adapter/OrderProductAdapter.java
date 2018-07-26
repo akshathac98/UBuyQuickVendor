@@ -63,6 +63,33 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
         notifyDataSetChanged();
     }
 
+    public void selectAll(boolean select) {
+        if (select) {
+            products_available = 0;
+            for (OrderProduct orderProduct : orderProducts) {
+                if (!orderProduct.isAvailable())
+                    orderProduct.setAvailable(true);
+            }
+            notifyDataSetChanged();
+        } else {
+            for (OrderProduct orderProduct : orderProducts) {
+                if (orderProduct.isAvailable())
+                    orderProduct.setAvailable(false);
+                products_available--;
+            }
+            notifyDataSetChanged();
+        }
+    }
+
+    public void deselectAll() {
+        for (OrderProduct orderProduct : orderProducts) {
+            orderProduct.setAvailable(false);
+            products_available = 0;
+            mCallback.onClick(products_available);
+        }
+        notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_product_name;
         private TextView tv_product_quantity;
@@ -72,6 +99,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
 
         public ViewHolder(View itemView) {
             super(itemView);
+            this.setIsRecyclable(false);
 
             this.tv_product_name = (TextView) itemView.findViewById(R.id.tv_product_name);
             this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
@@ -133,7 +161,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                     }
                 });
             }
-
+/*
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -142,14 +170,20 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                         Toast.makeText(v.getContext(), "Clicked " + clickedProduct.getProductName(), Toast.LENGTH_SHORT).show();
                     }
                 }
-            });
+            });*/
         }
 
         public void bind(OrderProduct orderProduct) {
+            if (orderProduct.isAvailable()) {
+                this.cb_product.setChecked(true);
+            } else {
+                this.cb_product.setChecked(false);
+            }
             this.tv_product_name.setText(orderProduct.getProductName());
-            this.tv_product_mrp.setText("MRP\n" + orderProduct.getProductMrp());
-            this.tv_product_quantity.setText("QTY\n" + orderProduct.getProductQuantity());
+            this.tv_product_mrp.setText("\u20B9" + orderProduct.getProductMrp());
+            this.tv_product_quantity.setText(orderProduct.getProductQuantity() + "\nKGS");
         }
+
     }
 
     @NonNull
