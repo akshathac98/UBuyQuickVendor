@@ -100,7 +100,12 @@
         <activity
             android:name=".DeliveryAgentsActivity"
             android:label="Delivery Agents" />
-        <activity android:name=".AddAreasActivity"></activity>
+        <activity android:name=".AddAreasActivity" />
+        <activity
+            android:name=".AddSlotsActivity"
+            android:label="Delivery Time Slots" />
+        <activity android:name=".FeedbacksActivity"
+            android:label="Feedbacks"></activity>
     </application>
 
 </manifest>

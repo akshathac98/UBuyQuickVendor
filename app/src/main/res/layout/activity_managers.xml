@@ -6,28 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".ManagersActivity">
 
-    <ListView
-        android:id="@+id/lv_managers"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_agents"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
-    <RelativeLayout
-        android:id="@+id/btn_add_manager"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_below="@id/lv_managers"
-        android:background="@drawable/dotted">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:drawableStart="@drawable/ic_plus"
-            android:drawableTint="@color/colorAccent"
-            android:text="Click to add more managers"
-            android:textColor="@color/colorAccent"
-            android:textSize="22sp" />
-
-    </RelativeLayout>
-
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rv_agents"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_rounded"
+        android:text="Add Manager"
+        android:textColor="@android:color/white" />
 </RelativeLayout>

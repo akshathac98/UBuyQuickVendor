@@ -35,14 +35,15 @@ public class AgentAdapter extends RecyclerView.Adapter<AgentAdapter.ViewHolder> 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
-    private String shop_id, vendor_number, shop_name, image_url;
+    private String shop_id, vendor_number, shop_name, image_url, agent_mode;
 
     private Context context;
     private List<Agent> agents;
 
-    public AgentAdapter(Context context, String shop_id, String vendor_number, String shop_name, String image_url) {
+    public AgentAdapter(Context context, String shop_id, String vendor_number, String shop_name, String image_url, String agent_mode) {
         this.context = context;
         this.shop_id = shop_id;
+        this.agent_mode = agent_mode;
         this.image_url = image_url;
         this.vendor_number = vendor_number;
         this.shop_name = shop_name;
@@ -68,111 +69,53 @@ public class AgentAdapter extends RecyclerView.Adapter<AgentAdapter.ViewHolder> 
             this.tv_name = (TextView) itemView.findViewById(R.id.tv_name);
             this.tv_number = (TextView) itemView.findViewById(R.id.tv_number);
             this.btn_delete = (ImageButton) itemView.findViewById(R.id.btn_delete);
-            this.btn_edit = (ImageButton) itemView.findViewById(R.id.btn_edit);
 
             this.btn_delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder2 = new AlertDialog.Builder(context);
-                    builder2.setTitle("Delete agent?");
-                    builder2.setNegativeButton("Cancel", null);
+                    if (agent_mode.equals("DELIVERY_AGENT")) {
+                        builder2.setTitle("Delete Agent?");
+                        builder2.setNegativeButton("Cancel", null);
 
-                    builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Map<String, Object> agentInfo = new HashMap<>();
-                            db.collection("delivery_agents").document(agents.get(getAdapterPosition()).getNumber()).delete();
-                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                    .collection("shops").document(shop_id).collection("delivery_agents")
-                                    .document(agents.get(getAdapterPosition()).getNumber()).delete();
-                            agents.remove(getAdapterPosition());
-                            agentInfo.put("deliveryagent_count", agents.size());
-                            notifyItemRemoved(getAdapterPosition());
-                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                    .collection("shops").document(shop_id).update(agentInfo);
-                        }
-                    });
-
-                    builder2.show();
-                }
-            });
-
-            this.btn_edit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_name_phone, null, false);
-
-                    final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
-                    final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
-
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle("Agent mobile number:");
-                    name.setText(agents.get(getAdapterPosition()).getName());
-                    number.setText(agents.get(getAdapterPosition()).getNumber());
-                    builder.setView(viewInflated);
-                    builder.setNegativeButton("Cancel", null);
-
-                    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            final Map<String, Object> agent = new HashMap<>();
-                            agent.put("user_id", number.getText().toString());
-                            agent.put("user_role", "DELIVERY_AGENT");
-                            agent.put("name", name.getText().toString());
-
-                            String previousNumber = agents.get(getAdapterPosition()).getNumber();
-
-                            db.collection("delivery_agents").document(agents.get(getAdapterPosition()).getNumber()).delete();
-
-                            if (!previousNumber.equals(number.getText().toString())) {
+                        builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Map<String, Object> agentInfo = new HashMap<>();
+                                db.collection("delivery_agents").document(agents.get(getAdapterPosition()).getNumber()).delete();
                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                         .collection("shops").document(shop_id).collection("delivery_agents")
                                         .document(agents.get(getAdapterPosition()).getNumber()).delete();
+                                agents.remove(getAdapterPosition());
+                                agentInfo.put("deliveryagent_count", agents.size());
+                                notifyItemRemoved(getAdapterPosition());
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).update(agentInfo);
                             }
+                        });
+                        builder2.show();
+                    } else {
+                        builder2.setTitle("Delete Manager?");
+                        builder2.setNegativeButton("Cancel", null);
 
-                            db.collection("delivery_agents").document(number.getText().toString()).get()
-                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            if (task.getResult().exists()) {
-                                                Map<String, Object> shop = new HashMap<>();
-                                                shop.put("shop_name", shop_name);
-                                                shop.put("image_url", image_url);
-                                                shop.put("vendor_id", vendor_number);
-                                                shop.put("shop_id", shop_id);
+                        builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Map<String, Object> agentInfo = new HashMap<>();
+                                db.collection("managers").document(agents.get(getAdapterPosition()).getNumber()).delete();
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).collection("managers")
+                                        .document(agents.get(getAdapterPosition()).getNumber()).delete();
+                                agents.remove(getAdapterPosition());
+                                agentInfo.put("manager_count", agents.size());
+                                notifyItemRemoved(getAdapterPosition());
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).update(agentInfo);
+                            }
+                        });
 
-                                                db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
-                                                        .set(shop);
-                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                        .collection("shops").document(shop_id).collection("delivery_agents")
-                                                        .document(number.getText().toString()).update(agent);
-                                            } else {
-                                                db.collection("delivery_agents").document(number.getText().toString()).set(agent)
-                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                Map<String, Object> shop = new HashMap<>();
-                                                                shop.put("shop_name", shop_name);
-                                                                shop.put("image_url", image_url);
-                                                                shop.put("vendor_id", vendor_number);
-                                                                shop.put("shop_id", shop_id);
-                                                                db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
-                                                                        .set(shop);
-                                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                        .collection("shops").document(shop_id).collection("delivery_agents")
-                                                                        .document(number.getText().toString()).update(agent);
-                                                            }
-                                                        });
-                                            }
-                                            agents.set(getAdapterPosition(), new Agent(name.getText().toString(), number.getText().toString()));
-                                            notifyDataSetChanged();
-                                        }
-                                    });
-                        }
-                    });
-
-                    builder.show();
+                        builder2.show();
+                    }
                 }
             });
 

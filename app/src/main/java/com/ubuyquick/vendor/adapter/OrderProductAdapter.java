@@ -15,6 +15,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.model.OrderProduct;
 import com.ubuyquick.vendor.utils.UniversalImageLoader;
+import com.ubuyquick.vendor.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,12 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
     private Context context;
     private List<OrderProduct> orderProducts;
     private String order_type;
+    private Utils.OnItemClick mCallback;
+    private int products_available = 0;
 
-    public OrderProductAdapter(Context context, String order_type) {
+    public OrderProductAdapter(Context context, String order_type, Utils.OnItemClick listener) {
         this.context = context;
+        this.mCallback = listener;
         this.order_type = order_type;
         orderProducts = new ArrayList<>();
         ImageLoader.getInstance().init(new UniversalImageLoader(context).getConfig());
@@ -62,8 +66,12 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked) {
+                            products_available++;
+                            mCallback.onClick(products_available);
                             orderProducts.get(getAdapterPosition()).setAvailable(true);
                         } else {
+                            products_available--;
+                            mCallback.onClick(products_available);
                             orderProducts.get(getAdapterPosition()).setAvailable(false);
                         }
                     }

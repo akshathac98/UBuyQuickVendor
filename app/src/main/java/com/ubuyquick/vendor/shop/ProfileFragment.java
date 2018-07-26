@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -41,7 +42,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ubuyquick.vendor.AddAreasActivity;
 import com.ubuyquick.vendor.AddShopActivity;
+import com.ubuyquick.vendor.AddSlotsActivity;
 import com.ubuyquick.vendor.DeliveryAgentsActivity;
+import com.ubuyquick.vendor.FeedbacksActivity;
 import com.ubuyquick.vendor.HomeActivity;
 import com.ubuyquick.vendor.ManagersActivity;
 import com.ubuyquick.vendor.R;
@@ -73,6 +76,7 @@ public class ProfileFragment extends Fragment {
     private int LOGIN_MODE;
     private int manager_count = 0, deliveryagent_count = 0;
 
+    private RelativeLayout btn_feedbacks;
     private Button btn_delivery_agent;
     private Button btn_manager;
     private Button btn_edit_profile;
@@ -128,6 +132,14 @@ public class ProfileFragment extends Fragment {
         tv_status = (TextView) view.findViewById(R.id.tv_status);
         tv_quick = (TextView) view.findViewById(R.id.tv_quick);
 
+        btn_feedbacks = (RelativeLayout) view.findViewById(R.id.relLayout1);
+        btn_feedbacks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), FeedbacksActivity.class));
+            }
+        });
+
 //        btn_delivery_agent = (Button) view.findViewById(R.id.btn_delivery_agent);
 //        btn_manager = (Button) view.findViewById(R.id.btn_manager);
         btn_edit_profile = (Button) view.findViewById(R.id.btn_edit_profile);
@@ -140,6 +152,15 @@ public class ProfileFragment extends Fragment {
         btn_manager = (Button) view.findViewById(R.id.btn_add_manager);
         btn_add_area = (Button) view.findViewById(R.id.btn_add_area);
         btn_add_slot = (Button) view.findViewById(R.id.btn_add_slot);
+
+        btn_add_slot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), AddSlotsActivity.class);
+                i.putExtra("shop_id", shop_id);
+                startActivity(i);
+            }
+        });
 
         btn_add_area.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,7 +218,7 @@ public class ProfileFragment extends Fragment {
 
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                    builder.setTitle("Delivery Agent mobile number:");
+                    builder.setTitle("Delivery Agent details:");
                     builder.setView(viewInflated);
                     builder.setNegativeButton("Cancel", null);
 
@@ -213,7 +234,7 @@ public class ProfileFragment extends Fragment {
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            if (task.getResult().exists()) {
+                                            if (!task.getResult().exists()) {
                                                 Map<String, Object> shop = new HashMap<>();
                                                 shop.put("shop_name", shop_name);
                                                 shop.put("vendor_id", vendor_number);
@@ -243,7 +264,14 @@ public class ProfileFragment extends Fragment {
                                                                 shop.put("vendor_id", vendor_number);
                                                                 shop.put("shop_id", shop_id);
                                                                 db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
-                                                                        .set(shop);
+                                                                        .set(shop).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                        Intent i = new Intent(getContext(), DeliveryAgentsActivity.class);
+                                                                        i.putExtra("shop_id", shop_id);
+                                                                        startActivity(i);
+                                                                    }
+                                                                });
                                                             }
                                                         });
                                             }
@@ -277,7 +305,7 @@ public class ProfileFragment extends Fragment {
                     final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                    builder.setTitle("Manager mobile number:");
+                    builder.setTitle("Manager details:");
                     builder.setView(viewInflated);
                     builder.setNegativeButton("Cancel", null);
 
@@ -293,7 +321,7 @@ public class ProfileFragment extends Fragment {
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            if (task.getResult().exists()) {
+                                            if (!task.getResult().exists()) {
                                                 Map<String, Object> shop = new HashMap<>();
                                                 shop.put("shop_name", shop_name);
                                                 shop.put("image_url", image_url);
@@ -332,7 +360,15 @@ public class ProfileFragment extends Fragment {
                                                         });
                                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                         .collection("shops").document(shop_id).collection("managers")
-                                                        .document(number.getText().toString()).set(agent);
+                                                        .document(number.getText().toString()).set(agent).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        Intent i = new Intent(getContext(), ManagersActivity.class);
+                                                        i.putExtra("shop_id", shop_id);
+                                                        startActivity(i);
+                                                    }
+                                                });
+
                                             }
                                         }
                                     });

@@ -6,6 +6,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -25,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.ubuyquick.vendor.adapter.AgentAdapter;
+import com.ubuyquick.vendor.model.Agent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,12 +43,12 @@ public class ManagersActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
     private EditText input;
-    private ListView list_managers;
 
     private String shop_id, vendor_number, shop_name, image_url;
-    private List<String> managers;
-    private RelativeLayout btn_add_manager;
-    private ArrayAdapter<String> arrayAdapter;
+    private List<Agent> agents;
+    private RecyclerView rv_agents;
+    private AgentAdapter agentAdapter;
+    private Button btn_add;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +65,12 @@ public class ManagersActivity extends AppCompatActivity {
         vendor_number = getIntent().getStringExtra("vendor_id");
         image_url = getIntent().getStringExtra("image_url");
 
-        btn_add_manager = (RelativeLayout) findViewById(R.id.btn_add_manager);
+        btn_add = (Button) findViewById(R.id.btn_add);
 
-        list_managers = (ListView) findViewById(R.id.lv_managers);
-        managers = new ArrayList<String>();
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, managers);
-        list_managers.setAdapter(arrayAdapter);
-        registerForContextMenu(list_managers);
-        list_managers.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                return false;
-            }
-        });
+        rv_agents = (RecyclerView) findViewById(R.id.rv_agents);
+        agents = new ArrayList<>();
+        agentAdapter = new AgentAdapter(this, shop_id, vendor_number, shop_name, image_url, "MANAGER");
+        rv_agents.setAdapter(agentAdapter);
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                 .collection("shops").document(shop_id).collection("managers").get()
@@ -85,200 +82,92 @@ public class ManagersActivity extends AppCompatActivity {
                         for (DocumentSnapshot document : documents) {
                             Log.d(TAG, "onComplete: document: " + document.toString());
                             Map<String, Object> manager = document.getData();
-                            managers.add(manager.get("user_id").toString());
+                            agents.add(new Agent(manager.get("name").toString(), manager.get("user_id").toString()));
                         }
-                        arrayAdapter.notifyDataSetChanged();
-
-                        btn_add_manager.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                View viewInflated = LayoutInflater.from(ManagersActivity.this).inflate(R.layout.dialog_name_phone, null, false);
-
-                                final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
-                                final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
-
-                                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                                builder.setTitle("Manager mobile number:");
-                                builder.setView(viewInflated);
-                                builder.setNegativeButton("Cancel", null);
-
-                                builder.setPositiveButton("Add Manager", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        final Map<String, Object> agent = new HashMap<>();
-                                        agent.put("user_id", number.getText().toString());
-                                        agent.put("name", name.getText().toString());
-                                        agent.put("user_role", "MANAGER");
-
-                                        db.collection("managers").document(number.getText().toString()).get()
-                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                        if (task.getResult().exists()) {
-                                                            Map<String, Object> shop = new HashMap<>();
-                                                            shop.put("shop_name", shop_name);
-                                                            shop.put("vendor_id", vendor_number);
-                                                            shop.put("image_url", image_url);
-                                                            shop.put("shop_id", shop_id);
-
-                                                            managers.add(input.getText().toString());
-                                                            arrayAdapter.notifyDataSetChanged();
-
-                                                            Map<String, Object> managerInfo = new HashMap<>();
-                                                            managerInfo.put("manager_count", managers.size());
-                                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                    .collection("shops").document(shop_id).update(managerInfo);
-
-                                                            db.collection("managers").document(number.getText().toString()).collection("shops").document(shop_id)
-                                                                    .set(shop);
-                                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                    .collection("shops").document(shop_id).collection("managers")
-                                                                    .document(input.getText().toString()).set(agent);
-                                                        } else {
-                                                            db.collection("managers").document(number.getText().toString()).set(agent)
-                                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                        @Override
-                                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                                            Map<String, Object> shop = new HashMap<>();
-                                                                            shop.put("shop_name", shop_name);
-                                                                            shop.put("image_url", image_url);
-                                                                            shop.put("vendor_id", vendor_number);
-                                                                            shop.put("shop_id", shop_id);
-                                                                            db.collection("managers").document(number.getText().toString()).collection("shops").document(shop_id)
-                                                                                    .set(shop);
-                                                                        }
-                                                                    });
-                                                        }
-                                                    }
-                                                });
-
-
-                                    }
-                                });
-                                builder.show();
-                            }
-                        });
+                        agentAdapter.setAgents(agents);
                     }
                 });
-    }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        if (v.getId() == R.id.lv_managers) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.assign_menu, menu);
-        }
-    }
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()) {
-            case R.id.action_edit:
                 View viewInflated = LayoutInflater.from(ManagersActivity.this).inflate(R.layout.dialog_name_phone, null, false);
 
                 final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
                 final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(ManagersActivity.this);
-                builder.setTitle("Manager mobile number:");
-                number.setText(managers.get(info.position));
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setTitle("Manager details:");
                 builder.setView(viewInflated);
                 builder.setNegativeButton("Cancel", null);
 
-                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("Add Manager", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         final Map<String, Object> agent = new HashMap<>();
                         agent.put("user_id", number.getText().toString());
-                        agent.put("user_role", "MANAGER");
                         agent.put("name", name.getText().toString());
-
-                        String previousNumber = managers.get(info.position);
-
-                        db.collection("managers").document(managers.get(info.position)).delete();
-
-                        if (!previousNumber.equals(number.getText().toString())) {
-                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                    .collection("shops").document(shop_id).collection("managers")
-                                    .document(managers.get(info.position)).delete();
-
-                        }
+                        agent.put("user_role", "MANAGER");
 
                         db.collection("managers").document(number.getText().toString()).get()
                                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                        final String no = number.getText().toString();
-
                                         if (task.getResult().exists()) {
                                             Map<String, Object> shop = new HashMap<>();
                                             shop.put("shop_name", shop_name);
-                                            shop.put("image_url", image_url);
                                             shop.put("vendor_id", vendor_number);
+                                            shop.put("image_url", image_url);
                                             shop.put("shop_id", shop_id);
+
+                                            agents.add(new Agent(name.getText().toString(), number.getText().toString()));
+                                            agentAdapter.setAgents(agents);
+
+                                            Map<String, Object> managerInfo = new HashMap<>();
+                                            managerInfo.put("manager_count", agents.size());
+                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                    .collection("shops").document(shop_id).update(managerInfo);
 
                                             db.collection("managers").document(number.getText().toString()).collection("shops").document(shop_id)
                                                     .set(shop);
                                             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                                     .collection("shops").document(shop_id).collection("managers")
-                                                    .document(no).update(agent);
+                                                    .document(input.getText().toString()).set(agent);
                                         } else {
-                                            db.collection("managers").document(no).set(agent)
+                                            agents.add(new Agent(name.getText().toString(), number.getText().toString()));
+                                            agentAdapter.setAgents(agents);
+                                            db.collection("managers").document(number.getText().toString()).set(agent)
                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             Map<String, Object> shop = new HashMap<>();
                                                             shop.put("shop_name", shop_name);
-                                                            shop.put("vendor_id", vendor_number);
                                                             shop.put("image_url", image_url);
+                                                            shop.put("vendor_id", vendor_number);
                                                             shop.put("shop_id", shop_id);
                                                             db.collection("managers").document(number.getText().toString()).collection("shops").document(shop_id)
                                                                     .set(shop);
-                                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                    .collection("shops").document(shop_id).collection("managers")
-                                                                    .document(no).update(agent);
                                                         }
                                                     });
+                                            Map<String, Object> managerInfo = new HashMap<>();
+                                            managerInfo.put("manager_count", agents.size());
+                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                    .collection("shops").document(shop_id).update(managerInfo);
+
+                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                    .collection("shops").document(shop_id).collection("managers")
+                                                    .document(number.getText().toString()).set(agent);
                                         }
-                                        managers.set(info.position, number.getText().toString());
-                                        arrayAdapter.notifyDataSetChanged();
                                     }
                                 });
+
+
                     }
                 });
-
                 builder.show();
-                return super.onContextItemSelected(item);
-
-
-            case R.id.action_delete:
-                AlertDialog.Builder builder2 = new AlertDialog.Builder(ManagersActivity.this);
-                builder2.setTitle("Delete manager?");
-                builder2.setNegativeButton("Cancel", null);
-
-                builder2.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        db.collection("managers").document(managers.get(info.position)).delete();
-                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                .collection("shops").document(shop_id).collection("managers")
-                                .document(managers.get(info.position)).delete();
-                        managers.remove(info.position);
-                        arrayAdapter.notifyDataSetChanged();
-                    }
-                });
-
-                builder2.show();
-                return super.onContextItemSelected(item);
-
-
-            default:
-                return super.onContextItemSelected(item);
-
-        }
+            }
+        });
     }
 
     @Override

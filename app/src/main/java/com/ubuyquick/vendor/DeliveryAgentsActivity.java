@@ -69,7 +69,7 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
 
         rv_agents = (RecyclerView) findViewById(R.id.rv_agents);
         agents = new ArrayList<>();
-        agentAdapter = new AgentAdapter(this, shop_id, vendor_number, shop_name, image_url);
+        agentAdapter = new AgentAdapter(this, shop_id, vendor_number, shop_name, image_url, "DELIVERY_AGENT");
         rv_agents.setAdapter(agentAdapter);
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
@@ -100,7 +100,7 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
                 final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setTitle("Agent mobile number:");
+                builder.setTitle("Delivery Agent details:");
                 builder.setView(viewInflated);
                 builder.setNegativeButton("Cancel", null);
 

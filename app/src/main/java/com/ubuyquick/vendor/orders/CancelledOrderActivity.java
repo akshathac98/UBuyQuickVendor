@@ -18,6 +18,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.adapter.OrderProductAdapter;
 import com.ubuyquick.vendor.model.OrderProduct;
+import com.ubuyquick.vendor.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,12 @@ public class CancelledOrderActivity extends AppCompatActivity {
         order_id = getIntent().getStringExtra("ORDER_ID");
         shop_id = getIntent().getStringExtra("shop_id");
 
-        orderProductAdapter = new OrderProductAdapter(this, "CANCELLED");
+        orderProductAdapter = new OrderProductAdapter(this, "CANCELLED", new Utils.OnItemClick() {
+            @Override
+            public void onClick(int count) {
+
+            }
+        });
         orderProducts = new ArrayList<>();
         rv_order_products.setAdapter(orderProductAdapter);
 

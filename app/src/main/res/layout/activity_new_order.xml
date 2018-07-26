@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,11 +10,7 @@
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -109,7 +105,6 @@
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="14sp" />
 
-
                     <TextView
                         android:id="@+id/tv_order_id3"
                         android:layout_width="wrap_content"
@@ -148,39 +143,72 @@
 
                     <TextView
                         android:id="@+id/tv_order_total"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/view1"
                         android:layout_marginBottom="5dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="5dp"
-                        android:text="Order Total: 129/-"
+                        android:text="Order Total:"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="18sp" />
 
                     <TextView
+                        android:id="@+id/tv_total"
+                        android:layout_below="@id/view1"
+                        android:text="129.0/-"
+                        android:layout_alignStart="@id/tv_available"
+                        android:layout_marginTop="5dp"
+                        android:textSize="18sp"
+                        android:layout_toEndOf="@id/tv_order_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
                         android:id="@+id/tv_total_products"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_order_total"
                         android:layout_marginBottom="5dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="5dp"
-                        android:text="Total Products: 5"
+                        android:text="Total Products:"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="18sp" />
 
                     <TextView
+                        android:textSize="18sp"
+                        android:layout_below="@id/tv_order_total"
+                        android:text="5"
+                        android:layout_alignStart="@id/tv_available"
+                        android:layout_toEndOf="@id/tv_total_products"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tv_products"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
                         android:id="@+id/tv_products_available"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_total_products"
                         android:layout_marginBottom="5dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="5dp"
-                        android:text="Products Available: 5"
+                        android:text="Products Available: "
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="18sp" />
+
+                    <TextView
+                        android:text="0"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_below="@id/tv_total_products"
+                        android:layout_toEndOf="@id/tv_products_available"
+                        android:textSize="18sp"
+                        android:id="@+id/tv_available"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
                 </RelativeLayout>
 
@@ -190,7 +218,7 @@
                 android:id="@+id/rv_order_products"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="5dp"
@@ -199,6 +227,75 @@
                 android:orientation="vertical"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+
+            <RelativeLayout
+                android:id="@+id/relLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Discount: "
+                    android:textSize="18sp"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@android:color/black"
+                    android:id="@+id/tv_head_discount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_discount"
+                    android:text="50/-"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_delivery_charge"
+                    android:text="Delivery Charges: "
+                    android:textSize="18sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_below="@id/tv_head_discount"
+                    android:textColor="@android:color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_delivery"
+                    android:text="50/-"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="8dp"
+                    android:layout_below="@id/tv_head_discount"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_package_charge"
+                    android:text="Packing Charges: "
+                    android:textSize="18sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="60dp"
+                    android:layout_below="@id/tv_delivery_charge"
+                    android:textColor="@android:color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_package"
+                    android:text="50/-"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="8dp"
+                    android:layout_below="@id/tv_delivery_charge"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="60dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
@@ -243,4 +340,4 @@
 
     </RelativeLayout>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

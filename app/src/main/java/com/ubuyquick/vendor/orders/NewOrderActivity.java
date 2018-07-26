@@ -32,6 +32,7 @@ import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.adapter.OrderProductAdapter;
 import com.ubuyquick.vendor.model.NewOrder;
 import com.ubuyquick.vendor.model.OrderProduct;
+import com.ubuyquick.vendor.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,8 +47,11 @@ public class NewOrderActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
     private String order_id, shop_id;
+    private int products_available = 0, total_products = 0;
+    private Double order_total = 0.0;
 
     private TextView tv_customer, tv_address, tv_order_id, tv_ordered_at, tv_order_total;
+    private TextView tv_total, tv_products, tv_available;
     private RecyclerView rv_order_products;
     private OrderProductAdapter orderProductAdapter;
     private List<OrderProduct> orderProducts;
@@ -71,6 +75,9 @@ public class NewOrderActivity extends AppCompatActivity {
         tv_order_id = (TextView) findViewById(R.id.tv_order_id);
         tv_ordered_at = (TextView) findViewById(R.id.tv_ordered_at);
         tv_order_total = (TextView) findViewById(R.id.tv_order_total);
+        tv_total = (TextView) findViewById(R.id.tv_total);
+        tv_products = (TextView) findViewById(R.id.tv_products);
+        tv_available = (TextView) findViewById(R.id.tv_available);
         btn_cancel = (TextView) findViewById(R.id.btn_cancel);
         btn_accept = (TextView) findViewById(R.id.btn_accept);
 
@@ -88,7 +95,12 @@ public class NewOrderActivity extends AppCompatActivity {
 
         Log.d(TAG, "initialize: order id: " + order_id);
 
-        orderProductAdapter = new OrderProductAdapter(this, "NEW");
+        orderProductAdapter = new OrderProductAdapter(this, "NEW", new Utils.OnItemClick() {
+            @Override
+            public void onClick(int count) {
+                tv_available.setText("" + count);
+            }
+        });
         orderProducts = new ArrayList<>();
         rv_order_products.setAdapter(orderProductAdapter);
 
@@ -101,10 +113,13 @@ public class NewOrderActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> product = document.getData();
+                                order_total += Double.parseDouble(product.get("mrp").toString());
                                 orderProducts.add(new OrderProduct(product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
                                         , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
                             }
+                            tv_total.setText("" + order_total);
+                            tv_products.setText("" + orderProducts.size());
                             orderProductAdapter.setOrderProducts(orderProducts);
                         }
                     }
@@ -315,4 +330,5 @@ public class NewOrderActivity extends AppCompatActivity {
         }
         return false;
     }
+
 }
