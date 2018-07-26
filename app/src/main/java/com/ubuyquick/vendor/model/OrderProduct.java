@@ -7,13 +7,23 @@ public class OrderProduct {
     private double product_mrp;
     private String product_image_url;
     private boolean available;
+    private String product_id;
 
-    public OrderProduct(String product_name, int product_quantity, double product_mrp, String product_image_url, boolean available) {
+    public OrderProduct(String product_id, String product_name, int product_quantity, double product_mrp, String product_image_url, boolean available) {
         this.product_name = product_name;
+        this.product_id = product_id;
         this.product_quantity = product_quantity;
         this.product_mrp = product_mrp;
         this.product_image_url = product_image_url;
         this.available = available;
+    }
+
+    public String getProductId() {
+        return product_id;
+    }
+
+    public void setProductId(String product_id) {
+        this.product_id = product_id;
     }
 
     public String getProductName() {

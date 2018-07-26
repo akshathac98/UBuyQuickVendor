@@ -78,9 +78,14 @@ public class AcceptedOrderActivity extends AppCompatActivity {
         order_id = getIntent().getStringExtra("ORDER_ID");
         shop_id = getIntent().getStringExtra("shop_id");
 
-        orderProductAdapter = new OrderProductAdapter(this, "ACCEPTED", new Utils.OnItemClick() {
+        orderProductAdapter = new OrderProductAdapter(this, shop_id, order_id, "ACCEPTED", new Utils.OnItemClick() {
             @Override
             public void onClick(int count) {
+
+            }
+        }, new Utils.OnChange() {
+            @Override
+            public void onChange(double mrp) {
 
             }
         });
@@ -97,7 +102,7 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> product = document.getData();
-                                orderProducts.add(new OrderProduct(product.get("name").toString(),
+                                orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
                                         , product.get("image_url").toString(), true));
                             }

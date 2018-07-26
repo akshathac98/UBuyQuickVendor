@@ -95,10 +95,16 @@ public class NewOrderActivity extends AppCompatActivity {
 
         Log.d(TAG, "initialize: order id: " + order_id);
 
-        orderProductAdapter = new OrderProductAdapter(this, "NEW", new Utils.OnItemClick() {
+        orderProductAdapter = new OrderProductAdapter(this, order_id, shop_id, "NEW", new Utils.OnItemClick() {
             @Override
             public void onClick(int count) {
                 tv_available.setText("" + count);
+            }
+        }, new Utils.OnChange() {
+            @Override
+            public void onChange(double mrp) {
+                tv_total.setText("" + (mrp + order_total));
+                order_total = (mrp + order_total);
             }
         });
         orderProducts = new ArrayList<>();
@@ -114,7 +120,7 @@ public class NewOrderActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> product = document.getData();
                                 order_total += Double.parseDouble(product.get("mrp").toString());
-                                orderProducts.add(new OrderProduct(product.get("name").toString(),
+                                orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
                                         , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
                             }

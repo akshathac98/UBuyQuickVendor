@@ -1,24 +1,34 @@
 package com.ubuyquick.vendor.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ubuyquick.vendor.R;
+import com.ubuyquick.vendor.model.Credit;
 import com.ubuyquick.vendor.model.OrderProduct;
 import com.ubuyquick.vendor.utils.UniversalImageLoader;
 import com.ubuyquick.vendor.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -27,14 +37,22 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
     private static final String TAG = "OrderProductAdapter";
 
     private Context context;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
     private List<OrderProduct> orderProducts;
-    private String order_type;
+    private String order_type, order_id, shop_id;
     private Utils.OnItemClick mCallback;
+    private Utils.OnChange mCallback2;
     private int products_available = 0;
 
-    public OrderProductAdapter(Context context, String order_type, Utils.OnItemClick listener) {
+    public OrderProductAdapter(Context context, String order_id, String shop_id, String order_type, Utils.OnItemClick listener, Utils.OnChange changeListener) {
         this.context = context;
+        this.order_id = order_id;
+        this.shop_id = shop_id;
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         this.mCallback = listener;
+        this.mCallback2 = changeListener;
         this.order_type = order_type;
         orderProducts = new ArrayList<>();
         ImageLoader.getInstance().init(new UniversalImageLoader(context).getConfig());
@@ -50,6 +68,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
         private TextView tv_product_quantity;
         private TextView tv_product_mrp;
         private CheckBox cb_product;
+        private ImageButton btn_edit;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -58,6 +77,43 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
             this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
             this.cb_product = (CheckBox) itemView.findViewById(R.id.cb_product);
+            this.btn_edit = (ImageButton) itemView.findViewById(R.id.btn_edit);
+
+            this.btn_edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                    View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_product, null, false);
+                    final TextInputEditText mrp = (TextInputEditText) viewInflated.findViewById(R.id.et_mrp);
+
+                    final OrderProduct orderProduct = orderProducts.get(getAdapterPosition());
+                    mrp.setText(orderProduct.getProductMrp() + "");
+
+                    builder.setTitle("Edit Product MRP:");
+                    builder.setView(viewInflated);
+                    builder.setNegativeButton("Cancel", null);
+                    builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (mrp.getText().toString().isEmpty()) {
+                                Toast.makeText(context, "MRP can't be empty", Toast.LENGTH_SHORT).show();
+                            } else {
+                                mCallback2.onChange(Double.parseDouble(mrp.getText().toString()) - orderProduct.getProductMrp());
+                                orderProduct.setProductMrp(Double.parseDouble(mrp.getText().toString()));
+                                notifyDataSetChanged();
+                                Map<String, Object> productInfo = new HashMap<>();
+                                productInfo.put("mrp", Double.parseDouble(mrp.getText().toString()));
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
+                                        .collection("new_orders").document(order_id).collection("products")
+                                        .document(orderProduct.getProductId()).update(productInfo);
+                            }
+                        }
+                    });
+                    builder.show();
+
+                }
+            });
 
             if (order_type.equals("ACCEPTED") || order_type.equals("CANCELLED") || order_type.equals("DELIVERED")) {
                 cb_product.setVisibility(View.INVISIBLE);
