@@ -103,8 +103,8 @@ public class NewOrderActivity extends AppCompatActivity {
         }, new Utils.OnChange() {
             @Override
             public void onChange(double mrp) {
-                tv_total.setText("" + (mrp + order_total));
-                order_total = (mrp + order_total);
+                tv_total.setText("" + (mrp + Double.parseDouble(tv_total.getText().toString())));
+                order_total = (mrp + Double.parseDouble(tv_total.getText().toString()));
             }
         });
         orderProducts = new ArrayList<>();
