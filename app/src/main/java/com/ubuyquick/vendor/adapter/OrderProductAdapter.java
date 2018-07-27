@@ -144,7 +144,8 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
             });
 
             if (order_type.equals("ACCEPTED") || order_type.equals("CANCELLED") || order_type.equals("DELIVERED")) {
-                cb_product.setVisibility(View.INVISIBLE);
+                cb_product.setVisibility(View.GONE);
+                btn_edit.setVisibility(View.INVISIBLE);
             } else {
                 cb_product.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override

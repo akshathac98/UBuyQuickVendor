@@ -8,6 +8,7 @@
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
+        android:layout_above="@id/relLayout3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -139,7 +140,7 @@
                         android:layout_below="@id/tv_ordered_at"
                         android:layout_marginEnd="2dp"
                         android:layout_marginStart="2dp"
-                        android:background="@android:color/black" />
+                        android:background="@color/colorAccent" />
 
                     <TextView
                         android:id="@+id/tv_order_total"
@@ -244,6 +245,7 @@
                         android:layout_toStartOf="@id/tv_product_quantity"
                         android:layout_toEndOf="@id/cb_product"
                         android:text="Product Name"
+                        android:textAllCaps="true"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="14sp" />
 
@@ -266,7 +268,7 @@
                         android:layout_toStartOf="@id/btn_edit"
                         android:layout_marginEnd="20dp"
                         android:textColor="@color/colorPrimaryDark"
-                        android:text="@string/mrp"
+                        android:text="PRICE"
                         android:textAlignment="center"
                         android:textSize="14sp" />
 
@@ -349,7 +351,7 @@
                     android:textSize="18sp"
                     android:layout_marginTop="12dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginBottom="60dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_below="@id/tv_delivery_charge"
                     android:textColor="@android:color/black"
                     android:layout_width="wrap_content"
@@ -362,7 +364,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_below="@id/tv_delivery_charge"
                     android:textSize="18sp"
-                    android:layout_marginBottom="60dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -373,6 +375,7 @@
     </android.support.v4.widget.NestedScrollView>
 
     <RelativeLayout
+        android:id="@+id/relLayout3"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"

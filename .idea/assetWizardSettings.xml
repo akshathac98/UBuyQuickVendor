@@ -14,8 +14,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_search" />
-                            <entry key="sourceFile" value="G:\UBuyQuick\Icons\nav_search.svg" />
+                            <entry key="outputName" value="ic_map" />
+                            <entry key="sourceFile" value="G:\UBuyQuick\Icons\map.svg" />
                           </map>
                         </option>
                       </PersistentState>

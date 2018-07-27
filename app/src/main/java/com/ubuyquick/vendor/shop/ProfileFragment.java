@@ -63,6 +63,7 @@ public class ProfileFragment extends Fragment {
     private com.makeramen.roundedimageview.RoundedImageView img_shop;
     private EditText input;
     private TextView tv_shop_name, tv_shop_location, tv_shop_timings, tv_specialization, tv_gstin;
+    private TextView tv_package, tv_shipping;
     private TextView tv_status, tv_quick;
 
     private String vendor_number;
@@ -83,6 +84,8 @@ public class ProfileFragment extends Fragment {
     private Button btn_delete_shop;
     private Button btn_add_area;
     private Button btn_add_slot;
+    private Button btn_charge;
+    private Button btn_package;
     private Button btn_to;
     private Button btn_from;
     private Switch btn_shop_status;
@@ -131,6 +134,8 @@ public class ProfileFragment extends Fragment {
         tv_gstin = (TextView) view.findViewById(R.id.tv_gst);
         tv_status = (TextView) view.findViewById(R.id.tv_status);
         tv_quick = (TextView) view.findViewById(R.id.tv_quick);
+        tv_shipping = (TextView) view.findViewById(R.id.tv_delivery_charge);
+        tv_package = (TextView) view.findViewById(R.id.tv_package_charge);
 
         btn_feedbacks = (RelativeLayout) view.findViewById(R.id.relLayout1);
         btn_feedbacks.setOnClickListener(new View.OnClickListener() {

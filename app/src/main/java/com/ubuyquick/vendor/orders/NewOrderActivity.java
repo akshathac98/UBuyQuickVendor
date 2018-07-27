@@ -10,12 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -36,6 +39,7 @@ import com.ubuyquick.vendor.model.NewOrder;
 import com.ubuyquick.vendor.model.OrderProduct;
 import com.ubuyquick.vendor.utils.Utils;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +62,7 @@ public class NewOrderActivity extends AppCompatActivity {
     private OrderProductAdapter orderProductAdapter;
     private List<OrderProduct> orderProducts;
     private TextView btn_accept, btn_cancel;
+    private EditText et_discount, et_shipping, et_package;
     private CheckBox cb_all;
 
     @Override
@@ -85,8 +90,45 @@ public class NewOrderActivity extends AppCompatActivity {
         btn_accept = (TextView) findViewById(R.id.btn_accept);
         cb_all = (CheckBox) findViewById(R.id.cb_product);
 
-        rv_order_products = (RecyclerView) findViewById(R.id.rv_order_products);
+        et_discount = (EditText) findViewById(R.id.et_discount);
+        et_package = (EditText) findViewById(R.id.et_package);
+        et_shipping = (EditText) findViewById(R.id.et_delivery);
 
+        EditText.OnEditorActionListener listener = new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    et_shipping.requestFocus();
+                }
+                return true;
+            }
+        };
+
+        EditText.OnEditorActionListener listener2 = new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    et_package.requestFocus();
+                }
+                return true;
+            }
+        };
+
+        EditText.OnEditorActionListener listener3 = new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    et_package.clearFocus();
+                }
+                return true;
+            }
+        };
+
+        et_discount.setOnEditorActionListener(listener);
+        et_shipping.setOnEditorActionListener(listener2);
+        et_package.setOnEditorActionListener(listener3);
+
+        rv_order_products = (RecyclerView) findViewById(R.id.rv_order_products);
 
     }
 
@@ -103,6 +145,7 @@ public class NewOrderActivity extends AppCompatActivity {
             @Override
             public void onClick(int count) {
                 tv_available.setText("" + count);
+                if (count == orderProducts.size());
             }
         }, new Utils.OnChange() {
             @Override
@@ -113,6 +156,7 @@ public class NewOrderActivity extends AppCompatActivity {
         });
         orderProducts = new ArrayList<>();
         rv_order_products.setAdapter(orderProductAdapter);
+        cb_all.setChecked(true);
         cb_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -135,7 +179,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                 order_total += Double.parseDouble(product.get("mrp").toString());
                                 orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
-                                        , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
+                                        , product.get("image_url").toString(), true));
                             }
                             tv_total.setText("" + order_total);
                             tv_products.setText("" + orderProducts.size());
@@ -156,7 +200,7 @@ public class NewOrderActivity extends AppCompatActivity {
                             tv_customer.setText(order.get("customer_name").toString());
                             tv_address.setText(order.get("delivery_address").toString());
                             tv_order_id.setText(order_id);
-                            tv_ordered_at.setText(order.get("ordered_at").toString());
+                            tv_ordered_at.setText(new Date(new java.sql.Timestamp(Long.parseLong(order.get("ordered_at").toString())).getTime()).toString());
 
                             btn_accept.setOnClickListener(new View.OnClickListener() {
                                 @Override

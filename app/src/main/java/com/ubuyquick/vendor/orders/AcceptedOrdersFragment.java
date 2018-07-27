@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.R;
@@ -59,7 +60,7 @@ public class AcceptedOrdersFragment extends Fragment {
         acceptedOrders = new ArrayList<>();
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
-                .document(getArguments().getString("shop_id")).collection("accepted_orders")
+                .document(getArguments().getString("shop_id")).collection("accepted_orders").orderBy("order_id", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
