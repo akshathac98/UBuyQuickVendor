@@ -4,9 +4,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -60,6 +65,57 @@ public class InventoryProductsActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String search = et_search.getText().toString();
+                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                        .collection("shops").document(shop_id).collection("inventory")
+                        .whereEqualTo("product_name", search).get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                                if (documents.size() > 0) {
+                                    for (DocumentSnapshot document : documents) {
+                                        Map<String, Object> product = document.getData();
+                                        inventorySearchProducts.add(new InventoryProduct(product.get("product_name").toString(),
+                                                Integer.parseInt(product.get("product_quantity").toString()),
+                                                Double.parseDouble(product.get("product_mrp").toString()),
+                                                product.get("image_url").toString(), true, document.getId(),
+                                                product.get("category").toString(), product.get("sub_category").toString()));
+                                    }
+                                    inventoryProductAdapter.setInventoryProducts(inventorySearchProducts);
+                                    et_search.addTextChangedListener(new TextWatcher() {
+                                        @Override
+                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                                        }
+
+                                        @Override
+                                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                            if (TextUtils.isEmpty(et_search.getText())) {
+                                                inventoryProductAdapter.setInventoryProducts(inventoryProducts);
+                                                inventorySearchProducts.clear();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void afterTextChanged(Editable s) {
+
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(InventoryProductsActivity.this, "No item found", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        });
+            }
+        });
+
+
 
         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                 .collection("shops").document(shop_id).collection("inventory").whereEqualTo("sub_category", sub_category)

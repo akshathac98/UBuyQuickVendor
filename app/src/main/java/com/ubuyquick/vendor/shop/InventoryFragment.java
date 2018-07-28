@@ -12,8 +12,10 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.CategoryActivity;
 import com.ubuyquick.vendor.R;
+import com.ubuyquick.vendor.SubCategoryActivity;
 import com.ubuyquick.vendor.adapter.InventoryProductAdapter;
 import com.ubuyquick.vendor.model.InventoryProduct;
 
@@ -36,18 +39,14 @@ public class InventoryFragment extends Fragment {
     private static final String TAG = "InventoryFragment";
 
     private Button btn_add_product;
-    private Button btn_search;
     private Button btn_change_view;
 
     private String shop_id;
-    private RecyclerView rv_products;
-    private List<InventoryProduct> inventoryProducts;
-    private List<InventoryProduct> inventorySearchProducts;
-    private InventoryProductAdapter inventoryProductAdapter;
+    private ListView list_categories;
+
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private EditText et_search;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,15 +63,20 @@ public class InventoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.inventory_fragment, container, false);
 
         shop_id = getArguments().getString("shop_id");
-        et_search = (view.findViewById(R.id.et_search));
-        btn_search = (view.findViewById(R.id.btn_search));
         btn_add_product = view.findViewById(R.id.btn_add_product);
         btn_change_view = view.findViewById(R.id.btn_change_view);
-        rv_products = (RecyclerView) view.findViewById(R.id.rv_products) ;
-        inventoryProductAdapter = new InventoryProductAdapter(getContext(), shop_id);
-        inventoryProducts = new ArrayList<>();
-        inventorySearchProducts = new ArrayList<>();
-        rv_products.setAdapter(inventoryProductAdapter);
+
+        list_categories = (ListView) view.findViewById(R.id.list_categories);
+
+        list_categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getContext(), InventorySubCategoryActivity.class);
+                i.putExtra("shop_id", shop_id);
+                i.putExtra("category", "dry_fruits");
+                startActivity(i);
+            }
+        });
 
         btn_change_view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,55 +84,6 @@ public class InventoryFragment extends Fragment {
                 Intent i = new Intent(getContext(), InventoryCategoryActivity.class);
                 i.putExtra("shop_id", shop_id);
                 startActivity(i);
-            }
-        });
-
-        btn_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String search = et_search.getText().toString();
-                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                        .collection("shops").document(shop_id).collection("inventory")
-                        .whereEqualTo("product_name", search).get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                List<DocumentSnapshot> documents = task.getResult().getDocuments();
-                                if (documents.size() > 0) {
-                                    for (DocumentSnapshot document : documents) {
-                                        Map<String, Object> product = document.getData();
-                                        inventorySearchProducts.add(new InventoryProduct(product.get("product_name").toString(),
-                                                Integer.parseInt(product.get("product_quantity").toString()),
-                                                Double.parseDouble(product.get("product_mrp").toString()),
-                                                product.get("image_url").toString(), true, document.getId(),
-                                                product.get("category").toString(), product.get("sub_category").toString()));
-                                    }
-                                    inventoryProductAdapter.setInventoryProducts(inventorySearchProducts);
-                                    et_search.addTextChangedListener(new TextWatcher() {
-                                        @Override
-                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                                        }
-
-                                        @Override
-                                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                            if (TextUtils.isEmpty(et_search.getText())) {
-                                                inventoryProductAdapter.setInventoryProducts(inventoryProducts);
-                                                inventorySearchProducts.clear();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void afterTextChanged(Editable s) {
-
-                                        }
-                                    });
-                                } else {
-                                    Toast.makeText(getContext(), "No item found", Toast.LENGTH_SHORT).show();
-                                }
-
-                            }
-                        });
             }
         });
 
@@ -140,26 +95,6 @@ public class InventoryFragment extends Fragment {
                 startActivity(i);
             }
         });
-
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                .collection("shops").document(shop_id).collection("inventory").get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        List<DocumentSnapshot> documents = task.getResult().getDocuments();
-                        for (DocumentSnapshot document : documents) {
-                            Map<String, Object> product = document.getData();
-                            inventoryProducts.add(new InventoryProduct(product.get("product_name").toString(),
-                                    Integer.parseInt(product.get("product_quantity").toString()),
-                                    Double.parseDouble(product.get("product_mrp").toString()),
-                                    product.get("image_url").toString(),
-                                    true, document.getId(), product.get("category").toString(),
-                                    product.get("sub_category").toString()));
-                        }
-                        inventoryProductAdapter.setInventoryProducts(inventoryProducts);
-                    }
-                });
-
         return view;
     }
 }
