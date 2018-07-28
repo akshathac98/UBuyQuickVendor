@@ -81,9 +81,19 @@
         <activity
             android:name=".orders.DeliveredOrderActivity"
             android:label="Delivered Order" />
-        <activity android:name=".CategoryActivity" />
+        <activity
+            android:name=".CategoryActivity"
+            android:label="Product Category" />
+        <activity
+            android:name=".shop.InventoryCategoryActivity"
+            android:label="Product Category" />
+        <activity
+            android:name=".shop.InventorySubCategoryActivity"
+            android:label="Product Subcategory" />
         <activity android:name=".AddProductActivity" />
-        <activity android:name=".SubCategoryActivity" />
+        <activity
+            android:name=".SubCategoryActivity"
+            android:label="Product Subcategory" />
         <activity
             android:name=".shop.EditShopProfileActivity"
             android:label="Edit Shop Profile" />
@@ -104,8 +114,14 @@
         <activity
             android:name=".AddSlotsActivity"
             android:label="Delivery Time Slots" />
-        <activity android:name=".FeedbacksActivity"
-            android:label="Feedbacks"></activity>
+        <activity
+            android:name=".FeedbacksActivity"
+            android:label="Feedbacks" />
+        <activity
+            android:name=".shop.AddFromActivity"
+            android:label="Add Product" />
+        <activity android:name=".shop.InventoryProductsActivity"
+            android:label="Shop Inventory"></activity>
     </application>
 
 </manifest>

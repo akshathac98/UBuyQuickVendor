@@ -1,20 +1,21 @@
-package com.ubuyquick.vendor;
+package com.ubuyquick.vendor.shop;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ubuyquick.vendor.R;
+import com.ubuyquick.vendor.SubCategoryActivity;
 
-public class CategoryActivity extends AppCompatActivity {
+public class InventoryCategoryActivity extends AppCompatActivity {
 
-    private static final String TAG = "CategoryActivity";
+    private static final String TAG = "InventoryCategoryActivity";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -38,7 +39,7 @@ public class CategoryActivity extends AppCompatActivity {
         list_categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(CategoryActivity.this, SubCategoryActivity.class);
+                Intent i = new Intent(InventoryCategoryActivity.this, InventorySubCategoryActivity.class);
                 i.putExtra("shop_id", shop_id);
                 i.putExtra("category", "dry_fruits");
                 startActivity(i);

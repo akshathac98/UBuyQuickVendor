@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -28,11 +27,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ubuyquick.vendor.Manifest;
 import com.ubuyquick.vendor.R;
-import com.ubuyquick.vendor.model.AcceptedOrder;
 import com.ubuyquick.vendor.model.Credit;
-import com.ubuyquick.vendor.orders.AcceptedOrderActivity;
 import com.ubuyquick.vendor.utils.MultiChoiceHelper;
 
 import java.util.ArrayList;
@@ -40,10 +36,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder> implements ActivityCompat.OnRequestPermissionsResultCallback,
+public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.ViewHolder> implements ActivityCompat.OnRequestPermissionsResultCallback,
         Filterable{
 
-    private static final String TAG = "CreditAdapter";
+    private static final String TAG = "CreditNoteAdapter";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -54,7 +50,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
 
     private String shop_id;
 
-    public CreditAdapter(Context context, String shop_id) {
+    public CreditNoteAdapter(Context context, String shop_id) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
@@ -73,8 +69,9 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
         private TextView tv_mobile;
         private TextView tv_credit;
 
-        private Button btn_send;
-        private Button btn_edit;
+        private Button btn_plus;
+        private Button btn_minus;
+        private Button btn_clear;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -82,8 +79,9 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
             this.tv_customer_name = (TextView) itemView.findViewById(R.id.tv_name);
             this.tv_mobile = (TextView) itemView.findViewById(R.id.tv_number);
             this.tv_credit = (TextView) itemView.findViewById(R.id.tv_credit);
-            btn_send = (Button) itemView.findViewById(R.id.btn_send);
-            btn_edit = (Button) itemView.findViewById(R.id.btn_edit);
+            this.btn_clear = (Button) itemView.findViewById(R.id.btn_clear);
+            this.btn_minus = (Button) itemView.findViewById(R.id.btn_minus);
+            this.btn_plus = (Button) itemView.findViewById(R.id.btn_plus);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -99,40 +97,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
             this.tv_mobile.setText(credit.getCustomerMobile());
             this.tv_credit.setText("\u20B9" + credit.getCredit());
 
-            btn_send.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                    builder.setMessage("Send message from your phone?")
-                            .setPositiveButton("Send Message", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                                            ((Activity) context).requestPermissions(new String[]{android.Manifest.permission.SEND_SMS}, 1);
-                                        } else {
-                                            final SmsManager smsManager = SmsManager.getDefault();
-                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                    .collection("shops").document(shop_id).get()
-                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                    Map<String, Object> vendor = task.getResult().getData();
-                                                    smsManager.sendTextMessage("+91" + credits.get(getAdapterPosition()).getCustomerMobile(), null, vendor.get("credit_message").toString(), null, null);
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                }
-                            })
-                            .setNegativeButton("Cancel", null)
-                            .show();
-                }
-            });
-
-            btn_edit.setOnClickListener(new View.OnClickListener() {
+            btn_plus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);

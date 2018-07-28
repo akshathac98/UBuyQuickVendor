@@ -37,6 +37,7 @@ public class InventoryFragment extends Fragment {
 
     private Button btn_add_product;
     private Button btn_search;
+    private Button btn_change_view;
 
     private String shop_id;
     private RecyclerView rv_products;
@@ -66,11 +67,21 @@ public class InventoryFragment extends Fragment {
         et_search = (view.findViewById(R.id.et_search));
         btn_search = (view.findViewById(R.id.btn_search));
         btn_add_product = view.findViewById(R.id.btn_add_product);
+        btn_change_view = view.findViewById(R.id.btn_change_view);
         rv_products = (RecyclerView) view.findViewById(R.id.rv_products) ;
         inventoryProductAdapter = new InventoryProductAdapter(getContext(), shop_id);
         inventoryProducts = new ArrayList<>();
         inventorySearchProducts = new ArrayList<>();
         rv_products.setAdapter(inventoryProductAdapter);
+
+        btn_change_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), InventoryCategoryActivity.class);
+                i.putExtra("shop_id", shop_id);
+                startActivity(i);
+            }
+        });
 
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,7 +135,7 @@ public class InventoryFragment extends Fragment {
         btn_add_product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), CategoryActivity.class);
+                Intent i = new Intent(getContext(), AddFromActivity.class);
                 i.putExtra("shop_id", shop_id);
                 startActivity(i);
             }

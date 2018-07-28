@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".shop.AddFromActivity">
+
+    <Button
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_rounded"
+        android:text="Add From Master Database"
+        android:id="@+id/btn_master"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_below="@id/btn_master"
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_rounded"
+        android:text="Add New Product"
+        android:id="@+id/btn_new"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
