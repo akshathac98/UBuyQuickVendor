@@ -18,8 +18,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,7 @@ import com.ubuyquick.vendor.Manifest;
 import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.model.AcceptedOrder;
 import com.ubuyquick.vendor.model.Credit;
+import com.ubuyquick.vendor.model.CreditNote;
 import com.ubuyquick.vendor.orders.AcceptedOrderActivity;
 import com.ubuyquick.vendor.utils.MultiChoiceHelper;
 
@@ -73,8 +76,10 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
         private TextView tv_mobile;
         private TextView tv_credit;
 
-        private Button btn_send;
-        private Button btn_edit;
+        private ImageButton btn_send;
+        private ImageButton btn_edit;
+        private ImageButton btn_plus;
+        private ImageButton btn_minus;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -82,8 +87,10 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
             this.tv_customer_name = (TextView) itemView.findViewById(R.id.tv_name);
             this.tv_mobile = (TextView) itemView.findViewById(R.id.tv_number);
             this.tv_credit = (TextView) itemView.findViewById(R.id.tv_credit);
-            btn_send = (Button) itemView.findViewById(R.id.btn_send);
-            btn_edit = (Button) itemView.findViewById(R.id.btn_edit);
+            btn_send = (ImageButton) itemView.findViewById(R.id.btn_send);
+            btn_edit = (ImageButton) itemView.findViewById(R.id.btn_edit);
+            this.btn_minus = (ImageButton) itemView.findViewById(R.id.btn_minus);
+            this.btn_plus = (ImageButton) itemView.findViewById(R.id.btn_plus);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -132,6 +139,113 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                 }
             });
 
+
+            btn_plus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                    View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_edit_credit, null, false);
+                    final EditText balance = (EditText) viewInflated.findViewById(R.id.et_balance);
+                    final TextView tv_balance = (TextView) viewInflated.findViewById(R.id.tv_balance);
+
+                    final Credit credit = credits.get(getAdapterPosition());
+                    tv_balance.setText(credit.getCredit() + " + ");
+                    balance.requestFocus();
+
+                    builder.setTitle("Enter amount to add:");
+                    builder.setView(viewInflated)
+                            .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    if (TextUtils.isEmpty(balance.getText().toString()))
+                                        Toast.makeText(context, "Number can't be empty", Toast.LENGTH_SHORT).show();
+                                    else {
+                                        Map<String, Object> creditInfo = new HashMap<>();
+                                        creditInfo.put("balance", Double.parseDouble(balance.getText().toString()) + credit.getCredit());
+
+                                        Credit credit1 = credits.get(getAdapterPosition());
+                                        credit1.setCredit(Double.parseDouble(balance.getText().toString()) + credit.getCredit());
+                                        notifyItemChanged(getAdapterPosition());
+
+                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                                                .document(shop_id).collection("credits").document(credits.get(getAdapterPosition()).getCustomerId())
+                                                .update(creditInfo);
+                                        Toast.makeText(context, "Saved credit holder info.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Cancel", null);
+                    builder.show();
+                }
+            });
+
+            btn_minus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                    View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_edit_credit, null, false);
+                    final EditText balance = (EditText) viewInflated.findViewById(R.id.et_balance);
+                    final TextView tv_balance = (TextView) viewInflated.findViewById(R.id.tv_balance);
+
+                    final Credit credit = credits.get(getAdapterPosition());
+                    tv_balance.setText(credit.getCredit() + " - ");
+                    balance.requestFocus();
+
+                    builder.setTitle("Enter amount to subtract:");
+                    builder.setView(viewInflated)
+                            .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    if (TextUtils.isEmpty(balance.getText().toString()))
+                                        Toast.makeText(context, "Number can't be empty", Toast.LENGTH_SHORT).show();
+                                    else {
+                                        Map<String, Object> creditInfo = new HashMap<>();
+                                        creditInfo.put("balance", credit.getCredit() - Double.parseDouble(balance.getText().toString()));
+
+                                        Credit credit1 = credits.get(getAdapterPosition());
+                                        credit1.setCredit(credit.getCredit() - Double.parseDouble(balance.getText().toString()));
+                                        notifyItemChanged(getAdapterPosition());
+
+                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                                                .document(shop_id).collection("credits").document(credits.get(getAdapterPosition()).getCustomerId())
+                                                .update(creditInfo);
+                                        Toast.makeText(context, "Saved credit holder info.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Cancel", null);
+                    builder.show();
+                }
+            });
+
+            btn_edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage("Delete Credit?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            .collection("shops").document(shop_id).collection("credits")
+                                            .document(credits.get(getAdapterPosition()).getCustomerMobile()).delete();
+                                    credits.remove(getAdapterPosition());
+                                    notifyItemRemoved(getAdapterPosition());
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            }).show();
+                }
+            });
+
+/*
+
             btn_edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -176,7 +290,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                             .setNegativeButton("Cancel", null);
                     builder.show();
                 }
-            });
+            });*/
         }
     }
 

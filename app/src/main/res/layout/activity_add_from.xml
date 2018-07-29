@@ -8,6 +8,7 @@
 
     <Button
         android:textColor="@android:color/white"
+        android:layout_marginTop="8dp"
         android:background="@drawable/button_rounded"
         android:text="Add From Master Database"
         android:id="@+id/btn_master"
@@ -16,6 +17,7 @@
 
     <Button
         android:layout_below="@id/btn_master"
+        android:layout_marginTop="8dp"
         android:textColor="@android:color/white"
         android:background="@drawable/button_rounded"
         android:text="Add New Product"

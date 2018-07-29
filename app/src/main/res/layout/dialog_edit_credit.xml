@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:padding="10dp">
 
@@ -10,13 +9,14 @@
         android:id="@+id/tv_balance"
         android:textSize="18sp"
         android:text="129.0 + "
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="14dp"
         android:layout_marginStart="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <EditText
         android:id="@+id/et_balance"
+        android:inputType="numberDecimal"
         android:layout_toEndOf="@id/tv_balance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

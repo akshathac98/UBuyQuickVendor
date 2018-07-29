@@ -13,98 +13,120 @@
 
         <TextView
             android:id="@+id/tv_head_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="5dp"
             android:text="Name :"
-            android:textSize="16sp"
-            android:layout_marginStart="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_name"
-            android:text="Bharat Kumar"
-            android:textAlignment="textStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/tv_number"
             android:layout_marginEnd="5dp"
             android:layout_marginTop="5dp"
-            android:textSize="16sp"
-            android:layout_toStartOf="@id/btn_edit"
-            android:layout_alignStart="@id/tv_number"
-            android:textColor="@color/colorTextPrimary"
             android:layout_toEndOf="@id/tv_head_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_toStartOf="@id/btn_edit"
+            android:text="Bharat Kumar"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_head_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_head_name"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="5dp"
             android:text="Number :"
-            android:layout_below="@id/tv_head_name"
-            android:textSize="16sp"
-            android:layout_marginStart="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_number"
-            android:layout_below="@id/tv_head_name"
-            android:text="9008003968"
-            android:layout_marginTop="5dp"
-            android:textSize="16sp"
-            android:layout_marginEnd="5dp"
-            android:layout_toStartOf="@id/btn_edit"
-            android:textColor="@color/colorTextPrimary"
-            android:layout_alignStart="@id/tv_credit"
-            android:layout_toEndOf="@id/tv_head_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/tv_credit"
+            android:layout_below="@id/tv_head_name"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@id/tv_head_name"
+            android:text="9008003968"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_head_credit"
-            android:text="Credit Balance :"
-            android:textSize="16sp"
-            android:layout_marginBottom="5dp"
-            android:layout_below="@id/tv_head_number"
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="8dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_head_number"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="5dp"
+            android:text="Credit Balance :"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_credit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@id/tv_head_number"
+            android:layout_marginBottom="5dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="5dp"
             android:layout_toEndOf="@id/tv_head_credit"
             android:text="\u20B9329.0"
-            android:layout_marginBottom="5dp"
             android:textColor="@color/colorTextPrimary"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="16sp" />
 
-        <Button
-            android:layout_alignParentEnd="true"
-            android:text="Send SMS"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:textColor="@android:color/white"
-            android:background="@color/colorAccent"
+        <ImageButton
             android:id="@+id/btn_send"
             android:layout_width="wrap_content"
-            android:layout_height="30dp" />
-
-        <Button
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="Edit"
-            android:layout_marginTop="8dp"
-            android:layout_below="@id/btn_send"
             android:layout_marginEnd="8dp"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="4dp"
-            android:background="@color/colorAccent"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/ic_emailoutline"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Send SMS"
+            android:textColor="@android:color/white" />
+
+        <ImageButton
             android:id="@+id/btn_edit"
             android:layout_width="wrap_content"
-            android:layout_height="30dp" />
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/btn_minus"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/ic_dustbin"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Edit"
+            android:textColor="@android:color/white" />
+
+
+        <ImageButton
+            android:id="@+id/btn_plus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tv_credit"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/btn_minus"
+            android:background="@drawable/ic_plus2" />
+
+        <ImageButton
+            android:id="@+id/btn_minus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tv_credit"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@id/tv_number"
+            android:background="@drawable/ic_minus2" />
+
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

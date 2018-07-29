@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,7 +71,7 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
         private TextView tv_product_name;
         private TextView tv_product_quantity;
         private TextView tv_product_mrp;
-        private Button btn_remove, btn_edit;
+        private ImageButton btn_remove, btn_edit;
         private CheckBox cb_product;
 
         public ViewHolder(View itemView) {
@@ -80,18 +81,8 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
             this.tv_product_name = (TextView) itemView.findViewById(R.id.tv_product_name);
             this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
-            this.btn_remove = (Button) itemView.findViewById(R.id.btn_remove);
-            this.btn_edit = (Button) itemView.findViewById(R.id.btn_edit);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        InventoryProduct clickedProduct = inventoryProducts.get(getAdapterPosition());
-                        Toast.makeText(v.getContext(), "Clicked " + clickedProduct.getProductName(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            this.btn_remove = (ImageButton) itemView.findViewById(R.id.btn_remove);
+            this.btn_edit = (ImageButton) itemView.findViewById(R.id.btn_edit);
 
             btn_edit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -189,7 +180,7 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
         public void bind(InventoryProduct inventoryProduct) {
 //            UniversalImageLoader.setImage(inventoryProduct.getProductImageUrl(), this.img_product);
             this.tv_product_name.setText(inventoryProduct.getProductName());
-            this.tv_product_mrp.setText("MRP: " + inventoryProduct.getProductMrp());
+            this.tv_product_mrp.setText("\u20B9" + inventoryProduct.getProductMrp());
             this.tv_product_quantity.setText("In stock: " + inventoryProduct.getProductQuantity());
         }
     }

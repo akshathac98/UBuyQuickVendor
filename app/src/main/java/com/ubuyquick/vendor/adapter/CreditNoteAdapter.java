@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -17,8 +18,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +30,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ubuyquick.vendor.HomeActivity;
 import com.ubuyquick.vendor.R;
+import com.ubuyquick.vendor.auth.LoginActivity;
 import com.ubuyquick.vendor.model.Credit;
+import com.ubuyquick.vendor.model.CreditNote;
 import com.ubuyquick.vendor.utils.MultiChoiceHelper;
 
 import java.util.ArrayList;
@@ -45,8 +51,8 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
     private FirebaseFirestore db;
 
     private Context context;
-    private List<Credit> credits;
-    private List<Credit> creditsFiltered;
+    private List<CreditNote> creditNotes;
+    private List<CreditNote> creditNotesFiltered;
 
     private String shop_id;
 
@@ -55,12 +61,12 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
         db = FirebaseFirestore.getInstance();
         this.context = context;
         this.shop_id = shop_id;
-        credits = new ArrayList<>();
-        creditsFiltered = new ArrayList<>();
+        creditNotes = new ArrayList<>();
+        creditNotesFiltered = new ArrayList<>();
     }
 
-    public void setCredits(List<Credit> credits) {
-        this.credits = credits;
+    public void setCreditNotes(List<CreditNote> creditNotes) {
+        this.creditNotes = creditNotes;
         notifyDataSetChanged();
     }
 
@@ -69,9 +75,7 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
         private TextView tv_mobile;
         private TextView tv_credit;
 
-        private Button btn_plus;
-        private Button btn_minus;
-        private Button btn_clear;
+        private ImageButton btn_clear;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -79,9 +83,8 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
             this.tv_customer_name = (TextView) itemView.findViewById(R.id.tv_name);
             this.tv_mobile = (TextView) itemView.findViewById(R.id.tv_number);
             this.tv_credit = (TextView) itemView.findViewById(R.id.tv_credit);
-            this.btn_clear = (Button) itemView.findViewById(R.id.btn_clear);
-            this.btn_minus = (Button) itemView.findViewById(R.id.btn_minus);
-            this.btn_plus = (Button) itemView.findViewById(R.id.btn_plus);
+            this.btn_clear = (ImageButton) itemView.findViewById(R.id.btn_clear);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -90,58 +93,39 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
                 }
             });
 
-        }
-
-        public void bind(final Credit credit) {
-            this.tv_customer_name.setText(credit.getCustomerName());
-            this.tv_mobile.setText(credit.getCustomerMobile());
-            this.tv_credit.setText("\u20B9" + credit.getCredit());
-
-            btn_plus.setOnClickListener(new View.OnClickListener() {
+            this.btn_clear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-                    View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_credit, null, false);
-                    final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
-                    final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
-                    final TextInputEditText balance = (TextInputEditText) viewInflated.findViewById(R.id.et_balance);
-
-                    Credit credit1 = credits.get(getAdapterPosition());
-                    name.setText(credit1.getCustomerName());
-                    number.setText(credit1.getCustomerMobile());
-                    balance.setText(credit1.getCredit() + "");
-
-                    builder.setTitle("Enter credit holder info:");
-                    builder.setView(viewInflated)
-                            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    builder.setMessage("Delete Credit Note?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    if (TextUtils.isEmpty(name.getText().toString()) || TextUtils.isEmpty(number.getText().toString()) || TextUtils.isEmpty(balance.getText().toString()))
-                                        Toast.makeText(context, "Please check your info", Toast.LENGTH_SHORT).show();
-                                    else {
-                                        Map<String, Object> creditInfo = new HashMap<>();
-                                        creditInfo.put("name", name.getText().toString());
-                                        creditInfo.put("number", number.getText().toString());
-                                        creditInfo.put("balance", Double.parseDouble(balance.getText().toString()));
-
-                                        Credit credit2 = credits.get(getAdapterPosition());
-                                        credit2.setCustomerName(name.getText().toString());
-                                        credit2.setCustomerMobile(number.getText().toString());
-                                        credit2.setCredit(Double.parseDouble(balance.getText().toString()));
-                                        notifyItemChanged(getAdapterPosition());
-
-                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
-                                                .document(shop_id).collection("credits").document(credits.get(getAdapterPosition()).getCustomerId())
-                                                .set(creditInfo);
-                                        Toast.makeText(context, "Saved credit holder info.", Toast.LENGTH_SHORT).show();
-                                    }
+                                    Map<String, Object> info = new HashMap<>();
+                                    info.put("cleared", true);
+                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    .collection("shops").document(shop_id).collection("credit_notes")
+                                    .document(creditNotes.get(getAdapterPosition()).getId()).update(info);
+                                    creditNotes.remove(getAdapterPosition());
+                                    notifyItemRemoved(getAdapterPosition());
                                 }
                             })
-                            .setNegativeButton("Cancel", null);
-                    builder.show();
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            }).show();
                 }
             });
+
+        }
+
+        public void bind(final CreditNote creditNote) {
+            this.tv_customer_name.setText(creditNote.getCustomerName());
+            this.tv_mobile.setText(creditNote.getCustomerMobile());
+            this.tv_credit.setText("\u20B9" + creditNote.getCredit());
+
         }
     }
 
@@ -152,27 +136,27 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
             protected FilterResults performFiltering(CharSequence constraint) {
                 String charString = constraint.toString();
                 if (charString.isEmpty()) {
-                    creditsFiltered = credits;
+                    creditNotesFiltered = creditNotes;
                 } else {
-                    List<Credit> filteredCredits = new ArrayList<>();
-                    for (Credit credit : credits) {
-                        if (credit.getCustomerName().toLowerCase().contains(charString.toLowerCase()) || credit.getCustomerMobile().contains(constraint)) {
-                            filteredCredits.add(credit);
+                    List<CreditNote> filteredCredits = new ArrayList<>();
+                    for (CreditNote creditNote : creditNotes) {
+                        if (creditNote.getCustomerName().toLowerCase().contains(charString.toLowerCase()) || creditNote.getCustomerMobile().contains(constraint)) {
+                            filteredCredits.add(creditNote);
                         }
                     }
 
-                    creditsFiltered = filteredCredits;
+                    creditNotesFiltered = filteredCredits;
 
                 }
 
                 FilterResults filterResults = new FilterResults();
-                filterResults.values = creditsFiltered;
+                filterResults.values = creditNotesFiltered;
                 return filterResults;
             }
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                creditsFiltered = (ArrayList<Credit>) results.values;
+                creditNotesFiltered = (ArrayList<CreditNote>) results.values;
                 notifyDataSetChanged();
             }
         };
@@ -195,17 +179,17 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(this.context).inflate(R.layout.card_credit, parent, false);
+        View view = LayoutInflater.from(this.context).inflate(R.layout.card_note, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(this.credits.get(position));
+        holder.bind(this.creditNotes.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return credits.size();
+        return creditNotes.size();
     }
 }

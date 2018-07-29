@@ -24,6 +24,7 @@
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/result_tabs"
+                app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
@@ -36,27 +37,27 @@
                     android:id="@+id/tabItem"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New" />
+                    android:text="NEW" />
 
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/tabItem1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Accepted" />
+                    android:text="ACCEPTED" />
 
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/tabItem2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rejected" />
+                    android:text="CANCELLED" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/tabItem3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Delivered" />
+                    android:text="DELIVERED" />
 
             </android.support.design.widget.TabLayout>
         </android.support.design.widget.AppBarLayout>
