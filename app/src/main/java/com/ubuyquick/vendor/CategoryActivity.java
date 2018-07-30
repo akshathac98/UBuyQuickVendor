@@ -41,6 +41,7 @@ public class CategoryActivity extends AppCompatActivity {
                 Intent i = new Intent(CategoryActivity.this, SubCategoryActivity.class);
                 i.putExtra("shop_id", shop_id);
                 i.putExtra("category", "dry_fruits");
+                i.putExtra("category_name", list_categories.getItemAtPosition(position).toString());
                 startActivity(i);
             }
         });

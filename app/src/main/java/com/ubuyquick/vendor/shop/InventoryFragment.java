@@ -74,6 +74,7 @@ public class InventoryFragment extends Fragment {
                 Intent i = new Intent(getContext(), InventorySubCategoryActivity.class);
                 i.putExtra("shop_id", shop_id);
                 i.putExtra("category", "dry_fruits");
+                i.putExtra("category_name", list_categories.getItemAtPosition(position).toString());
                 startActivity(i);
             }
         });

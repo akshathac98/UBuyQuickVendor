@@ -26,7 +26,7 @@
 
                 <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/img_shop"
-                    android:layout_width="wrap_content"
+                    android:layout_width="280dp"
                     android:layout_height="150dp"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="8dp"
@@ -315,7 +315,6 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tv_head_slot"
                     android:layout_marginStart="8dp"
-                    android:layout_marginBottom="10dp"
                     android:layout_marginTop="20dp"
                     android:text="Delivery Charge: \u20B932.0"
                     android:textSize="16sp" />
@@ -326,7 +325,6 @@
                     android:layout_height="25dp"
                     android:layout_alignTop="@id/tv_head_charge"
                     android:layout_below="@id/tv_head_slot"
-                    android:layout_marginBottom="10dp"
                     android:layout_marginEnd="20dp"
                     android:layout_alignParentEnd="true"
                     android:background="@drawable/button_rounded"
@@ -339,9 +337,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
-                    android:text="Packing Charge: 28.0"
+                    android:text="Packing Charge: \u20B928.0"
                     android:textSize="16sp" />
 
                 <Button
@@ -349,9 +347,10 @@
                     android:layout_width="80dp"
                     android:layout_height="25dp"
                     android:layout_alignTop="@id/tv_head_package"
-                    android:layout_alignStart="@id/btn_edit_charge"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="20dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_toEndOf="@id/tv_head_area"
+                    android:layout_below="@id/tv_head_charge"
                     android:background="@drawable/button_rounded"
                     android:text="Edit"
                     android:textColor="@android:color/white" />

@@ -157,7 +157,7 @@
                     <TextView
                         android:id="@+id/tv_total"
                         android:layout_below="@id/view1"
-                        android:text="129.0/-"
+                        android:text="\u20B9129.0/-"
                         android:layout_alignStart="@id/tv_available"
                         android:layout_marginTop="5dp"
                         android:textSize="18sp"

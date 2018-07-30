@@ -244,53 +244,43 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                 }
             });
 
-/*
-
-            btn_edit.setOnClickListener(new View.OnClickListener() {
+            tv_credit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
                     View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_credit, null, false);
-                    final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
-                    final TextInputEditText number = (TextInputEditText) viewInflated.findViewById(R.id.et_number);
                     final TextInputEditText balance = (TextInputEditText) viewInflated.findViewById(R.id.et_balance);
 
                     Credit credit1 = credits.get(getAdapterPosition());
-                    name.setText(credit1.getCustomerName());
-                    number.setText(credit1.getCustomerMobile());
                     balance.setText(credit1.getCredit() + "");
 
-                    builder.setTitle("Enter credit holder info:");
+                    builder.setTitle("Credit Balance:");
                     builder.setView(viewInflated)
                             .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    if (TextUtils.isEmpty(name.getText().toString()) || TextUtils.isEmpty(number.getText().toString()) || TextUtils.isEmpty(balance.getText().toString()))
-                                        Toast.makeText(context, "Please check your info", Toast.LENGTH_SHORT).show();
+                                    if (TextUtils.isEmpty(balance.getText().toString()))
+                                        Toast.makeText(context, "Amount can't be empty", Toast.LENGTH_SHORT).show();
                                     else {
                                         Map<String, Object> creditInfo = new HashMap<>();
-                                        creditInfo.put("name", name.getText().toString());
-                                        creditInfo.put("number", number.getText().toString());
                                         creditInfo.put("balance", Double.parseDouble(balance.getText().toString()));
 
                                         Credit credit2 = credits.get(getAdapterPosition());
-                                        credit2.setCustomerName(name.getText().toString());
-                                        credit2.setCustomerMobile(number.getText().toString());
                                         credit2.setCredit(Double.parseDouble(balance.getText().toString()));
                                         notifyItemChanged(getAdapterPosition());
 
                                         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
                                                 .document(shop_id).collection("credits").document(credits.get(getAdapterPosition()).getCustomerId())
                                                 .set(creditInfo);
-                                        Toast.makeText(context, "Saved credit holder info.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "Saved credit balance", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             })
                             .setNegativeButton("Cancel", null);
                     builder.show();
                 }
-            });*/
+            });
         }
     }
 

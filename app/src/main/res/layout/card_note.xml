@@ -87,7 +87,6 @@
             android:text="Clear"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/colorPrimary"
             android:textColor="@android:color/white"
             android:background="@drawable/ic_dustbin"
             android:id="@+id/btn_clear"

@@ -11,12 +11,11 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/et_balance"
+            android:id="@+id/et_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorPrimary"
-            android:hint="Credit Balance"
-            />
+            android:hint="Enter amount" />
 
     </android.support.design.widget.TextInputLayout>
 

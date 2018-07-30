@@ -75,6 +75,7 @@ public class ProfileFragment extends Fragment {
     private String timings_to;
 
     private int LOGIN_MODE;
+    private double delivery_charge = 0.0, packing_charge = 0.0;
     private int manager_count = 0, deliveryagent_count = 0;
 
     private RelativeLayout btn_feedbacks;
@@ -134,8 +135,8 @@ public class ProfileFragment extends Fragment {
         tv_gstin = (TextView) view.findViewById(R.id.tv_gst);
         tv_status = (TextView) view.findViewById(R.id.tv_status);
         tv_quick = (TextView) view.findViewById(R.id.tv_quick);
-        tv_shipping = (TextView) view.findViewById(R.id.tv_delivery_charge);
-        tv_package = (TextView) view.findViewById(R.id.tv_package_charge);
+        tv_shipping = (TextView) view.findViewById(R.id.tv_head_charge);
+        tv_package = (TextView) view.findViewById(R.id.tv_head_package);
 
         btn_feedbacks = (RelativeLayout) view.findViewById(R.id.relLayout1);
         btn_feedbacks.setOnClickListener(new View.OnClickListener() {
@@ -157,6 +158,72 @@ public class ProfileFragment extends Fragment {
         btn_manager = (Button) view.findViewById(R.id.btn_add_manager);
         btn_add_area = (Button) view.findViewById(R.id.btn_add_area);
         btn_add_slot = (Button) view.findViewById(R.id.btn_add_slot);
+        btn_charge = (Button) view.findViewById(R.id.btn_edit_charge);
+        btn_package = (Button) view.findViewById(R.id.btn_edit_package);
+
+        btn_charge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_charge, null, false);
+                final TextInputEditText amount = (TextInputEditText) viewInflated.findViewById(R.id.et_input);
+                amount.setText(delivery_charge + "");
+
+                builder.setTitle("Delivery Charge:");
+                builder.setView(viewInflated);
+                builder.setNegativeButton("Cancel", null);
+                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (amount.getText().toString().isEmpty()) {
+                            Toast.makeText(getContext(), "Field cannot be empty", Toast.LENGTH_SHORT).show();
+                        } else {
+                            delivery_charge = Double.parseDouble(amount.getText().toString());
+                            tv_shipping.setText("Delivery Charge: \u20B9" + delivery_charge);
+                            Map<String, Object> info = new HashMap<>();
+                            info.put("delivery_charges", delivery_charge);
+                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    .collection("shops").document(shop_id).update(info);
+                        }
+                    }
+                });
+
+                builder.show();
+            }
+        });
+
+        btn_package.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_charge, null, false);
+                final TextInputEditText amount = (TextInputEditText) viewInflated.findViewById(R.id.et_input);
+                amount.setText(packing_charge + "");
+
+                builder.setTitle("Packing Charge:");
+                builder.setView(viewInflated);
+                builder.setNegativeButton("Cancel", null);
+                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (amount.getText().toString().isEmpty()) {
+                            Toast.makeText(getContext(), "Field cannot be empty", Toast.LENGTH_SHORT).show();
+                        } else {
+                            packing_charge = Double.parseDouble(amount.getText().toString());
+                            tv_package.setText("Packing Charge: \u20B9" + packing_charge);
+                            Map<String, Object> info = new HashMap<>();
+                            info.put("packing_charges", packing_charge);
+                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    .collection("shops").document(shop_id).update(info);
+                        }
+                    }
+                });
+
+                builder.show();
+            }
+        });
 
         btn_add_slot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,7 +259,8 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
-                builder.setMessage("Confirm Delete Shop?")
+                builder.setTitle("Confirm Delete Shop?")
+                        .setMessage("Note: This action cannot be reversed.")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -215,7 +283,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(final View v) {
 
-                if (deliveryagent_count == 0) {
+                if (false) {
                     View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_name_phone, null, false);
 
                     final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
@@ -303,7 +371,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(final View v) {
 
-                if (manager_count == 0) {
+                if (false) {
                     View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_name_phone, null, false);
 
                     final TextInputEditText name = (TextInputEditText) viewInflated.findViewById(R.id.et_name);
@@ -521,12 +589,17 @@ public class ProfileFragment extends Fragment {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         Map<String, Object> shop = task.getResult().getData();
                         UniversalImageLoader.setImage(image_url, img_shop);
+                        packing_charge = Double.parseDouble(shop.get("packing_charges").toString());
+                        delivery_charge = Double.parseDouble(shop.get("delivery_charges").toString());
                         tv_shop_location.setText(shop.get("shop_address").toString() + ", " + shop.get("shop_address2").toString());
                         tv_shop_name.setText(shop.get("shop_name").toString());
                         tv_gstin.setText(shop.get("shop_gstin").toString());
                         tv_specialization.setText(shop.get("shop_specialization").toString());
                         btn_from.setText(shop.get("shop_timings_from").toString());
                         btn_to.setText(shop.get("shop_timings_to").toString());
+                        tv_package.setText("Packing Charge: \u20B9" + shop.get("packing_charges").toString());
+                        tv_shipping.setText("Delivery Charge: \u20B9" + shop.get("delivery_charges").toString());
+
 //                        tv_shop_timings.setText(shop.get("shop_timings").toString());
 
                         btn_quick_delivery.setChecked(Boolean.parseBoolean(shop.get("quick_delivery").toString()));

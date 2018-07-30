@@ -60,6 +60,7 @@
             <TextView
                 android:id="@+id/tv_inventory"
                 android:layout_marginTop="8dp"
+                android:textColor="@color/colorPrimary"
                 android:text="MY INVENTORY"
                 android:textSize="18sp"
                 android:layout_marginStart="16dp"

@@ -42,7 +42,7 @@ public class AcceptedOrderActivity extends AppCompatActivity {
 
     private String order_id, shop_id;
 
-    private TextView tv_customer, tv_address, tv_order_id, tv_ordered_at, tv_order_total;
+    private TextView tv_customer, tv_agent, tv_address, tv_order_id, tv_ordered_at, tv_order_total, tv_product_count;
     private RecyclerView rv_order_products;
     private OrderProductAdapter orderProductAdapter;
     private List<OrderProduct> orderProducts;
@@ -62,10 +62,12 @@ public class AcceptedOrderActivity extends AppCompatActivity {
 
     private void initializeViews() {
         tv_customer = (TextView) findViewById(R.id.tv_customer);
+        tv_agent = (TextView) findViewById(R.id.tv_agent);
         tv_address = (TextView) findViewById(R.id.tv_address);
         tv_order_id = (TextView) findViewById(R.id.tv_order_id);
         tv_ordered_at = (TextView) findViewById(R.id.tv_ordered_at);
-        tv_order_total = (TextView) findViewById(R.id.tv_order_total);
+        tv_order_total = (TextView) findViewById(R.id.tv_total);
+        tv_product_count = (TextView) findViewById(R.id.tv_product_count2);
 
         btn_delivered = (Button) findViewById(R.id.btn_delivered);
         rv_order_products = (RecyclerView) findViewById(R.id.rv_order_products);
@@ -100,6 +102,7 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            tv_product_count.setText(task.getResult().getDocuments().size() + "");
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> product = document.getData();
                                 orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
@@ -200,6 +203,7 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                             });
 
                             tv_customer.setText(order.get("customer_name").toString());
+                            tv_agent.setText(order.get("delivery_agent_name").toString());
                             tv_address.setText(order.get("delivery_address").toString());
                             tv_order_id.setText(order_id);
                             tv_ordered_at.setText(order.get("ordered_at").toString());

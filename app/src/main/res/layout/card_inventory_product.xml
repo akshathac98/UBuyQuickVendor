@@ -74,7 +74,6 @@
             android:layout_marginBottom="4dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/ic_dustbin"
-            android:backgroundTint="@color/colorPrimary"
             android:text="Remove"
             android:textColor="@android:color/white" />
 

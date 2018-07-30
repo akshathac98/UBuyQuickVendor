@@ -4,6 +4,7 @@
     tools:context="com.ubuyquick.vendor.ShopActivity">
     <item
         android:id="@+id/action_deliver"
+        android:icon="@drawable/ic_map"
         android:orderInCategory="100"
         android:title="Deliver"
         app:showAsAction="always" />

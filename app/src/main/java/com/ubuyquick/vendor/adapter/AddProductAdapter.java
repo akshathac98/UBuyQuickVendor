@@ -73,7 +73,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
         private TextView tv_product_mrp;
         private ImageButton btn_plus;
         private ImageButton btn_minus;
-        private Button btn_add;
+        private ImageButton btn_add;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -83,7 +83,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
             this.tv_product_mrp = (TextView) itemView.findViewById(R.id.tv_product_mrp);
 //            this.btn_minus = (ImageButton) itemView.findViewById(R.id.btn_minus);
 //            this.btn_plus = (ImageButton) itemView.findViewById(R.id.btn_plus);
-            this.btn_add = (Button) itemView.findViewById(R.id.btn_add);
+            this.btn_add = (ImageButton) itemView.findViewById(R.id.btn_add);
         }
 
         public void bind(final AddProduct addProduct) {

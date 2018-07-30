@@ -56,7 +56,7 @@ public class NewProductActivity extends AppCompatActivity {
     private ImageView img_product;
 
     private String[] categories = {"dry_fruits", "Organic Staples"};
-    private String[] quantities = {"Kg", "Ltr", "Ml", "Gms", "Pcs"};
+    private String[] quantities = {"kg", "gm", "ltr", "ml", "pc"};
 
     private Spinner s_categories, s_subcategories, s_quantities;
 
@@ -80,7 +80,6 @@ public class NewProductActivity extends AppCompatActivity {
 
         s_categories = (Spinner) findViewById(R.id.s_categories);
         s_subcategories = (Spinner) findViewById(R.id.s_subcategories);
-        s_quantities = (Spinner) findViewById(R.id.s_quantity);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -98,7 +97,6 @@ public class NewProductActivity extends AppCompatActivity {
         arrayAdapter3.addAll(quantities);
         s_subcategories.setAdapter(arrayAdapter);
         s_categories.setAdapter(arrayAdapter2);
-        s_quantities.setAdapter(arrayAdapter3);
 
         til_product_description = (TextInputLayout) findViewById(R.id.til_product_description);
         til_product_name = (TextInputLayout) findViewById(R.id.til_product_name);

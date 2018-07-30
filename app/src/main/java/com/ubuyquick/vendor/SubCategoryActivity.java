@@ -36,6 +36,7 @@ public class SubCategoryActivity extends AppCompatActivity {
 
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_up);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        this.getSupportActionBar().setTitle(getIntent().getStringExtra("category_name"));
 
         shop_id = getIntent().getStringExtra("shop_id");
         category = getIntent().getStringExtra("category");
@@ -55,6 +56,7 @@ public class SubCategoryActivity extends AppCompatActivity {
                 i.putExtra("shop_id", shop_id);
                 i.putExtra("category", "dry_fruits");
                 i.putExtra("sub_category", sub[position]);
+                i.putExtra("sub_category_name", list_subcategories.getItemAtPosition(position).toString());
                 startActivity(i);
             }
         });

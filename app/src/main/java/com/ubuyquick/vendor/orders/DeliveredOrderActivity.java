@@ -1,12 +1,18 @@
 package com.ubuyquick.vendor.orders;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +39,7 @@ public class DeliveredOrderActivity extends AppCompatActivity {
 
     private String order_id, shop_id;
 
+    private Button btn_assign;
     private TextView tv_customer, tv_address, tv_order_id, tv_ordered_at, tv_order_total;
     private RecyclerView rv_order_products;
     private OrderProductAdapter orderProductAdapter;
@@ -41,7 +48,7 @@ public class DeliveredOrderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cancelled_order);
+        setContentView(R.layout.activity_delivered_order);
 
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_up);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -58,14 +65,20 @@ public class DeliveredOrderActivity extends AppCompatActivity {
         tv_order_total = (TextView) findViewById(R.id.tv_order_total);
 
         rv_order_products = (RecyclerView) findViewById(R.id.rv_order_products);
-    }
 
-    private void initialize() {
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         order_id = getIntent().getStringExtra("ORDER_ID");
         shop_id = getIntent().getStringExtra("shop_id");
+
+        btn_assign = (Button) findViewById(R.id.btn_assign);
+
+
+    }
+
+    private void initialize() {
 
         orderProductAdapter = new OrderProductAdapter(this, shop_id, order_id, "DELIVERED", new Utils.OnItemClick() {
             @Override

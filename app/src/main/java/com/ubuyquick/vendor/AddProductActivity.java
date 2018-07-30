@@ -41,6 +41,7 @@ public class AddProductActivity extends AppCompatActivity {
 
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_up);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        this.getSupportActionBar().setTitle(getIntent().getStringExtra("sub_category_name"));
 
         shop_id = getIntent().getStringExtra("shop_id");
         category = getIntent().getStringExtra("category");

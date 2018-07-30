@@ -35,7 +35,7 @@
         <Button
             android:id="@+id/btn_upload"
             android:layout_width="wrap_content"
-            android:layout_height="31dp"
+            android:layout_height="35dp"
             android:layout_below="@id/tv_product_image"
             android:layout_centerHorizontal="true"
             android:layout_marginEnd="8dp"
@@ -43,177 +43,216 @@
             android:text="Upload"
             android:textSize="10sp" />
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_product_name"
+        <android.support.v7.widget.CardView
+            android:id="@+id/layout_categories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/btn_upload"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp">
+            app:cardCornerRadius="5dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/et_product_name"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorPrimary"
-                android:hint="Product Name"
-                android:textColor="@color/colorTextPrimary" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tv_category"
-            android:text="Select Category"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_below="@id/til_product_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
-        <Spinner
-            android:id="@+id/s_categories"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_below="@id/tv_category"
-            android:layout_marginTop="5dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:dropDownWidth="200dp"
-            android:spinnerMode="dropdown"
-            android:textAlignment="center" />
+                <TextView
+                    android:id="@+id/tv_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/s_categories"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Category"
+                    android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tv_subcategory"
-            android:text="Select Subcategory"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_below="@id/s_categories"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/s_categories"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toEndOf="@id/tv_category"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:dropDownWidth="200dp"
+                    android:spinnerMode="dropdown"
+                    android:textAlignment="center" />
 
-        <Spinner
-            android:id="@+id/s_subcategories"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_below="@id/tv_subcategory"
-            android:layout_marginTop="5dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:dropDownWidth="200dp"
-            android:spinnerMode="dropdown"
-            android:textAlignment="center" />
+                <TextView
+                    android:id="@+id/tv_subcategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/s_subcategories"
+                    android:layout_below="@id/s_categories"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Subcategory"
+                    android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tv_quantity"
-            android:text="Quantity: "
-            android:textSize="20sp"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_below="@id/s_subcategories"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/s_subcategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_below="@id/s_categories"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toEndOf="@id/tv_subcategory"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:dropDownWidth="200dp"
+                    android:spinnerMode="dropdown"
+                    android:textAlignment="center" />
 
-        <Spinner
-            android:id="@+id/s_quantity"
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/layout_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@id/tv_quantity"
-            android:layout_below="@id/s_subcategories"
-            android:layout_marginTop="5dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:dropDownWidth="200dp"
-            android:spinnerMode="dropdown"
-            android:textAlignment="center" />
+            android:layout_below="@id/layout_categories"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_product_stock"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/s_quantity"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/et_product_stock"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:inputType="number"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorPrimary"
-                android:hint="Stock"
-                android:textColor="@color/colorTextPrimary" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_product_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/til_product_stock"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp">
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_product_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/et_product_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorPrimary"
-                android:hint="Product Description"
-                android:textColor="@color/colorTextPrimary" />
-        </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_product_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:hint="Product Name(include quantity)"
+                        android:textColor="@color/colorTextPrimary" />
+                </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_product_discount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/til_product_mrp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp">
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_product_mrp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/til_product_name"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/et_product_discount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorPrimary"
-                android:hint="Product Discount"
-                android:textColor="@color/colorTextPrimary" />
-        </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_product_mrp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:hint="MRP"
+                        android:inputType="number"
+                        android:textColor="@color/colorTextPrimary" />
+                </android.support.design.widget.TextInputLayout>
+<!--
+                <TextView
+                    android:id="@+id/tv_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/til_product_mrp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Quantity: "
+                    android:textSize="18sp" />
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_product_mrp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/til_product_description"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp">
+                <Spinner
+                    android:id="@+id/s_quantity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toEndOf="@id/tv_quantity"
+                    android:layout_below="@id/til_product_mrp"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:dropDownWidth="wrap_content"
+                    android:spinnerMode="dropdown"
+                    android:textAlignment="center" />-->
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/et_product_mrp"
-                android:layout_width="match_parent"
-                android:inputType="numberDecimal"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorPrimary"
-                android:hint="Product MRP"
-                android:textColor="@color/colorTextPrimary" />
-        </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_product_stock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/til_product_mrp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_product_stock"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:hint="Stock"
+                        android:textColor="@color/colorTextPrimary" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_product_discount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_below="@id/til_product_stock"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_product_discount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:hint="Product Discount"
+                        android:textColor="@color/colorTextPrimary" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_product_description"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/til_product_discount"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_product_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:hint="Product Description"
+                        android:inputType="numberDecimal"
+                        android:textColor="@color/colorTextPrimary" />
+                </android.support.design.widget.TextInputLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
 
         <Button
+            android:id="@+id/btn_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_details"
             android:backgroundTint="@color/colorAccent"
             android:text="Add Product"
-            android:textColor="@android:color/white"
-            android:id="@+id/btn_add"
-            android:layout_below="@id/til_product_discount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:textColor="@android:color/white" />
 
     </RelativeLayout>
 
