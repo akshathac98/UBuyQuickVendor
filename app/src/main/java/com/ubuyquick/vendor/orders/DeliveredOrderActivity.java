@@ -1,6 +1,8 @@
 package com.ubuyquick.vendor.orders;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -44,6 +46,8 @@ public class DeliveredOrderActivity extends AppCompatActivity {
     private RecyclerView rv_order_products;
     private OrderProductAdapter orderProductAdapter;
     private List<OrderProduct> orderProducts;
+    private int LOGIN_MODE = 0;
+    private String number;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,16 +70,20 @@ public class DeliveredOrderActivity extends AppCompatActivity {
 
         rv_order_products = (RecyclerView) findViewById(R.id.rv_order_products);
 
-
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         order_id = getIntent().getStringExtra("ORDER_ID");
         shop_id = getIntent().getStringExtra("shop_id");
 
-        btn_assign = (Button) findViewById(R.id.btn_assign);
+        SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
 
-
+        if (LOGIN_MODE == 1) {
+            number = getIntent().getStringExtra("vendor_id");
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
     }
 
     private void initialize() {
@@ -94,7 +102,7 @@ public class DeliveredOrderActivity extends AppCompatActivity {
         orderProducts = new ArrayList<>();
         rv_order_products.setAdapter(orderProductAdapter);
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        db.collection("vendors").document(number)
                 .collection("shops").document(shop_id)
                 .collection("delivered_orders").document(order_id).collection("products")
                 .get()
@@ -113,7 +121,7 @@ public class DeliveredOrderActivity extends AppCompatActivity {
                     }
                 });
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        db.collection("vendors").document(number)
                 .collection("shops").document(shop_id)
                 .collection("delivered_orders").document(order_id)
                 .get()

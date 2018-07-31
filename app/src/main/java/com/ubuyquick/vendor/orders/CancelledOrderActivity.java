@@ -1,5 +1,7 @@
 package com.ubuyquick.vendor.orders;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +40,9 @@ public class CancelledOrderActivity extends AppCompatActivity {
     private OrderProductAdapter orderProductAdapter;
     private List<OrderProduct> orderProducts;
 
+    private int LOGIN_MODE = 0;
+    private String number;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +72,15 @@ public class CancelledOrderActivity extends AppCompatActivity {
         order_id = getIntent().getStringExtra("ORDER_ID");
         shop_id = getIntent().getStringExtra("shop_id");
 
+        SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
+        if (LOGIN_MODE == 1) {
+            number = getIntent().getStringExtra("vendor_id");
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
+
         orderProductAdapter = new OrderProductAdapter(this, shop_id, order_id, "CANCELLED", new Utils.OnItemClick() {
             @Override
             public void onClick(int count) {
@@ -81,7 +95,7 @@ public class CancelledOrderActivity extends AppCompatActivity {
         orderProducts = new ArrayList<>();
         rv_order_products.setAdapter(orderProductAdapter);
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        db.collection("vendors").document(number)
                 .collection("shops").document(shop_id)
                 .collection("cancelled_orders").document(order_id).collection("products")
                 .get()
@@ -100,7 +114,7 @@ public class CancelledOrderActivity extends AppCompatActivity {
                     }
                 });
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        db.collection("vendors").document(number)
                 .collection("shops").document(shop_id)
                 .collection("cancelled_orders").document(order_id)
                 .get()

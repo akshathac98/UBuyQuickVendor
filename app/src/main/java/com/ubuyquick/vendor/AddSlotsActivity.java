@@ -1,6 +1,8 @@
 package com.ubuyquick.vendor;
 
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +39,8 @@ public class AddSlotsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
+    private int LOGIN_MODE = 0;
+
     private String shop_id, from, to;
     private ImageButton btn_add;
     private Button btn_from, btn_to;
@@ -66,6 +70,10 @@ public class AddSlotsActivity extends AppCompatActivity {
         btn_from = (Button) findViewById(R.id.btn_from);
         btn_to = (Button) findViewById(R.id.btn_to);
         et_deliveries = (EditText) findViewById(R.id.et_deliveries);
+
+        SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
 
         btn_from.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,22 +133,40 @@ public class AddSlotsActivity extends AppCompatActivity {
                     slot.put("to", to);
                     slot.put("deliveries", d);
 
-                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                            .collection("shops").document(shop_id).collection("time_slots").add(slot)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            timeSlots.add(new TimeSlot(from + " to " + to, d, documentReference.getId()));
-                            timeSlotAdapter.setTimeSlots(timeSlots);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(AddSlotsActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    if (LOGIN_MODE == 1) {
+                        db.collection("vendors").document(getIntent().getStringExtra("vendor_id"))
+                                .collection("shops").document(shop_id).collection("time_slots").add(slot)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        timeSlots.add(new TimeSlot(from + " to " + to, d, documentReference.getId()));
+                                        timeSlotAdapter.setTimeSlots(timeSlots);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(AddSlotsActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                .collection("shops").document(shop_id).collection("time_slots").add(slot)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        timeSlots.add(new TimeSlot(from + " to " + to, d, documentReference.getId()));
+                                        timeSlotAdapter.setTimeSlots(timeSlots);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(AddSlotsActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
 
+                    }
                     btn_from.setText("FROM");
                     btn_to.setText("TO");
                     et_deliveries.setText("");

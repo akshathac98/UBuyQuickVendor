@@ -64,7 +64,7 @@ public class ProfileFragment extends Fragment {
     private EditText input;
     private TextView tv_shop_name, tv_shop_location, tv_shop_timings, tv_specialization, tv_gstin;
     private TextView tv_package, tv_shipping;
-    private TextView tv_status, tv_quick;
+    private TextView tv_status, tv_quick, tv_manager, tv_delivery;
 
     private String vendor_number;
     private String shop_id;
@@ -111,7 +111,7 @@ public class ProfileFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         ImageLoader.getInstance().init(new UniversalImageLoader(getContext()).getConfig());
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        db.collection("vendors").document(vendor_id)
                 .collection("shops").document(shop_id).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -135,6 +135,8 @@ public class ProfileFragment extends Fragment {
         tv_gstin = (TextView) view.findViewById(R.id.tv_gst);
         tv_status = (TextView) view.findViewById(R.id.tv_status);
         tv_quick = (TextView) view.findViewById(R.id.tv_quick);
+        tv_manager = (TextView) view.findViewById(R.id.tv_head_manager);
+        tv_delivery = (TextView) view.findViewById(R.id.tv_head_agent);
         tv_shipping = (TextView) view.findViewById(R.id.tv_head_charge);
         tv_package = (TextView) view.findViewById(R.id.tv_head_package);
 
@@ -183,8 +185,15 @@ public class ProfileFragment extends Fragment {
                             tv_shipping.setText("Delivery Charge: \u20B9" + delivery_charge);
                             Map<String, Object> info = new HashMap<>();
                             info.put("delivery_charges", delivery_charge);
-                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                    .collection("shops").document(shop_id).update(info);
+                            if (LOGIN_MODE == 1) {
+                                db.collection("vendors").document(vendor_id)
+                                        .collection("shops").document(shop_id).update(info);
+                            } else if (LOGIN_MODE == 2) {
+
+                            } else {
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).update(info);
+                            }
                         }
                     }
                 });
@@ -215,8 +224,15 @@ public class ProfileFragment extends Fragment {
                             tv_package.setText("Packing Charge: \u20B9" + packing_charge);
                             Map<String, Object> info = new HashMap<>();
                             info.put("packing_charges", packing_charge);
-                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                    .collection("shops").document(shop_id).update(info);
+                            if (LOGIN_MODE == 1) {
+                                db.collection("vendors").document(vendor_id)
+                                        .collection("shops").document(shop_id).update(info);
+                            } else if (LOGIN_MODE == 2) {
+
+                            } else {
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).update(info);
+                            }
                         }
                     }
                 });
@@ -230,6 +246,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), AddSlotsActivity.class);
                 i.putExtra("shop_id", shop_id);
+                i.putExtra("vendor_id", vendor_number);
                 startActivity(i);
             }
         });
@@ -249,9 +266,12 @@ public class ProfileFragment extends Fragment {
         LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
 
         if (LOGIN_MODE == 1) {
+            tv_manager.setVisibility(View.GONE);
             btn_manager.setVisibility(View.GONE);
+            btn_delete_shop.setVisibility(View.GONE);
         } else if (LOGIN_MODE == 2) {
             btn_manager.setVisibility(View.GONE);
+            btn_delete_shop.setVisibility(View.GONE);
             btn_delivery_agent.setVisibility(View.GONE);
         }
 
@@ -467,6 +487,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), EditShopProfileActivity.class);
                 i.putExtra("shop_id", shop_id);
+                i.putExtra("vendor_id", vendor_id);
                 startActivity(i);
             }
         });
@@ -478,13 +499,25 @@ public class ProfileFragment extends Fragment {
                 if (isChecked) {
                     tv_quick.setText("On");
                     shop.put("quick_delivery", true);
-                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                            .collection("shops").document(shop_id).update(shop);
+                    if (LOGIN_MODE == 1) {
+                        db.collection("vendors").document(vendor_id)
+                                .collection("shops").document(shop_id).update(shop);
+                    } else {
+                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                .collection("shops").document(shop_id).update(shop);
+                    }
+
                 } else {
                     tv_quick.setText("Off");
                     shop.put("quick_delivery", false);
-                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                            .collection("shops").document(shop_id).update(shop);
+                    if (LOGIN_MODE == 1) {
+                        db.collection("vendors").document(vendor_id)
+                                .collection("shops").document(shop_id).update(shop);
+                    } else {
+                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                .collection("shops").document(shop_id).update(shop);
+                    }
+
                 }
             }
         });
@@ -568,13 +601,24 @@ public class ProfileFragment extends Fragment {
                 if (isChecked) {
                     tv_status.setText("Online");
                     shop.put("shop_status", true);
-                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                            .collection("shops").document(shop_id).update(shop);
+                    if (LOGIN_MODE == 1) {
+                        db.collection("vendors").document(vendor_id)
+                                .collection("shops").document(shop_id).update(shop);
+                    } else {
+                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                .collection("shops").document(shop_id).update(shop);
+                    }
+
                 } else {
                     tv_status.setText("Offline");
                     shop.put("shop_status", false);
-                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                            .collection("shops").document(shop_id).update(shop);
+                    if (LOGIN_MODE == 1) {
+                        db.collection("vendors").document(vendor_id)
+                                .collection("shops").document(shop_id).update(shop);
+                    } else {
+                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                .collection("shops").document(shop_id).update(shop);
+                    }
                 }
             }
         });
@@ -582,7 +626,7 @@ public class ProfileFragment extends Fragment {
 
     private void initialize() {
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        db.collection("vendors").document(vendor_id)
                 .collection("shops").document(shop_id).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override

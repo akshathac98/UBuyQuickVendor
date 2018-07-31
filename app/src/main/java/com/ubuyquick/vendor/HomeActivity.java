@@ -59,14 +59,17 @@ public class HomeActivity extends AppCompatActivity
 
     private int LOGIN_MODE;
     private String not_available = "NA";
-    private TextView tv_email, tv_name, tv_phone, tv_aadhar, tv_pan, tv_verified, tv_status;
+    private TextView tv_email, tv_vendor_email, tv_vendor_aadhar, tv_name, tv_phone, tv_aadhar, tv_pan, tv_verified, tv_status;
     private Button btn_logout, btn_edit_profile, btn_add_shop;
+    private View view;
     private CircleImageView img_vendor;
     private RecyclerView rv_shops;
     private ShopAdapter shopAdapter;
     private List<Shop> shops;
 
     private String vendor_id;
+    private String shop;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,40 +112,78 @@ public class HomeActivity extends AppCompatActivity
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    shops.add(new Shop(document.get("image_url").toString(),
-                                            document.get("shop_name").toString(),
-                                            true,
-                                            document.get("shop_id").toString(),
-                                            document.get("vendor_id").toString(),
-                                            true));
+                                    shop = document.get("vendor_id").toString();
                                 }
+                                db.collection("vendors").document(shop).collection("shops").whereEqualTo("shop_id", task.getResult().getDocuments().get(0).getData().get("shop_id"))
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                                        shops.add(new Shop(document.get("shop_image_url").toString(),
+                                                                document.get("shop_name").toString(),
+                                                                Boolean.parseBoolean(document.get("shop_status").toString()),
+                                                                document.get("shop_id").toString(), shop,
+                                                                Boolean.parseBoolean(document.get("quick_delivery").toString())));
+                                                    }
+                                                    shopAdapter.setShops(shops);
+                                                } else {
+                                                    Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
                                 shopAdapter.setShops(shops);
                             } else {
                                 Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
+            tv_vendor_email.setVisibility(View.GONE);
+            tv_email.setVisibility(View.GONE);
+            tv_vendor_aadhar.setVisibility(View.GONE);
+            tv_aadhar.setVisibility(View.GONE);
+            view.setVisibility(View.GONE);
         } else {
-            db.collection("users").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+            db.collection("delivery_agents").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    shops.add(new Shop(document.get("image_url").toString(),
-                                            document.get("shop_name").toString(),
-                                            Boolean.parseBoolean(document.get("shop_status").toString()),
-                                            document.get("shop_id").toString(),
-                                            document.get("vendor_id").toString(),
-                                            Boolean.parseBoolean(document.get("quick_delivery").toString())));
+                                    shop = document.get("vendor_id").toString();
                                 }
+                                db.collection("vendors").document(shop).collection("shops").whereEqualTo("shop_id", task.getResult().getDocuments().get(0).getData().get("shop_id"))
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                                        shops.add(new Shop(document.get("shop_image_url").toString(),
+                                                                document.get("shop_name").toString(),
+                                                                Boolean.parseBoolean(document.get("shop_status").toString()),
+                                                                document.get("shop_id").toString(), shop,
+                                                                Boolean.parseBoolean(document.get("quick_delivery").toString())));
+                                                    }
+                                                    shopAdapter.setShops(shops);
+                                                } else {
+                                                    Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
                                 shopAdapter.setShops(shops);
                             } else {
                                 Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
+            tv_vendor_email.setVisibility(View.GONE);
+            tv_email.setVisibility(View.GONE);
+            tv_vendor_aadhar.setVisibility(View.GONE);
+            tv_aadhar.setVisibility(View.GONE);
+            view.setVisibility(View.GONE);
         }
 
     }
@@ -186,15 +227,26 @@ public class HomeActivity extends AppCompatActivity
                 }
             });
         } else if (LOGIN_MODE == 1) {
+            vendorRef = db.collection("managers").document(mAuth.getCurrentUser().getPhoneNumber().substring(3));
+            vendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            tv_name.setText(document.getData().get("name").toString());
+                        }
+                    }
+                }
+            });
             tv_email.setText(not_available);
-            tv_name.setText(not_available);
-            tv_phone.setText(not_available);
+            tv_phone.setText(mAuth.getCurrentUser().getPhoneNumber().substring(3));
             tv_aadhar.setText(not_available);
-            tv_verified.setText("Logged in as Manager");
+            tv_verified.setText("Manager");
         } else {
             tv_email.setText(not_available);
             tv_name.setText(not_available);
-            tv_phone.setText(not_available);
+            tv_phone.setText(mAuth.getCurrentUser().getPhoneNumber().substring(3));
             tv_aadhar.setText(not_available);
             tv_verified.setText("Delivery Agent");
         }
@@ -247,8 +299,11 @@ public class HomeActivity extends AppCompatActivity
 
         View header = navigationView.getHeaderView(0);
         tv_aadhar = (TextView) header.findViewById(R.id.tv_aadhar);
+        tv_vendor_aadhar = (TextView) header.findViewById(R.id.tv_vendor_aadhar);
         tv_name = (TextView) header.findViewById(R.id.tv_vendor_name);
         tv_email = (TextView) header.findViewById(R.id.tv_email);
+        view = (View) header.findViewById(R.id.view);
+        tv_vendor_email = (TextView) header.findViewById(R.id.tv_vendor_email);
         tv_phone = (TextView) header.findViewById(R.id.tv_phone);
         tv_verified = (TextView) header.findViewById(R.id.tv_verified);
         img_vendor = (CircleImageView) header.findViewById(R.id.img_vendor);

@@ -3,19 +3,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_shops"
-            android:icon="@drawable/ic_nav_shop"
-            android:title="MY SHOPS" />
-        <item
-            android:id="@+id/nav_managers"
-            android:icon="@drawable/ic_nav_manager"
-            android:title="MY MANAGERS" />
-        <item
-            android:id="@+id/nav_delivery_agents"
-            android:icon="@drawable/ic_nav_delivery_agent"
-            android:title="MY DELIVERY AGENTS" />
-    </group>
-
 </menu>

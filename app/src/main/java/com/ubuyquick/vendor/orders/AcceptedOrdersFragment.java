@@ -1,5 +1,7 @@
 package com.ubuyquick.vendor.orders;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,6 +44,8 @@ public class AcceptedOrdersFragment extends Fragment {
     private AcceptedOrderAdapter acceptedOrderAdapter;
     private List<AcceptedOrder> acceptedOrders;
 
+    private int LOGIN_MODE = 0;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,36 +59,73 @@ public class AcceptedOrdersFragment extends Fragment {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         orderList = (RecyclerView) view.findViewById(R.id.rv_orders);
-        acceptedOrderAdapter = new AcceptedOrderAdapter(view.getContext(), getArguments().getString("shop_id"));
+        acceptedOrderAdapter = new AcceptedOrderAdapter(view.getContext(), getArguments().getString("shop_id"), getArguments()
+                .getString("vendor_id"));
         orderList.setAdapter(acceptedOrderAdapter);
         acceptedOrders = new ArrayList<>();
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
-                .document(getArguments().getString("shop_id")).collection("accepted_orders").orderBy("order_id", Query.Direction.DESCENDING)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            if (task.getResult().getDocuments().size() > 0) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                    Map<String, Object> order = document.getData();
-                                    acceptedOrders.add(new AcceptedOrder(order.get("order_id").toString(), order.get("customer_name").toString()
-                                            , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString()));
+        SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
+        if (LOGIN_MODE == 1) {
+
+            db.collection("vendors").document(getArguments().getString("vendor_id")).collection("shops")
+                    .document(getArguments().getString("shop_id")).collection("accepted_orders").orderBy("order_id", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult().getDocuments().size() > 0) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Log.d(TAG, document.getId() + " => " + document.getData());
+                                        Map<String, Object> order = document.getData();
+                                        acceptedOrders.add(new AcceptedOrder(order.get("order_id").toString(), order.get("customer_name").toString()
+                                                , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString()));
+                                    }
+                                    acceptedOrderAdapter.setAcceptedOrders(acceptedOrders);
+                                } else {
+                                    TextView no_orders = new TextView(getContext());
+                                    no_orders.setLayoutParams(layoutParams);
+                                    no_orders.setText("You haven't accepted any orders.");
+                                    relativeLayout.addView(no_orders);
                                 }
-                                acceptedOrderAdapter.setAcceptedOrders(acceptedOrders);
                             } else {
-                                TextView no_orders = new TextView(getContext());
-                                no_orders.setLayoutParams(layoutParams);
-                                no_orders.setText("You haven't accepted any orders.");
-                                relativeLayout.addView(no_orders);
+                                Log.d(TAG, "onComplete: error getting documents: " + task.getException());
                             }
-                        } else {
-                            Log.d(TAG, "onComplete: error getting documents: " + task.getException());
                         }
-                    }
-                });
+                    });
+
+        } else {
+
+
+            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                    .document(getArguments().getString("shop_id")).collection("accepted_orders").orderBy("order_id", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult().getDocuments().size() > 0) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Log.d(TAG, document.getId() + " => " + document.getData());
+                                        Map<String, Object> order = document.getData();
+                                        acceptedOrders.add(new AcceptedOrder(order.get("order_id").toString(), order.get("customer_name").toString()
+                                                , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString()));
+                                    }
+                                    acceptedOrderAdapter.setAcceptedOrders(acceptedOrders);
+                                } else {
+                                    TextView no_orders = new TextView(getContext());
+                                    no_orders.setLayoutParams(layoutParams);
+                                    no_orders.setText("You haven't accepted any orders.");
+                                    relativeLayout.addView(no_orders);
+                                }
+                            } else {
+                                Log.d(TAG, "onComplete: error getting documents: " + task.getException());
+                            }
+                        }
+                    });
+        }
 
         return view;
     }

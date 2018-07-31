@@ -1,5 +1,7 @@
 package com.ubuyquick.vendor.orders;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,6 +44,9 @@ public class DeliveredOrdersFragment extends Fragment {
     private RecyclerView orderList;
     private DeliveredOrderAdapter deliveredOrderAdapter;
     private List<DeliveredOrder> deliveredOrders;
+    
+    private int LOGIN_MODE = 0;
+    private String number;
 
     @Nullable
     @Override
@@ -57,11 +62,21 @@ public class DeliveredOrdersFragment extends Fragment {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         orderList = (RecyclerView) view.findViewById(R.id.rv_orders);
-        deliveredOrderAdapter = new DeliveredOrderAdapter(view.getContext(), getArguments().getString("shop_id"));
+        deliveredOrderAdapter = new DeliveredOrderAdapter(view.getContext(), getArguments().getString("shop_id"),
+                getArguments().getString("vendor_id"));
         orderList.setAdapter(deliveredOrderAdapter);
         deliveredOrders = new ArrayList<>();
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
+        if (LOGIN_MODE == 1) {
+            number = getArguments().getString("vendor_id");
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
+
+        db.collection("vendors").document(number)
                 .collection("shops").document(getArguments().getString("shop_id")).collection("delivered_orders")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

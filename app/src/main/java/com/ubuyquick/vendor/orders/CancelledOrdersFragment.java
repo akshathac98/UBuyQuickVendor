@@ -1,5 +1,7 @@
 package com.ubuyquick.vendor.orders;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,6 +43,9 @@ public class CancelledOrdersFragment extends Fragment {
     private CancelledOrderAdapter cancelledOrderAdapter;
     private List<CancelledOrder> cancelledOrders;
 
+    private int LOGIN_MODE = 0;
+    private String number;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,12 +60,22 @@ public class CancelledOrdersFragment extends Fragment {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         orderList = (RecyclerView) view.findViewById(R.id.rv_orders);
-        cancelledOrderAdapter = new CancelledOrderAdapter(view.getContext(), getArguments().getString("shop_id"));
+        cancelledOrderAdapter = new CancelledOrderAdapter(view.getContext(), getArguments().getString("shop_id"),
+                getArguments().getString("vendor_id"));
         orderList.setAdapter(cancelledOrderAdapter);
         cancelledOrders = new ArrayList<>();
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                .collection("shops").document("BHYRAVA_PROVISIONS").collection("cancelled_orders")
+        SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
+        if (LOGIN_MODE == 1) {
+            number = getArguments().getString("vendor_id");
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
+
+        db.collection("vendors").document(number)
+                .collection("shops").document(getArguments().getString("shop_id")).collection("cancelled_orders")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

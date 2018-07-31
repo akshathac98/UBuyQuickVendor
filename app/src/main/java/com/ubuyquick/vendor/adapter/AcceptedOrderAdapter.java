@@ -42,13 +42,14 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
 
     private Context context;
     private List<AcceptedOrder> acceptedOrders;
-    private String shop_id;
+    private String shop_id, vendor_id;
 
-    public AcceptedOrderAdapter(Context context, String shop_id) {
+    public AcceptedOrderAdapter(Context context, String shop_id, String vendor_id) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
         this.shop_id = shop_id;
+        this.vendor_id = vendor_id;
         acceptedOrders = new ArrayList<>();
     }
 
@@ -91,6 +92,7 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
                         Intent i = new Intent(v.getContext(), AcceptedOrderActivity.class);
                         i.putExtra("ORDER_ID", clickedAcceptedOrder.getOrderId());
                         i.putExtra("shop_id", shop_id);
+                        i.putExtra("vendor_id", vendor_id);
                         v.getContext().startActivity(i);
                         ((Activity) v.getContext()).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
                     }

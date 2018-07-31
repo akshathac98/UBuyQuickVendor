@@ -3,8 +3,10 @@ package com.ubuyquick.vendor.shop;
 import android.Manifest;
 import android.app.Activity;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -57,6 +59,7 @@ public class EditShopProfileActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private FirebaseFirestore db;
 
+    private int LOGIN_MODE = 0;
     private Button btn_from, btn_to, btn_location, btn_save_profile;
     private TextView tv_location, tv_delivery_radius, tv_upload;
     private ImageView img_shop;
@@ -81,19 +84,23 @@ public class EditShopProfileActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                .collection("shops").document(getIntent().getStringExtra("shop_id"))
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                Map<String, Object> shop = task.getResult().getData();
-                UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
-                et_shop_name.setText(shop.get("shop_name").toString());
-                et_address.setText(shop.get("shop_address").toString());
-                et_pincode.setText(shop.get("shop_pincode").toString());
-                et_gstin.setText(shop.get("shop_gstin").toString());
-                et_address2.setText(shop.get("shop_address2").toString());
-                et_spec.setText(shop.get("shop_specialization").toString());
+        SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
+        if (LOGIN_MODE == 1) {
+            db.collection("vendors").document(getIntent().getStringExtra("vendor_id"))
+                    .collection("shops").document(getIntent().getStringExtra("shop_id"))
+                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    Map<String, Object> shop = task.getResult().getData();
+                    UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
+                    et_shop_name.setText(shop.get("shop_name").toString());
+                    et_address.setText(shop.get("shop_address").toString());
+                    et_pincode.setText(shop.get("shop_pincode").toString());
+                    et_gstin.setText(shop.get("shop_gstin").toString());
+                    et_address2.setText(shop.get("shop_address2").toString());
+                    et_spec.setText(shop.get("shop_specialization").toString());
 //                timings_from = shop.get("shop_timings").toString().substring(0, 9);
 //                btn_from.setText(timings_from);
 //                timings_to = shop.get("shop_timings").toString().substring(12);
@@ -103,9 +110,39 @@ public class EditShopProfileActivity extends AppCompatActivity {
 //                lat = Double.parseDouble(shop.get("shop_location").toString().split(",")[0]);
 //                lng = Double.parseDouble(shop.get("shop_location").toString().split(",")[1]);
 //                tv_location.setText("Location: " + lat + ", " + lng);
-                tv_upload.setVisibility(View.GONE);
-            }
-        });
+                    tv_upload.setVisibility(View.GONE);
+                }
+            });
+
+        } else {
+
+            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                    .collection("shops").document(getIntent().getStringExtra("shop_id"))
+                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    Map<String, Object> shop = task.getResult().getData();
+                    UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
+                    et_shop_name.setText(shop.get("shop_name").toString());
+                    et_address.setText(shop.get("shop_address").toString());
+                    et_pincode.setText(shop.get("shop_pincode").toString());
+                    et_gstin.setText(shop.get("shop_gstin").toString());
+                    et_address2.setText(shop.get("shop_address2").toString());
+                    et_spec.setText(shop.get("shop_specialization").toString());
+//                timings_from = shop.get("shop_timings").toString().substring(0, 9);
+//                btn_from.setText(timings_from);
+//                timings_to = shop.get("shop_timings").toString().substring(12);
+//                btn_to.setText(timings_to);
+//                radius = Double.parseDouble(shop.get("delivery_radius").toString());
+//                tv_delivery_radius.setText("Delivery radius: " + radius + "mts.");
+//                lat = Double.parseDouble(shop.get("shop_location").toString().split(",")[0]);
+//                lng = Double.parseDouble(shop.get("shop_location").toString().split(",")[1]);
+//                tv_location.setText("Location: " + lat + ", " + lng);
+                    tv_upload.setVisibility(View.GONE);
+                }
+            });
+
+        }
 
         initializeViews();
         initialize();
@@ -168,20 +205,39 @@ public class EditShopProfileActivity extends AppCompatActivity {
                         shop.put("shop_pincode", et_pincode.getText().toString());
                         shop.put("shop_image_url", url);
 
-                        db.collection("vendors").document(mobile_number).collection("shops").document(shop_id).update(shop)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        finish();
-                                        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(EditShopProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                        if (LOGIN_MODE == 1) {
+                            db.collection("vendors").document(getIntent().getStringExtra("vendor_id")).collection("shops").document(shop_id).update(shop)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            finish();
+                                            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(EditShopProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } else {
+
+                            db.collection("vendors").document(mobile_number).collection("shops").document(shop_id).update(shop)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            finish();
+                                            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(EditShopProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

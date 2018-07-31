@@ -1,6 +1,8 @@
 package com.ubuyquick.vendor;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
@@ -49,6 +51,7 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
     private RecyclerView rv_agents;
     private AgentAdapter agentAdapter;
     private Button btn_add;
+    private int LOGIN_MODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,27 +70,51 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
 
         btn_add = (Button) findViewById(R.id.btn_add);
 
+        SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
         rv_agents = (RecyclerView) findViewById(R.id.rv_agents);
         agents = new ArrayList<>();
         agentAdapter = new AgentAdapter(this, shop_id, vendor_number, shop_name, image_url, "DELIVERY_AGENT");
         rv_agents.setAdapter(agentAdapter);
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                .collection("shops").document(shop_id).collection("delivery_agents").get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        List<DocumentSnapshot> documents = task.getResult().getDocuments();
-                        Log.d(TAG, "onComplete: size: " + documents.size());
-                        for (DocumentSnapshot document : documents) {
-                            Log.d(TAG, "onComplete: document: " + document.toString());
-                            Map<String, Object> manager = document.getData();
-                            agents.add(new Agent(manager.get("name").toString(), manager.get("user_id").toString()));
-                        }
-                        agentAdapter.setAgents(agents);
+        if (LOGIN_MODE == 1) {
+            db.collection("vendors").document(vendor_number)
+                    .collection("shops").document(shop_id).collection("delivery_agents").get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                            Log.d(TAG, "onComplete: size: " + documents.size());
+                            for (DocumentSnapshot document : documents) {
+                                Log.d(TAG, "onComplete: document: " + document.toString());
+                                Map<String, Object> manager = document.getData();
+                                agents.add(new Agent(manager.get("name").toString(), manager.get("user_id").toString()));
+                            }
+                            agentAdapter.setAgents(agents);
 
-                    }
-                });
+                        }
+                    });
+        } else {
+            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                    .collection("shops").document(shop_id).collection("delivery_agents").get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                            Log.d(TAG, "onComplete: size: " + documents.size());
+                            for (DocumentSnapshot document : documents) {
+                                Log.d(TAG, "onComplete: document: " + document.toString());
+                                Map<String, Object> manager = document.getData();
+                                agents.add(new Agent(manager.get("name").toString(), manager.get("user_id").toString()));
+                            }
+                            agentAdapter.setAgents(agents);
+
+                        }
+                    });
+
+
+        }
 
 
         btn_add.setOnClickListener(new View.OnClickListener() {
@@ -128,14 +155,27 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
 
                                             Map<String, Object> managerInfo = new HashMap<>();
                                             managerInfo.put("deliveryagent_count", agents.size());
-                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                    .collection("shops").document(shop_id).update(managerInfo);
 
-                                            db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
-                                                    .set(shop);
-                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                    .collection("shops").document(shop_id).collection("delivery_agents")
-                                                    .document(number.getText().toString()).set(agent);
+                                            if (LOGIN_MODE == 1) {
+                                                db.collection("vendors").document(vendor_number)
+                                                        .collection("shops").document(shop_id).update(managerInfo);
+
+                                                db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
+                                                        .set(shop);
+                                                db.collection("vendors").document(vendor_number)
+                                                        .collection("shops").document(shop_id).collection("delivery_agents")
+                                                        .document(number.getText().toString()).set(agent);
+                                            } else {
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).update(managerInfo);
+
+                                                db.collection("delivery_agents").document(number.getText().toString()).collection("shops").document(shop_id)
+                                                        .set(shop);
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).collection("delivery_agents")
+                                                        .document(number.getText().toString()).set(agent);
+                                            }
+
                                         } else {
                                             agents.add(new Agent(name.getText().toString(), number.getText().toString()));
                                             agentAdapter.setAgents(agents);
@@ -154,12 +194,23 @@ public class DeliveryAgentsActivity extends AppCompatActivity {
                                                     });
                                             Map<String, Object> managerInfo = new HashMap<>();
                                             managerInfo.put("deliveryagent_count", agents.size());
-                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                    .collection("shops").document(shop_id).update(managerInfo);
 
-                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                    .collection("shops").document(shop_id).collection("delivery_agents")
-                                                    .document(number.getText().toString()).set(agent);
+                                            if (LOGIN_MODE == 1) {
+                                                db.collection("vendors").document(vendor_number)
+                                                        .collection("shops").document(shop_id).update(managerInfo);
+
+                                                db.collection("vendors").document(vendor_number)
+                                                        .collection("shops").document(shop_id).collection("delivery_agents")
+                                                        .document(number.getText().toString()).set(agent);
+                                            } else {
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).update(managerInfo);
+
+                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                        .collection("shops").document(shop_id).collection("delivery_agents")
+                                                        .document(number.getText().toString()).set(agent);
+                                            }
+
                                         }
                                     }
                                 });
