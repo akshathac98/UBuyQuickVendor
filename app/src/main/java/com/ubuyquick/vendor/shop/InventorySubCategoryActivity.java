@@ -57,6 +57,7 @@ public class InventorySubCategoryActivity extends AppCompatActivity {
                 Intent i = new Intent(InventorySubCategoryActivity.this, InventoryProductsActivity.class);
                 i.putExtra("shop_id", shop_id);
                 i.putExtra("category", "dry_fruits");
+                i.putExtra("vendor_id", getIntent().getStringExtra("vendor_id"));
                 i.putExtra("sub_category", sub[position]);
                 i.putExtra("sub_category_name", list_subcategories.getItemAtPosition(position).toString());
                 startActivity(i);

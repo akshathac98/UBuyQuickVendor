@@ -1,6 +1,7 @@
 package com.ubuyquick.vendor.credits;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,6 +45,8 @@ public class CreditNotesFragment extends Fragment {
     private EditText et_search;
 
     private String shop_id;
+    private int LOGIN_MODE = 0;
+    private String number1;
 
     public CreditNotesFragment() {
         // Required empty public constructor
@@ -65,12 +68,20 @@ public class CreditNotesFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+        if (LOGIN_MODE == 1) {
+            number1 = getArguments().getString("vendor_id");
+        } else {
+            number1 = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
+
         shop_id = getArguments().getString("shop_id");
 
         rv_credits = (RecyclerView) view.findViewById(R.id.rv_credits);
         creditNotes = new ArrayList<>();
         et_search = (EditText) view.findViewById(R.id.et_search);
-        creditNoteAdapter = new CreditNoteAdapter(view.getContext(), shop_id);
+        creditNoteAdapter = new CreditNoteAdapter(view.getContext(), shop_id, getArguments().getString("vendor_id"));
         rv_credits.setAdapter(creditNoteAdapter);
 
         et_search.addTextChangedListener(new TextWatcher() {
@@ -90,7 +101,7 @@ public class CreditNotesFragment extends Fragment {
             }
         });
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+        db.collection("vendors").document(number1).collection("shops")
                 .document(shop_id).collection("credit_notes").whereEqualTo("cleared", false).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {

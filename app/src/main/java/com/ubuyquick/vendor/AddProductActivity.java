@@ -59,7 +59,7 @@ public class AddProductActivity extends AppCompatActivity {
     }
 
     private void initialize() {
-        addProductAdapter = new AddProductAdapter(this, shop_id, category, sub_category);
+        addProductAdapter = new AddProductAdapter(this, shop_id, category, sub_category, getIntent().getStringExtra("vendor_id"));
         addProducts = new ArrayList<>();
         rv_products.setAdapter(addProductAdapter);
 

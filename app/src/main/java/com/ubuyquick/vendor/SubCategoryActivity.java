@@ -54,6 +54,7 @@ public class SubCategoryActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(SubCategoryActivity.this, AddProductActivity.class);
                 i.putExtra("shop_id", shop_id);
+                i.putExtra("vendor_id", getIntent().getStringExtra("vendor_id"));
                 i.putExtra("category", "dry_fruits");
                 i.putExtra("sub_category", sub[position]);
                 i.putExtra("sub_category_name", list_subcategories.getItemAtPosition(position).toString());

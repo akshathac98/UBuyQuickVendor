@@ -2,6 +2,7 @@ package com.ubuyquick.vendor.adapter;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -47,19 +48,31 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
     private String shop_id;
     private String category;
     private String sub_category;
+    private String vendor_id;
+    private int LOGIN_MODE = 0;
+    private String number;
 
     private int existing_quantity = 0;
 
     private Map<String, Object> product;
 
-    public AddProductAdapter(Context context, String shop_id, String category, String sub_category) {
+    public AddProductAdapter(Context context, String shop_id, String category, String sub_category, String vendor_id) {
         this.context = context;
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         addProducts = new ArrayList<>();
         this.shop_id = shop_id;
+        this.vendor_id = vendor_id;
         this.category = category;
         this.sub_category = sub_category;
+
+        SharedPreferences preferences = context.getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+        if (LOGIN_MODE == 1) {
+            number = vendor_id;
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
     }
 
     public void setAddProducts(List<AddProduct> addProducts) {
@@ -99,7 +112,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
                     product.put("image_url", addProduct.getImageUrl());
                     product.put("product_id", addProduct.getProductId());
 
-                    DocumentReference docRef = db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                    DocumentReference docRef = db.collection("vendors").document(number)
                             .collection("shops").document(shop_id).collection("product_categories")
                             .document(category).collection(sub_category).document(addProduct.getProductId());
 
@@ -123,7 +136,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
                                     }
                                 }
 
-                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                db.collection("vendors").document(number)
                                         .collection("shops").document(shop_id).collection("product_categories")
                                         .document(category).collection(sub_category).document(addProduct.getProductId()).set(product)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -136,7 +149,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Vi
                                 product.put("category", category);
                                 product.put("sub_category", sub_category);
 
-                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                db.collection("vendors").document(number)
                                         .collection("shops").document(shop_id).collection("inventory").document(addProduct.getProductId())
                                         .set(product);
                             }

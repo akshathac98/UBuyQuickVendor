@@ -73,6 +73,9 @@ public class ShopActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    private int LOGIN_MODE = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,12 +166,15 @@ public class ShopActivity extends AppCompatActivity {
                     Fragment creditFragment = new CreditFragment();
                     Bundle creditArgs = new Bundle();
                     creditArgs.putString("shop_id", shop_id);
+                    creditArgs.putString("vendor_id", vendor_id);
+                    creditArgs.putString("shop_name", shop_name);
                     creditFragment.setArguments(creditArgs);
                     return creditFragment;
                 case 3:
                     Fragment fragment = new InventoryFragment();
                     Bundle args = new Bundle();
                     args.putString("shop_id", shop_id);
+                    args.putString("vendor_id", vendor_id);
                     fragment.setArguments(args);
                     return fragment;
                 default:

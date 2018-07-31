@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -55,15 +56,26 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
     private List<Credit> credits;
     private List<Credit> creditsFiltered;
 
-    private String shop_id;
+    private String shop_id, vendor_id, number;
+    private int LOGIN_MODE = 0;
 
-    public CreditAdapter(Context context, String shop_id) {
+    public CreditAdapter(Context context, String shop_id, String vendor_id) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
         this.shop_id = shop_id;
+        this.vendor_id = vendor_id;
         credits = new ArrayList<>();
         creditsFiltered = new ArrayList<>();
+
+        SharedPreferences preferences = context.getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+        if (LOGIN_MODE == 1) {
+            number = vendor_id;
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
+
     }
 
     public void setCredits(List<Credit> credits) {
@@ -120,7 +132,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                                             ((Activity) context).requestPermissions(new String[]{android.Manifest.permission.SEND_SMS}, 1);
                                         } else {
                                             final SmsManager smsManager = SmsManager.getDefault();
-                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            db.collection("vendors").document(number)
                                                     .collection("shops").document(shop_id).get()
                                             .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                 @Override
@@ -138,7 +150,6 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                             .show();
                 }
             });
-
 
             btn_plus.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -168,7 +179,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                                         credit1.setCredit(Double.parseDouble(balance.getText().toString()) + credit.getCredit());
                                         notifyItemChanged(getAdapterPosition());
 
-                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                                        db.collection("vendors").document(number).collection("shops")
                                                 .document(shop_id).collection("credits").document(credits.get(getAdapterPosition()).getCustomerId())
                                                 .update(creditInfo);
                                         Toast.makeText(context, "Saved credit holder info.", Toast.LENGTH_SHORT).show();
@@ -208,7 +219,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                                         credit1.setCredit(credit.getCredit() - Double.parseDouble(balance.getText().toString()));
                                         notifyItemChanged(getAdapterPosition());
 
-                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                                        db.collection("vendors").document(number).collection("shops")
                                                 .document(shop_id).collection("credits").document(credits.get(getAdapterPosition()).getCustomerId())
                                                 .update(creditInfo);
                                         Toast.makeText(context, "Saved credit holder info.", Toast.LENGTH_SHORT).show();
@@ -228,7 +239,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    db.collection("vendors").document(number)
                                             .collection("shops").document(shop_id).collection("credits")
                                             .document(credits.get(getAdapterPosition()).getCustomerMobile()).delete();
                                     credits.remove(getAdapterPosition());
@@ -270,7 +281,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                                         credit2.setCredit(Double.parseDouble(balance.getText().toString()));
                                         notifyItemChanged(getAdapterPosition());
 
-                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                                        db.collection("vendors").document(number).collection("shops")
                                                 .document(shop_id).collection("credits").document(credits.get(getAdapterPosition()).getCustomerId())
                                                 .set(creditInfo);
                                         Toast.makeText(context, "Saved credit balance", Toast.LENGTH_SHORT).show();

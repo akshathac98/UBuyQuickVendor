@@ -1,7 +1,9 @@
 package com.ubuyquick.vendor;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -48,6 +50,9 @@ public class NewProductActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private StorageReference storageRef;
 
+    private String number, vendor_id;
+    private int LOGIN_MODE = 0;
+
     private int GALLERY = 1, CAMERA = 2, IMAGE_UPLOAD;
 
     private Button btn_add, btn_upload;
@@ -86,6 +91,14 @@ public class NewProductActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         ImageLoader.getInstance().init(new UniversalImageLoader(this).getConfig());
         shop_id = getIntent().getStringExtra("shop_id");
+
+        SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+        if (LOGIN_MODE == 1) {
+            number = getIntent().getStringExtra("vendor_id");
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
 
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, android.R.id.text1);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -130,7 +143,7 @@ public class NewProductActivity extends AppCompatActivity {
                 til_product_discount.setErrorEnabled(false);
 
                 if (validateForm()) {
-                    storageRef = storage.getReference().child(mAuth.getCurrentUser().getPhoneNumber().substring(3));
+                    storageRef = storage.getReference().child(number);
                     img_product.setDrawingCacheEnabled(true);
 
                     Bitmap bmpProduct = img_product.getDrawingCache();
@@ -158,17 +171,16 @@ public class NewProductActivity extends AppCompatActivity {
                             product.put("product_id", product_id);
                             product.put("product_mrp", Double.valueOf(mrp));
                             product.put("product_quantity", Integer.valueOf(stock));
-                            product.put("quantity", s_quantities.getSelectedItem().toString().toLowerCase().replace(' ', '_'));
                             product.put("image_url", downloadUri);
 
-                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                            db.collection("vendors").document(number)
                                     .collection("shops").document(shop_id).collection("product_categories")
                                     .document(category).collection(sub_category).document(product_id).set(product);
 
                             product.put("category", category);
                             product.put("sub_category", sub_category);
 
-                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                            db.collection("vendors").document(number)
                                     .collection("shops").document(shop_id).collection("inventory").document(product_id)
                                     .set(product);
 

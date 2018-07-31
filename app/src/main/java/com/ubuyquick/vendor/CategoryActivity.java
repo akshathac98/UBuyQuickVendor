@@ -21,7 +21,7 @@ public class CategoryActivity extends AppCompatActivity {
 
     private ListView list_categories;
 
-    private String shop_id;
+    private String shop_id, vendor_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,7 @@ public class CategoryActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(CategoryActivity.this, SubCategoryActivity.class);
                 i.putExtra("shop_id", shop_id);
+                i.putExtra("vendor_id", getIntent().getStringExtra("vendor_id"));
                 i.putExtra("category", "dry_fruits");
                 i.putExtra("category_name", list_categories.getItemAtPosition(position).toString());
                 startActivity(i);

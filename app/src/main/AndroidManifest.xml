@@ -120,8 +120,10 @@
         <activity
             android:name=".shop.AddFromActivity"
             android:label="Add Product" />
-        <activity android:name=".shop.InventoryProductsActivity"
-            android:label="Shop Inventory"></activity>
+        <activity
+            android:name=".shop.InventoryProductsActivity"
+            android:label="Shop Inventory" />
+        <activity android:name=".DeliveryOrdersActivity"></activity>
     </application>
 
 </manifest>

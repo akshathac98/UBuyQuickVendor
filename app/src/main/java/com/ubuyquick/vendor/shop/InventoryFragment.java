@@ -73,6 +73,7 @@ public class InventoryFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getContext(), InventorySubCategoryActivity.class);
                 i.putExtra("shop_id", shop_id);
+                i.putExtra("vendor_id", getArguments().getString("vendor_id"));
                 i.putExtra("category", "dry_fruits");
                 i.putExtra("category_name", list_categories.getItemAtPosition(position).toString());
                 startActivity(i);
@@ -92,6 +93,7 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), AddFromActivity.class);
+                i.putExtra("vendor_id", getArguments().getString("vendor_id"));
                 i.putExtra("shop_id", shop_id);
                 startActivity(i);
             }

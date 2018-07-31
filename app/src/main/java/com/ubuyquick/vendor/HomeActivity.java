@@ -243,9 +243,23 @@ public class HomeActivity extends AppCompatActivity
             tv_phone.setText(mAuth.getCurrentUser().getPhoneNumber().substring(3));
             tv_aadhar.setText(not_available);
             tv_verified.setText("Manager");
+        } else if (LOGIN_MODE == 2) {
+            vendorRef = db.collection("delivery_agents").document(mAuth.getCurrentUser().getPhoneNumber().substring(3));
+            vendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            tv_name.setText(document.getData().get("name").toString());
+                        }
+                    }
+                }
+            });
+            tv_verified.setText("Delivery Agent");
+            tv_phone.setText(mAuth.getCurrentUser().getPhoneNumber().substring(3));
         } else {
             tv_email.setText(not_available);
-            tv_name.setText(not_available);
             tv_phone.setText(mAuth.getCurrentUser().getPhoneNumber().substring(3));
             tv_aadhar.setText(not_available);
             tv_verified.setText("Delivery Agent");
@@ -310,17 +324,24 @@ public class HomeActivity extends AppCompatActivity
         btn_edit_profile = (Button) header.findViewById(R.id.btn_edit_profile);
         btn_logout = (Button) header.findViewById(R.id.btn_logout);
         btn_add_shop = (Button) findViewById(R.id.btn_add_shop);
-        btn_add_shop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(HomeActivity.this, AddShopActivity.class));
-                overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
-            }
-        });
-        tv_status = (TextView) findViewById(R.id.tv_status);
 
         SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", MODE_PRIVATE);
         LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
+        if (LOGIN_MODE > 0) {
+            btn_add_shop.setVisibility(View.GONE);
+        } else {
+
+
+            btn_add_shop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(HomeActivity.this, AddShopActivity.class));
+                    overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                }
+            });
+            tv_status = (TextView) findViewById(R.id.tv_status);
+        }
 
     }
 

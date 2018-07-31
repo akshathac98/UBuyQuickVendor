@@ -1,5 +1,7 @@
 package com.ubuyquick.vendor.shop;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,6 +45,9 @@ public class InventoryProductsActivity extends AppCompatActivity {
     private List<InventoryProduct> inventorySearchProducts;
     private InventoryProductAdapter inventoryProductAdapter;
 
+    private int LOGIN_MODE = 0;
+    private String vendor_id, number;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,13 +58,14 @@ public class InventoryProductsActivity extends AppCompatActivity {
         this.getSupportActionBar().setTitle(getIntent().getStringExtra("sub_category_name"));
 
         shop_id = getIntent().getStringExtra("shop_id");
+        vendor_id = getIntent().getStringExtra("vendor_id");
         category = getIntent().getStringExtra("category");
         sub_category = getIntent().getStringExtra("sub_category");
 
         et_search = findViewById(R.id.et_search);
         btn_search = findViewById(R.id.btn_search);
-        rv_products = (RecyclerView) findViewById(R.id.rv_products) ;
-        inventoryProductAdapter = new InventoryProductAdapter(this, shop_id);
+        rv_products = (RecyclerView) findViewById(R.id.rv_products);
+        inventoryProductAdapter = new InventoryProductAdapter(this, shop_id, vendor_id);
         inventoryProducts = new ArrayList<>();
         inventorySearchProducts = new ArrayList<>();
         rv_products.setAdapter(inventoryProductAdapter);
@@ -67,11 +73,19 @@ public class InventoryProductsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+        if (LOGIN_MODE == 1) {
+            number = vendor_id;
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
+
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String search = et_search.getText().toString();
-                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                db.collection("vendors").document(number)
                         .collection("shops").document(shop_id).collection("inventory")
                         .whereEqualTo("product_name", search).get()
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -118,7 +132,7 @@ public class InventoryProductsActivity extends AppCompatActivity {
 
 
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        db.collection("vendors").document(number)
                 .collection("shops").document(shop_id).collection("inventory").whereEqualTo("sub_category", sub_category)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

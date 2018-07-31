@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -54,15 +55,25 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
     private List<CreditNote> creditNotes;
     private List<CreditNote> creditNotesFiltered;
 
-    private String shop_id;
+    private String shop_id, vendor_id, number;
+    private int LOGIN_MODE = 0;
 
-    public CreditNoteAdapter(Context context, String shop_id) {
+    public CreditNoteAdapter(Context context, String shop_id, String vendor_id) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
         this.shop_id = shop_id;
+        this.vendor_id = vendor_id;
         creditNotes = new ArrayList<>();
         creditNotesFiltered = new ArrayList<>();
+
+        SharedPreferences preferences = context.getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+        if (LOGIN_MODE == 1) {
+            number = vendor_id;
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
     }
 
     public void setCreditNotes(List<CreditNote> creditNotes) {
@@ -103,7 +114,7 @@ public class CreditNoteAdapter extends RecyclerView.Adapter<CreditNoteAdapter.Vi
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     Map<String, Object> info = new HashMap<>();
                                     info.put("cleared", true);
-                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    db.collection("vendors").document(number)
                                     .collection("shops").document(shop_id).collection("credit_notes")
                                     .document(creditNotes.get(getAdapterPosition()).getId()).update(info);
                                     creditNotes.remove(getAdapterPosition());

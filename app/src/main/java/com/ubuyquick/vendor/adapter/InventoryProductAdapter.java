@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.RecyclerView;
@@ -50,14 +51,25 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private String shop_id;
+    private String shop_id, vendor_id;
+    private String number;
+    private int LOGIN_MODE = 0;
 
-    public InventoryProductAdapter(Context context, String shop_id) {
+    public InventoryProductAdapter(Context context, String shop_id, String vendor_id) {
         this.context = context;
         inventoryProducts = new ArrayList<>();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.shop_id = shop_id;
+        this.vendor_id = vendor_id;
+
+        SharedPreferences preferences = context.getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+        if (LOGIN_MODE == 1) {
+            number = vendor_id;
+        } else {
+            number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
 //        ImageLoader.getInstance().init(new UniversalImageLoader(context).getConfig());
     }
 
@@ -114,7 +126,7 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
                                 product.put("product_mrp", Double.parseDouble(price.getText().toString()));
                                 product.put("product_quantity", Integer.parseInt(stock.getText().toString()));
 
-                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                db.collection("vendors").document(number)
                                         .collection("shops").document(shop_id).collection("product_categories")
                                         .document(inventoryProduct.getProductCategory()).collection(inventoryProduct.getProductSubcategory()).document(inventoryProduct.getProductId()).update(product)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -124,7 +136,7 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
                                             }
                                         });
 
-                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                db.collection("vendors").document(number)
                                         .collection("shops").document(shop_id).collection("inventory").document(inventoryProduct.getProductId())
                                         .update(product);
 
@@ -143,14 +155,14 @@ public class InventoryProductAdapter extends RecyclerView.Adapter<InventoryProdu
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                    db.collection("vendors").document(number)
                                             .collection("shops").document(shop_id).collection("inventory")
                                             .document(inventoryProducts.get(getAdapterPosition()).getProductId())
                                             .delete()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            db.collection("vendors").document(number)
                                                     .collection("shops").document(shop_id).collection("product_categories")
                                                     .document(inventoryProducts.get(getAdapterPosition()).getProductCategory())
                                                     .collection(inventoryProducts.get(getAdapterPosition()).getProductSubcategory())

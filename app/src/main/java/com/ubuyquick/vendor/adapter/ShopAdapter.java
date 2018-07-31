@@ -3,6 +3,7 @@ package com.ubuyquick.vendor.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.ubuyquick.vendor.DeliveryOrdersActivity;
 import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.ShopActivity;
 import com.ubuyquick.vendor.model.Shop;
@@ -23,16 +25,21 @@ import com.ubuyquick.vendor.utils.UniversalImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
 
     private static final String TAG = "ShopAdapter";
 
     private Context context;
     private List<Shop> shops;
+    private int LOGIN_MODE = 0;
 
     public ShopAdapter(Context context) {
         this.context = context;
         this.shops = new ArrayList<>();
+        SharedPreferences preferences = context.getSharedPreferences("LOGIN_MODE", MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
         ImageLoader.getInstance().init(new UniversalImageLoader(context).getConfig());
     }
 
@@ -60,14 +67,28 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 public void onClick(View v) {
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                         Shop clickedShop = shops.get(getAdapterPosition());
-                        Intent i = new Intent(v.getContext(), ShopActivity.class);
-                        i.putExtra("shop_id", clickedShop.getShopId());
-                        i.putExtra("shop_name", clickedShop.getShopName());
-                        i.putExtra("vendor_id", clickedShop.getVendorId());
-                        i.putExtra("image_url", clickedShop.getImageUrl());
 
-                        v.getContext().startActivity(i);
-                        ((Activity) context).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                        if (LOGIN_MODE == 2) {
+
+                            Intent i = new Intent(v.getContext(), DeliveryOrdersActivity.class);
+                            i.putExtra("shop_id", clickedShop.getShopId());
+                            i.putExtra("shop_name", clickedShop.getShopName());
+                            i.putExtra("vendor_id", clickedShop.getVendorId());
+                            i.putExtra("image_url", clickedShop.getImageUrl());
+                            v.getContext().startActivity(i);
+                            ((Activity) context).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                        } else {
+
+
+                            Intent i = new Intent(v.getContext(), ShopActivity.class);
+                            i.putExtra("shop_id", clickedShop.getShopId());
+                            i.putExtra("shop_name", clickedShop.getShopName());
+                            i.putExtra("vendor_id", clickedShop.getVendorId());
+                            i.putExtra("image_url", clickedShop.getImageUrl());
+                            v.getContext().startActivity(i);
+                            ((Activity) context).overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                        }
+
                     }
                 }
             });

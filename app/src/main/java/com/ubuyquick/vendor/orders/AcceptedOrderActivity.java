@@ -94,6 +94,8 @@ public class AcceptedOrderActivity extends AppCompatActivity {
 
         if (LOGIN_MODE == 1) {
             number = vendor_id;
+        } else if (LOGIN_MODE == 2) {
+            number = vendor_id;
         } else {
             number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
         }

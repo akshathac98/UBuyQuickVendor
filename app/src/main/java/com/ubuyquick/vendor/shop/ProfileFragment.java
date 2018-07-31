@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,6 +56,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
@@ -91,6 +94,8 @@ public class ProfileFragment extends Fragment {
     private Button btn_from;
     private Switch btn_shop_status;
     private Switch btn_quick_delivery;
+
+    private CardView cv3, cv4, cv5, cv6;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -162,6 +167,32 @@ public class ProfileFragment extends Fragment {
         btn_add_slot = (Button) view.findViewById(R.id.btn_add_slot);
         btn_charge = (Button) view.findViewById(R.id.btn_edit_charge);
         btn_package = (Button) view.findViewById(R.id.btn_edit_package);
+
+        cv3 = (CardView) view.findViewById(R.id.cardView3);
+        cv4 = (CardView) view.findViewById(R.id.cardView4);
+        cv5 = (CardView) view.findViewById(R.id.cardView5);
+        cv6 = (CardView) view.findViewById(R.id.cardView6);
+
+        SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+
+        if (LOGIN_MODE == 2) {
+            cv3.setVisibility(View.GONE);
+            cv4.setVisibility(View.GONE);
+            cv5.setVisibility(View.GONE);
+            cv6.setVisibility(View.GONE);
+            btn_edit_profile.setVisibility(View.GONE);
+        } else {
+            btn_edit_profile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getContext(), EditShopProfileActivity.class);
+                    i.putExtra("shop_id", shop_id);
+                    i.putExtra("vendor_id", vendor_id);
+                    startActivity(i);
+                }
+            });
+        }
 
         btn_charge.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -261,9 +292,6 @@ public class ProfileFragment extends Fragment {
                 startActivity(i);
             }
         });
-
-        SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
-        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
 
         if (LOGIN_MODE == 1) {
             tv_manager.setVisibility(View.GONE);
@@ -478,17 +506,6 @@ public class ProfileFragment extends Fragment {
                     i.putExtra("shop_name", shop_name);
                     startActivity(i);
                 }
-            }
-        });
-
-
-        btn_edit_profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getContext(), EditShopProfileActivity.class);
-                i.putExtra("shop_id", shop_id);
-                i.putExtra("vendor_id", vendor_id);
-                startActivity(i);
             }
         });
 

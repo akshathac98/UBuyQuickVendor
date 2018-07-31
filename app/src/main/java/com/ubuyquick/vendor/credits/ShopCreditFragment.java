@@ -3,6 +3,7 @@ package com.ubuyquick.vendor.credits;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -56,6 +57,8 @@ public class ShopCreditFragment extends Fragment {
     private Button btn_add, btn_message;
 
     private String shop_id;
+    private int LOGIN_MODE = 0;
+    private String number1;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -69,7 +72,8 @@ public class ShopCreditFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public ShopCreditFragment() {
-        // Required empty public constructor
+
+
     }
 
     /**
@@ -97,6 +101,7 @@ public class ShopCreditFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -107,12 +112,19 @@ public class ShopCreditFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        SharedPreferences preferences = getContext().getSharedPreferences("LOGIN_MODE", Context.MODE_PRIVATE);
+        LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
+        if (LOGIN_MODE == 1) {
+            number1 = getArguments().getString("vendor_id");
+        } else {
+            number1 = mAuth.getCurrentUser().getPhoneNumber().substring(3);
+        }
         shop_id = getArguments().getString("shop_id");
 
         rv_credits = (RecyclerView) view.findViewById(R.id.rv_credits);
         credits = new ArrayList<>();
         et_search = (EditText) view.findViewById(R.id.et_search);
-        creditAdapter = new CreditAdapter(view.getContext(), shop_id);
+        creditAdapter = new CreditAdapter(view.getContext(), shop_id, getArguments().getString("vendor_id"));
         rv_credits.setAdapter(creditAdapter);
         btn_add = (Button) view.findViewById(R.id.btn_add);
         btn_message = (Button) view.findViewById(R.id.btn_message);
@@ -134,7 +146,7 @@ public class ShopCreditFragment extends Fragment {
             }
         });
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+        db.collection("vendors").document(number1)
                 .collection("shops").document(shop_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull final Task<DocumentSnapshot> task) {
@@ -157,7 +169,7 @@ public class ShopCreditFragment extends Fragment {
                                         else {
                                             Map<String, Object> msg = new HashMap<>();
                                             msg.put("credit_message", message.getText().toString());
-                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                            db.collection("vendors").document(number1)
                                                     .collection("shops").document(shop_id).update(msg);
                                             Toast.makeText(getContext(), "Credit remainder message saved.", Toast.LENGTH_SHORT).show();
                                         }
@@ -196,7 +208,7 @@ public class ShopCreditFragment extends Fragment {
                                     credits.add(new Credit(number.getText().toString(), name.getText().toString(),
                                             number.getText().toString(), Double.parseDouble(balance.getText().toString())));
                                     creditAdapter.setCredits(credits);
-                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+                                    db.collection("vendors").document(number1).collection("shops")
                                             .document(shop_id).collection("credits").document(number.getText().toString())
                                             .set(credit);
                                     Toast.makeText(getContext(), "Saved credit holder info.", Toast.LENGTH_SHORT).show();
@@ -208,7 +220,7 @@ public class ShopCreditFragment extends Fragment {
             }
         });
 
-        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops")
+        db.collection("vendors").document(number1).collection("shops")
                 .document(shop_id).collection("credits").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -261,6 +273,7 @@ public class ShopCreditFragment extends Fragment {
         mListener = null;
     }
 */
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
