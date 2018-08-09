@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -41,6 +42,7 @@ public class NewOrdersFragment extends Fragment {
     private RecyclerView orderList;
     private NewOrderAdapter newOrderAdapter;
     private List<NewOrder> newOrders;
+    private ProgressBar progressBar;
 
     private int LOGIN_MODE = 0;
 
@@ -57,6 +59,7 @@ public class NewOrdersFragment extends Fragment {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         orderList = (RecyclerView) view.findViewById(R.id.rv_orders);
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
         newOrderAdapter = new NewOrderAdapter(view.getContext(), getArguments().getString("shop_id"));
         orderList.setAdapter(newOrderAdapter);
         newOrders = new ArrayList<>();
@@ -121,6 +124,9 @@ public class NewOrdersFragment extends Fragment {
                     });
         }
 
+        progressBar.setVisibility(View.GONE);
+        orderList.setVisibility(View.VISIBLE);
         return view;
     }
+
 }

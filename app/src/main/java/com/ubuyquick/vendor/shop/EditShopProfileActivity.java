@@ -197,6 +197,7 @@ public class EditShopProfileActivity extends AppCompatActivity {
                         final String shop_id = getIntent().getStringExtra("shop_id");
                         String url = taskSnapshot.getDownloadUrl().toString();
                         Map<String, Object> shop = new HashMap<>();
+                        Map<String, Object> index = new HashMap<>();
                         shop.put("shop_name", et_shop_name.getText().toString());
                         shop.put("shop_address", et_address.getText().toString());
                         shop.put("shop_address2", et_address2.getText().toString());
@@ -205,8 +206,32 @@ public class EditShopProfileActivity extends AppCompatActivity {
                         shop.put("shop_pincode", et_pincode.getText().toString());
                         shop.put("shop_image_url", url);
 
+                        index.put("shop_name", et_shop_name.getText().toString());
+                        index.put("address", et_address.getText().toString());
+                        index.put("image_url", url);
+                        index.put("address2", et_address2.getText().toString());
+                        index.put("shop_specialization", et_spec.getText().toString());
+                        index.put("shop_gstin", et_gstin.getText().toString());
+                        index.put("shop_pincode", et_pincode.getText().toString());
+
+
                         if (LOGIN_MODE == 1) {
                             db.collection("vendors").document(getIntent().getStringExtra("vendor_id")).collection("shops").document(shop_id).update(shop)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            finish();
+                                            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(EditShopProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                            db.collection("shops_index").document(shop_id).update(index)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -236,6 +261,23 @@ public class EditShopProfileActivity extends AppCompatActivity {
                                             Toast.makeText(EditShopProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
+
+                            db.collection("shops_index").document(shop_id).update(index)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            finish();
+                                            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(EditShopProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+
                         }
 
                     }

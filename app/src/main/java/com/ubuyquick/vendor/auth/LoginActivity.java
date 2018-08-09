@@ -98,7 +98,6 @@ public class LoginActivity extends AppCompatActivity {
                     login_mode = login_modes[0];
                     LOGIN_MODE = 0;
                 }
-
             }
         });
 

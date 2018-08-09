@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -95,7 +96,9 @@ public class ProfileFragment extends Fragment {
     private Switch btn_shop_status;
     private Switch btn_quick_delivery;
 
-    private CardView cv3, cv4, cv5, cv6;
+    private CardView cv2, cv3, cv4, cv5, cv6;
+
+    private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -129,7 +132,31 @@ public class ProfileFragment extends Fragment {
         initializeViews();
         initialize();
 
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
+        setVisible();
+
         return view;
+    }
+
+    private void setVisible() {
+        cv2.setVisibility(View.VISIBLE);
+        cv3.setVisibility(View.VISIBLE);
+        cv4.setVisibility(View.VISIBLE);
+        cv5.setVisibility(View.VISIBLE);
+        cv6.setVisibility(View.VISIBLE);
+
+        if (LOGIN_MODE == 1) {
+            tv_manager.setVisibility(View.GONE);
+            btn_manager.setVisibility(View.GONE);
+            btn_delete_shop.setVisibility(View.GONE);
+        } else if (LOGIN_MODE == 2) {
+            btn_manager.setVisibility(View.GONE);
+            btn_delete_shop.setVisibility(View.GONE);
+            btn_delivery_agent.setVisibility(View.GONE);
+        } else {
+            btn_delete_shop.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initializeViews() {
@@ -169,6 +196,7 @@ public class ProfileFragment extends Fragment {
         btn_package = (Button) view.findViewById(R.id.btn_edit_package);
 
         cv3 = (CardView) view.findViewById(R.id.cardView3);
+        cv2 = (CardView) view.findViewById(R.id.cardView2);
         cv4 = (CardView) view.findViewById(R.id.cardView4);
         cv5 = (CardView) view.findViewById(R.id.cardView5);
         cv6 = (CardView) view.findViewById(R.id.cardView6);
@@ -293,16 +321,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        if (LOGIN_MODE == 1) {
-            tv_manager.setVisibility(View.GONE);
-            btn_manager.setVisibility(View.GONE);
-            btn_delete_shop.setVisibility(View.GONE);
-        } else if (LOGIN_MODE == 2) {
-            btn_manager.setVisibility(View.GONE);
-            btn_delete_shop.setVisibility(View.GONE);
-            btn_delivery_agent.setVisibility(View.GONE);
-        }
-
         btn_delete_shop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -314,6 +332,8 @@ public class ProfileFragment extends Fragment {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                         .collection("shops").document(shop_id).delete();
+
+                                db.collection("shops_index").document(shop_id).delete();
                                 Toast.makeText(getContext(), "Deleted shop successfully.", Toast.LENGTH_SHORT).show();
                                 getActivity().finish();
                             }
@@ -519,9 +539,11 @@ public class ProfileFragment extends Fragment {
                     if (LOGIN_MODE == 1) {
                         db.collection("vendors").document(vendor_id)
                                 .collection("shops").document(shop_id).update(shop);
+                        db.collection("shops_index").document(shop_id).update(shop);
                     } else {
                         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                 .collection("shops").document(shop_id).update(shop);
+                        db.collection("shops_index").document(shop_id).update(shop);
                     }
 
                 } else {
@@ -530,9 +552,11 @@ public class ProfileFragment extends Fragment {
                     if (LOGIN_MODE == 1) {
                         db.collection("vendors").document(vendor_id)
                                 .collection("shops").document(shop_id).update(shop);
+                        db.collection("shops_index").document(shop_id).update(shop);
                     } else {
                         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                 .collection("shops").document(shop_id).update(shop);
+                        db.collection("shops_index").document(shop_id).update(shop);
                     }
 
                 }
@@ -621,9 +645,11 @@ public class ProfileFragment extends Fragment {
                     if (LOGIN_MODE == 1) {
                         db.collection("vendors").document(vendor_id)
                                 .collection("shops").document(shop_id).update(shop);
+                        db.collection("shops_index").document(shop_id).update(shop);
                     } else {
                         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                 .collection("shops").document(shop_id).update(shop);
+                        db.collection("shops_index").document(shop_id).update(shop);
                     }
 
                 } else {
@@ -632,9 +658,11 @@ public class ProfileFragment extends Fragment {
                     if (LOGIN_MODE == 1) {
                         db.collection("vendors").document(vendor_id)
                                 .collection("shops").document(shop_id).update(shop);
+                        db.collection("shops_index").document(shop_id).update(shop);
                     } else {
                         db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                 .collection("shops").document(shop_id).update(shop);
+                        db.collection("shops_index").document(shop_id).update(shop);
                     }
                 }
             }
@@ -649,7 +677,7 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         Map<String, Object> shop = task.getResult().getData();
-                        UniversalImageLoader.setImage(image_url, img_shop);
+                        UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
                         packing_charge = Double.parseDouble(shop.get("packing_charges").toString());
                         delivery_charge = Double.parseDouble(shop.get("delivery_charges").toString());
                         tv_shop_location.setText(shop.get("shop_address").toString() + ", " + shop.get("shop_address2").toString());

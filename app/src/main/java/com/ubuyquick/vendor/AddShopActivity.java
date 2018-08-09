@@ -218,6 +218,8 @@ public class AddShopActivity extends AppCompatActivity {
                         shop.put("quick_delivery", false);
                         shop.put("shop_specialization", et_specialization.getText().toString());
                         shop.put("shop_rating", 0.0);
+                        shop.put("packing_charges", 0.0);
+                        shop.put("delivery_charges", 0.0);
                         shop.put("credit_message", "Credit balance pending on UBuyQuick");
                         shop.put("shop_status", true);
                         shop.put("shop_id", shop_id);
@@ -227,13 +229,9 @@ public class AddShopActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Intent i = new Intent(AddShopActivity.this, ShopActivity.class);
-                                        i.putExtra("shop_id", shop_id);
-                                        i.putExtra("shop_name", et_shop_name.getText().toString());
-                                        Toast.makeText(AddShopActivity.this, "Shop added successfully", Toast.LENGTH_SHORT).show();
-                                        startActivity(i);
-                                        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
-                                        finish();
+//                                        Intent i = new Intent(AddShopActivity.this, ShopActivity.class);
+//                                        i.putExtra("shop_id", shop_id);
+//                                        i.putExtra("shop_name", et_shop_name.getText().toString());
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -242,6 +240,14 @@ public class AddShopActivity extends AppCompatActivity {
                                         Toast.makeText(AddShopActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
+
+                        shop.put("vendor", mAuth.getCurrentUser().getPhoneNumber().substring(3));
+                        db.collection("shops_index").document(shop_id).set(shop);
+
+                        Toast.makeText(AddShopActivity.this, "Shop added successfully", Toast.LENGTH_SHORT).show();
+                        finish();
+                        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

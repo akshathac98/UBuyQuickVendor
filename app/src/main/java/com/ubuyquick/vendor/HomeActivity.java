@@ -22,7 +22,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.QuickContactBadge;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +59,8 @@ public class HomeActivity extends AppCompatActivity
 
     private DocumentReference vendorRef;
 
+    private ProgressBar progressBar;
+
     private int LOGIN_MODE;
     private String not_available = "NA";
     private TextView tv_email, tv_vendor_email, tv_vendor_aadhar, tv_name, tv_phone, tv_aadhar, tv_pan, tv_verified, tv_status;
@@ -66,6 +70,8 @@ public class HomeActivity extends AppCompatActivity
     private RecyclerView rv_shops;
     private ShopAdapter shopAdapter;
     private List<Shop> shops;
+    private RelativeLayout relativeLayout;
+    private RelativeLayout.LayoutParams layoutParams;
 
     private String vendor_id;
     private String shop;
@@ -98,7 +104,9 @@ public class HomeActivity extends AppCompatActivity
                                             document.get("shop_id").toString(), mAuth.getCurrentUser().getPhoneNumber().substring(3),
                                             Boolean.parseBoolean(document.get("quick_delivery").toString())));
                                 }
+                                progressBar.setVisibility(View.INVISIBLE);
                                 shopAdapter.setShops(shops);
+                                rv_shops.setVisibility(View.VISIBLE);
                             } else {
                                 Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -114,25 +122,35 @@ public class HomeActivity extends AppCompatActivity
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     shop = document.get("vendor_id").toString();
                                 }
-                                db.collection("vendors").document(shop).collection("shops").whereEqualTo("shop_id", task.getResult().getDocuments().get(0).getData().get("shop_id"))
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                                        shops.add(new Shop(document.get("shop_image_url").toString(),
-                                                                document.get("shop_name").toString(),
-                                                                Boolean.parseBoolean(document.get("shop_status").toString()),
-                                                                document.get("shop_id").toString(), shop,
-                                                                Boolean.parseBoolean(document.get("quick_delivery").toString())));
+                                try {
+                                    db.collection("vendors").document(shop).collection("shops").whereEqualTo("shop_id", task.getResult().getDocuments().get(0).getData().get("shop_id"))
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                                            shops.add(new Shop(document.get("shop_image_url").toString(),
+                                                                    document.get("shop_name").toString(),
+                                                                    Boolean.parseBoolean(document.get("shop_status").toString()),
+                                                                    document.get("shop_id").toString(), shop,
+                                                                    Boolean.parseBoolean(document.get("quick_delivery").toString())));
+                                                        }
+                                                        progressBar.setVisibility(View.INVISIBLE);
+                                                        shopAdapter.setShops(shops);
+                                                        rv_shops.setVisibility(View.VISIBLE);
+                                                    } else {
+                                                        Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                                     }
-                                                    shopAdapter.setShops(shops);
-                                                } else {
-                                                    Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                                 }
-                                            }
-                                        });
+                                            });
+                                } catch (Exception e) {
+                                    e.getLocalizedMessage();
+                                    TextView no_orders = new TextView(HomeActivity.this);
+                                    no_orders.setLayoutParams(layoutParams);
+                                    no_orders.setText("You have no shops to manage.");
+                                    relativeLayout.addView(no_orders);
+                                }
                                 shopAdapter.setShops(shops);
                             } else {
                                 Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -191,6 +209,8 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        rv_shops.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
         loadShopList();
     }
 
@@ -301,6 +321,9 @@ public class HomeActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout);
+        layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -324,6 +347,8 @@ public class HomeActivity extends AppCompatActivity
         btn_edit_profile = (Button) header.findViewById(R.id.btn_edit_profile);
         btn_logout = (Button) header.findViewById(R.id.btn_logout);
         btn_add_shop = (Button) findViewById(R.id.btn_add_shop);
+
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         SharedPreferences preferences = getSharedPreferences("LOGIN_MODE", MODE_PRIVATE);
         LOGIN_MODE = preferences.getInt("LOGIN_MODE", 0);
