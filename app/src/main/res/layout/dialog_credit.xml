@@ -15,8 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorPrimary"
-            android:hint="Name"
-            />
+            android:hint="Name" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -29,8 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorPrimary"
-            android:hint="Number"
-            />
+            android:hint="Number" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -43,8 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorPrimary"
-            android:hint="Credit Balance"
-            />
+            android:hint="Credit Balance" />
 
     </android.support.design.widget.TextInputLayout>
 
