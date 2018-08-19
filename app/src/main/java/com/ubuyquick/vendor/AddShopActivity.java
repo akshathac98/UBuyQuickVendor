@@ -219,6 +219,7 @@ public class AddShopActivity extends AppCompatActivity {
                         shop.put("shop_specialization", et_specialization.getText().toString());
                         shop.put("shop_rating", 0.0);
                         shop.put("packing_charges", 0.0);
+                        shop.put("minimum_order", 0.0);
                         shop.put("delivery_charges", 0.0);
                         shop.put("credit_message", "Credit balance pending on UBuyQuick");
                         shop.put("shop_status", true);

@@ -321,10 +321,32 @@
                     android:textColor="@android:color/white" />
 
                 <TextView
-                    android:id="@+id/tv_head_charge"
+                    android:id="@+id/tv_head_minimum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tv_head_slot"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Minimum Order: \u20B932.0"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/btn_edit_minimum"
+                    android:layout_width="80dp"
+                    android:layout_height="25dp"
+                    android:layout_alignTop="@id/tv_head_minimum"
+                    android:layout_below="@id/tv_head_slot"
+                    android:layout_marginEnd="20dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/button_rounded"
+                    android:text="Edit"
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/tv_head_charge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_head_minimum"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="20dp"
                     android:text="Delivery Charge: \u20B932.0"

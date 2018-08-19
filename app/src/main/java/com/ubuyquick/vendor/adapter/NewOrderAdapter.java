@@ -72,6 +72,8 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
         private TextView tv_address;
         private TextView tv_order_id;
         private TextView tv_ordered_at;
+        private TextView tv_order_date;
+        private TextView tv_product_quantity;
         private Button btn_cancel;
         private Button btn_accept;
 
@@ -82,6 +84,8 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
             this.tv_address = (TextView) itemView.findViewById(R.id.tv_address);
             this.tv_order_id = (TextView) itemView.findViewById(R.id.tv_order_id);
             this.tv_ordered_at = (TextView) itemView.findViewById(R.id.tv_ordered_at);
+            this.tv_order_date = (TextView) itemView.findViewById(R.id.tv_order_date);
+            this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.btn_cancel = (Button) itemView.findViewById(R.id.btn_cancel);
             this.btn_accept = (Button) itemView.findViewById(R.id.btn_accept);
 
@@ -104,7 +108,9 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
             this.tv_customer.setText(newOrder.getCustomerName());
             this.tv_address.setText(newOrder.getAddress());
             this.tv_order_id.setText("Order ID: " + newOrder.getOrderId());
-            this.tv_ordered_at.setText(newOrder.getOrderedAt());
+            this.tv_ordered_at.setText(newOrder.getOrderedAt().substring(0, 17));
+            this.tv_product_quantity.setText(newOrder.getCount() + "");
+            this.tv_order_date.setText(newOrder.getOrderedAt().substring(0, 11));
 
 //            this.btn_cancel.setOnClickListener(new View.OnClickListener() {
 //                @Override

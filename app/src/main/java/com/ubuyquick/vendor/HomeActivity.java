@@ -64,6 +64,7 @@ public class HomeActivity extends AppCompatActivity
     private int LOGIN_MODE;
     private String not_available = "NA";
     private TextView tv_email, tv_vendor_email, tv_vendor_aadhar, tv_name, tv_phone, tv_aadhar, tv_pan, tv_verified, tv_status;
+    private TextView tv_click;
     private Button btn_logout, btn_edit_profile, btn_add_shop;
     private View view;
     private CircleImageView img_vendor;
@@ -97,6 +98,9 @@ public class HomeActivity extends AppCompatActivity
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
+                                if (task.getResult().size() == 0) {
+                                    tv_click.setVisibility(View.VISIBLE);
+                                }
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     shops.add(new Shop(document.get("shop_image_url").toString(),
                                             document.get("shop_name").toString(),
@@ -337,6 +341,7 @@ public class HomeActivity extends AppCompatActivity
         View header = navigationView.getHeaderView(0);
         tv_aadhar = (TextView) header.findViewById(R.id.tv_aadhar);
         tv_vendor_aadhar = (TextView) header.findViewById(R.id.tv_vendor_aadhar);
+        tv_click = (TextView) header.findViewById(R.id.tv_click);
         tv_name = (TextView) header.findViewById(R.id.tv_vendor_name);
         tv_email = (TextView) header.findViewById(R.id.tv_email);
         view = (View) header.findViewById(R.id.view);

@@ -203,7 +203,7 @@ public class NewOrderActivity extends AppCompatActivity {
                             tv_customer.setText(order.get("customer_name").toString());
                             tv_address.setText(order.get("delivery_address").toString());
                             tv_order_id.setText(order_id);
-                            tv_ordered_at.setText(new Date(new java.sql.Timestamp(Long.parseLong(order.get("ordered_at").toString())).getTime()).toString());
+                            tv_ordered_at.setText(new Date(new java.sql.Timestamp(Long.parseLong(order.get("order_id").toString())).getTime()).toString());
 
                             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
                                     .collection("shops").document(shop_id).collection("delivery_agents").get()

@@ -67,7 +67,7 @@ public class ProfileFragment extends Fragment {
     private com.makeramen.roundedimageview.RoundedImageView img_shop;
     private EditText input;
     private TextView tv_shop_name, tv_shop_location, tv_shop_timings, tv_specialization, tv_gstin;
-    private TextView tv_package, tv_shipping;
+    private TextView tv_package, tv_shipping, tv_minimum;
     private TextView tv_status, tv_quick, tv_manager, tv_delivery;
 
     private String vendor_number;
@@ -79,7 +79,7 @@ public class ProfileFragment extends Fragment {
     private String timings_to;
 
     private int LOGIN_MODE;
-    private double delivery_charge = 0.0, packing_charge = 0.0;
+    private double delivery_charge = 0.0, packing_charge = 0.0, minimum_order = 0.0;
     private int manager_count = 0, deliveryagent_count = 0;
 
     private RelativeLayout btn_feedbacks;
@@ -91,6 +91,7 @@ public class ProfileFragment extends Fragment {
     private Button btn_add_slot;
     private Button btn_charge;
     private Button btn_package;
+    private Button btn_minimum;
     private Button btn_to;
     private Button btn_from;
     private Switch btn_shop_status;
@@ -171,6 +172,7 @@ public class ProfileFragment extends Fragment {
         tv_delivery = (TextView) view.findViewById(R.id.tv_head_agent);
         tv_shipping = (TextView) view.findViewById(R.id.tv_head_charge);
         tv_package = (TextView) view.findViewById(R.id.tv_head_package);
+        tv_minimum = (TextView) view.findViewById(R.id.tv_head_minimum);
 
         btn_feedbacks = (RelativeLayout) view.findViewById(R.id.relLayout1);
         btn_feedbacks.setOnClickListener(new View.OnClickListener() {
@@ -194,6 +196,7 @@ public class ProfileFragment extends Fragment {
         btn_add_slot = (Button) view.findViewById(R.id.btn_add_slot);
         btn_charge = (Button) view.findViewById(R.id.btn_edit_charge);
         btn_package = (Button) view.findViewById(R.id.btn_edit_package);
+        btn_minimum = (Button) view.findViewById(R.id.btn_edit_minimum);
 
         cv3 = (CardView) view.findViewById(R.id.cardView3);
         cv2 = (CardView) view.findViewById(R.id.cardView2);
@@ -221,6 +224,47 @@ public class ProfileFragment extends Fragment {
                 }
             });
         }
+
+        btn_minimum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_charge, null, false);
+                final TextInputEditText amount = (TextInputEditText) viewInflated.findViewById(R.id.et_input);
+                amount.setText(minimum_order + "");
+
+                builder.setTitle("Minimum Order:");
+                builder.setView(viewInflated);
+                builder.setNegativeButton("Cancel", null);
+                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (amount.getText().toString().isEmpty()) {
+                            Toast.makeText(getContext(), "Field cannot be empty", Toast.LENGTH_SHORT).show();
+                        } else {
+                            minimum_order = Double.parseDouble(amount.getText().toString());
+                            tv_shipping.setText("Minimum Order: \u20B9" + minimum_order);
+                            Map<String, Object> info = new HashMap<>();
+                            info.put("minimum_order", minimum_order);
+                            if (LOGIN_MODE == 1) {
+                                db.collection("vendors").document(vendor_id)
+                                        .collection("shops").document(shop_id).update(info);
+                                db.collection("shops_index").document(shop_id).update(info);
+                            } else if (LOGIN_MODE == 2) {
+
+                            } else {
+                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                        .collection("shops").document(shop_id).update(info);
+                                db.collection("shops_index").document(shop_id).update(info);
+                            }
+                        }
+                    }
+                });
+
+                builder.show();
+            }
+        });
 
         btn_charge.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -680,6 +724,7 @@ public class ProfileFragment extends Fragment {
                         UniversalImageLoader.setImage(shop.get("shop_image_url").toString(), img_shop);
                         packing_charge = Double.parseDouble(shop.get("packing_charges").toString());
                         delivery_charge = Double.parseDouble(shop.get("delivery_charges").toString());
+                        minimum_order = Double.parseDouble(shop.get("minimum_order").toString());
                         tv_shop_location.setText(shop.get("shop_address").toString() + ", " + shop.get("shop_address2").toString());
                         tv_shop_name.setText(shop.get("shop_name").toString());
                         tv_gstin.setText(shop.get("shop_gstin").toString());
@@ -688,6 +733,7 @@ public class ProfileFragment extends Fragment {
                         btn_to.setText(shop.get("shop_timings_to").toString());
                         tv_package.setText("Packing Charge: \u20B9" + shop.get("packing_charges").toString());
                         tv_shipping.setText("Delivery Charge: \u20B9" + shop.get("delivery_charges").toString());
+                        tv_minimum.setText("Minimum Order: \u20B9" + shop.get("minimum_order").toString());
 
 //                        tv_shop_timings.setText(shop.get("shop_timings").toString());
 
