@@ -179,6 +179,7 @@ public class HomeActivity extends AppCompatActivity
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, "onComplete: number: " + document.get("vendor_id").toString());
                                     shop = document.get("vendor_id").toString();
                                 }
                                 db.collection("vendors").document(shop).collection("shops").whereEqualTo("shop_id", task.getResult().getDocuments().get(0).getData().get("shop_id"))
@@ -188,13 +189,16 @@ public class HomeActivity extends AppCompatActivity
                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                 if (task.isSuccessful()) {
                                                     for (QueryDocumentSnapshot document : task.getResult()) {
+                                                        Log.d(TAG, "onComplete: " + task.getResult().getDocuments().toString());
                                                         shops.add(new Shop(document.get("shop_image_url").toString(),
                                                                 document.get("shop_name").toString(),
                                                                 Boolean.parseBoolean(document.get("shop_status").toString()),
                                                                 document.get("shop_id").toString(), shop,
                                                                 Boolean.parseBoolean(document.get("quick_delivery").toString())));
                                                     }
+                                                    progressBar.setVisibility(View.INVISIBLE);
                                                     shopAdapter.setShops(shops);
+                                                    rv_shops.setVisibility(View.VISIBLE);
                                                 } else {
                                                     Toast.makeText(HomeActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                                 }
