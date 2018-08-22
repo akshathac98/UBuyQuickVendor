@@ -47,20 +47,20 @@ public class AddFromActivity extends AppCompatActivity {
         btn_master.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(AddFromActivity.this, CategoryActivity.class);
-                i.putExtra("shop_id", shop_id);
-                i.putExtra("vendor_id", getIntent().getStringExtra("vendor_id"));
-                startActivity(i);
+//                Intent i = new Intent(AddFromActivity.this, CategoryActivity.class);
+//                i.putExtra("shop_id", shop_id);
+//                i.putExtra("vendor_id", getIntent().getStringExtra("vendor_id"));
+//                startActivity(i);
             }
         });
 
         btn_new.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(AddFromActivity.this, NewProductActivity.class);
-                i.putExtra("vendor_id", getIntent().getStringExtra("vendor_id"));
-                i.putExtra("shop_id", shop_id);
-                startActivity(i);
+//                Intent i = new Intent(AddFromActivity.this, NewProductActivity.class);
+//                i.putExtra("vendor_id", getIntent().getStringExtra("vendor_id"));
+//                i.putExtra("shop_id", shop_id);
+//                startActivity(i);
             }
         });
     }

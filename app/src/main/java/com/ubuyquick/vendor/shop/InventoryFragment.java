@@ -70,6 +70,7 @@ public class InventoryFragment extends Fragment {
         juices.add("Concentrates");
         juices.add("Squash And Sharbat");
         juices.add("Ayurvedic");
+        juices.add("Bottles");
 
         teacoffee = new ArrayList<>();
         teacoffee.add("Tea");
@@ -90,6 +91,8 @@ public class InventoryFragment extends Fragment {
 
         dishwashers = new ArrayList<>();
         dishwashers.add("Dishwashing Bars");
+        dishwashers.add("Dishwashing Gels");
+        dishwashers.add("Scrubbers");
 
         dishwashinggelspowder = new ArrayList<>();
         dishwashinggelspowder.add("Dishwashing Bars");
@@ -120,12 +123,12 @@ public class InventoryFragment extends Fragment {
         bathbody.add("Soaps");
         bathbody.add("Handwash");
         bathbody.add("Sanitizer");
-        bathbody.add("Shampoo");
-        bathbody.add("Conditioner");
 
         haircare = new ArrayList<>();
         haircare.add("Hair Oil And Others");
         haircare.add("Hair Colour");
+        haircare.add("Shampoo");
+        haircare.add("Conditioner");
 
         skincare = new ArrayList<>();
         skincare.add("Body Lotions");
@@ -148,14 +151,15 @@ public class InventoryFragment extends Fragment {
         facecare.add("Face Mask And Bleach");
         facecare.add("Lip Care");
         facecare.add("Face Wipes");
+        facecare.add("Face Cream");
         facecare.add("More Face Products");
 
         femininehygeine = new ArrayList<>();
         femininehygeine.add("Sanitary Care");
         femininehygeine.add("Fem Essentials");
+        femininehygeine.add("Hair Removal");
 
         shavingneeds = new ArrayList<>();
-        shavingneeds.add("Hair Removal");
         shavingneeds.add("Razors");
         shavingneeds.add("Cartridges");
         shavingneeds.add("Pre Shave");
@@ -194,7 +198,10 @@ public class InventoryFragment extends Fragment {
         breakfastcereal.add("Breakfast Bars");
         breakfastcereal.add("Oats");
         breakfastcereal.add("Muesli");
-        breakfastcereal.add("Breakfast Mixes And Butter");
+
+        breakfastmixes = new ArrayList<>();
+        breakfastmixes.add("Mixes");
+        breakfastmixes.add("Batter");
 
         biscuitscookies = new ArrayList<>();
         biscuitscookies.add("Cookies And Cakes");
@@ -213,7 +220,7 @@ public class InventoryFragment extends Fragment {
         chipscrisps.add("Potato Chips");
         chipscrisps.add("Crisps And Puff");
         chipscrisps.add("Tortillas And Nachos");
-        chipscrisps.add("Popcorms");
+        chipscrisps.add("Popcorns");
 
         chocolatecandies = new ArrayList<>();
         chocolatecandies.add("Chocolate Gift Packs");
@@ -262,7 +269,7 @@ public class InventoryFragment extends Fragment {
         bakingdessertitems.add("Baking Ingredients");
 
         babyfood = new ArrayList<>();
-
+        babyfood.add("Baby Food");
 
         diaperswipes = new ArrayList<>();
         diaperswipes.add("Diapers");
@@ -335,6 +342,7 @@ public class InventoryFragment extends Fragment {
         subsubcategories.put("Paneer And Curd", paneercurd);
         subsubcategories.put("Butter And Cheese", buttercheese);
         subsubcategories.put("Breakfast Cereal", breakfastcereal);
+        subsubcategories.put("Breakfast Mixes And Batter", breakfastmixes);
         subsubcategories.put("Biscuits And Cookies", biscuitscookies);
         subsubcategories.put("Namkeen And Snacks", namkeensnacks);
         subsubcategories.put("Chips And Crisps", chipscrisps);
@@ -500,10 +508,10 @@ public class InventoryFragment extends Fragment {
         btn_add_product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), AddFromActivity.class);
-                i.putExtra("vendor_id", getArguments().getString("vendor_id"));
-                i.putExtra("shop_id", shop_id);
-                startActivity(i);
+//                Intent i = new Intent(getContext(), AddFromActivity.class);
+//                i.putExtra("vendor_id", getArguments().getString("vendor_id"));
+//                i.putExtra("shop_id", shop_id);
+//                startActivity(i);
             }
         });
         return view;
@@ -511,6 +519,7 @@ public class InventoryFragment extends Fragment {
 
     private Map<String, ArrayList<String>> subsubcategories;
 
+    private ArrayList<String> breakfastmixes;
     private ArrayList<String> softdrinks;
     private ArrayList<String> juices;
     private ArrayList<String> teacoffee;

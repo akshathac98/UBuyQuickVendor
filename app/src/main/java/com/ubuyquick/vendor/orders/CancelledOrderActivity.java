@@ -107,7 +107,7 @@ public class CancelledOrderActivity extends AppCompatActivity {
                                 Map<String, Object> product = document.getData();
                                 orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
-                                        , product.get("image_url").toString(), Boolean.parseBoolean(product.get("available").toString())));
+                                        , product.get("measure").toString(), Boolean.parseBoolean(product.get("available").toString())));
                             }
                             orderProductAdapter.setOrderProducts(orderProducts);
                         }
