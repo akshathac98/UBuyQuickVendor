@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -59,6 +60,8 @@ public class HomeActivity extends AppCompatActivity
 
     private DocumentReference vendorRef;
 
+    private boolean doubleBackToExitPressedOnce = false;
+
     private ProgressBar progressBar;
 
     private int LOGIN_MODE;
@@ -87,6 +90,8 @@ public class HomeActivity extends AppCompatActivity
         initialize();
 
     }
+
+
 
     private void loadShopList() {
         shops.clear();
@@ -341,7 +346,7 @@ public class HomeActivity extends AppCompatActivity
         View header = navigationView.getHeaderView(0);
         tv_aadhar = (TextView) header.findViewById(R.id.tv_aadhar);
         tv_vendor_aadhar = (TextView) header.findViewById(R.id.tv_vendor_aadhar);
-        tv_click = (TextView) header.findViewById(R.id.tv_click);
+        tv_click = (TextView) findViewById(R.id.tv_click);
         tv_name = (TextView) header.findViewById(R.id.tv_vendor_name);
         tv_email = (TextView) header.findViewById(R.id.tv_email);
         view = (View) header.findViewById(R.id.view);
@@ -380,9 +385,20 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
+            return;
         }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Press again to exit UBuyQuick Seller", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 
     @Override

@@ -78,9 +78,9 @@ public class CreditNotesFragment extends Fragment {
 
         shop_id = getArguments().getString("shop_id");
 
+        et_search = (EditText) view.findViewById(R.id.et_search);
         rv_credits = (RecyclerView) view.findViewById(R.id.rv_credits);
         creditNotes = new ArrayList<>();
-        et_search = (EditText) view.findViewById(R.id.et_search);
         creditNoteAdapter = new CreditNoteAdapter(view.getContext(), shop_id, getArguments().getString("vendor_id"));
         rv_credits.setAdapter(creditNoteAdapter);
 

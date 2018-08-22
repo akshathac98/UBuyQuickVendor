@@ -182,7 +182,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
             }
             this.tv_product_name.setText(orderProduct.getProductName());
             this.tv_product_mrp.setText("\u20B9" + orderProduct.getProductMrp());
-            this.tv_product_quantity.setText(orderProduct.getProductQuantity() + "\nKGS");
+            this.tv_product_quantity.setText(orderProduct.getProductQuantity() + "");
         }
 
     }

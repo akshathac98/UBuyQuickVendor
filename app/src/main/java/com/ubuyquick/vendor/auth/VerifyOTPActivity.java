@@ -95,7 +95,13 @@ public class VerifyOTPActivity extends AppCompatActivity {
         btn_verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, pinView.getText().toString());
+                PhoneAuthCredential credential = null;
+                try {
+                    credential = PhoneAuthProvider.getCredential(mVerificationId, pinView.getText().toString());
+                } catch (Exception e) {
+                    Toast.makeText(VerifyOTPActivity.this, "Something went wrong...", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 mAuth.signInWithCredential(credential)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override

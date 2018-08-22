@@ -57,6 +57,7 @@ public class ShopCreditFragment extends Fragment {
     private Button btn_add, btn_message;
 
     private String shop_id;
+    private String shop_name;
     private int LOGIN_MODE = 0;
     private String number1;
 
@@ -120,11 +121,12 @@ public class ShopCreditFragment extends Fragment {
             number1 = mAuth.getCurrentUser().getPhoneNumber().substring(3);
         }
         shop_id = getArguments().getString("shop_id");
+        shop_name = getArguments().getString("shop_name");
 
         rv_credits = (RecyclerView) view.findViewById(R.id.rv_credits);
         credits = new ArrayList<>();
         et_search = (EditText) view.findViewById(R.id.et_search);
-        creditAdapter = new CreditAdapter(view.getContext(), shop_id, getArguments().getString("vendor_id"));
+        creditAdapter = new CreditAdapter(view.getContext(), shop_id, getArguments().getString("vendor_id"), shop_name);
         rv_credits.setAdapter(creditAdapter);
         btn_add = (Button) view.findViewById(R.id.btn_add);
         btn_message = (Button) view.findViewById(R.id.btn_message);

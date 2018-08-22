@@ -52,7 +52,7 @@ public class OrderFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
+/*
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +96,7 @@ public class OrderFragment extends Fragment {
 
             }
         });
+        */
         return view;
     }
 

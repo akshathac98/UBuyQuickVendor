@@ -51,6 +51,8 @@ public class CancelledOrderAdapter extends RecyclerView.Adapter<CancelledOrderAd
         private TextView tv_address;
         private TextView tv_order_id;
         private TextView tv_ordered_at;
+        private TextView tv_ordered_date;
+        private TextView tv_product_quantity;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -58,7 +60,9 @@ public class CancelledOrderAdapter extends RecyclerView.Adapter<CancelledOrderAd
             this.tv_customer = (TextView) itemView.findViewById(R.id.tv_customer);
             this.tv_address = (TextView) itemView.findViewById(R.id.tv_address);
             this.tv_order_id = (TextView) itemView.findViewById(R.id.tv_order_id);
+            this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.tv_ordered_at = (TextView) itemView.findViewById(R.id.tv_ordered_at);
+            this.tv_ordered_date = (TextView) itemView.findViewById(R.id.tv_order_date);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -80,7 +84,9 @@ public class CancelledOrderAdapter extends RecyclerView.Adapter<CancelledOrderAd
             this.tv_customer.setText(cancelledOrder.getCustomerName());
             this.tv_address.setText(cancelledOrder.getAddress());
             this.tv_order_id.setText("Order ID: " + cancelledOrder.getOrderId());
-            this.tv_ordered_at.setText(cancelledOrder.getOrderedAt());
+            this.tv_ordered_at.setText(cancelledOrder.getOrderedAt().substring(11, 16));
+            this.tv_product_quantity.setText(cancelledOrder.getCount() + "");
+            this.tv_ordered_date.setText(cancelledOrder.getOrderedAt().substring(0, 11));
         }
     }
 

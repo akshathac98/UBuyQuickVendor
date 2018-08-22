@@ -179,10 +179,11 @@ public class NewOrderActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> product = document.getData();
-                                order_total += Double.parseDouble(product.get("mrp").toString());
+                                order_total += Double.parseDouble(product.get("mrp").toString()) *
+                                Double.parseDouble(product.get("quantity").toString());
                                 orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
-                                        , product.get("image_url").toString(), true));
+                                        , "", true));
                             }
                             tv_total.setText("\u20B9" + order_total);
                             tv_products.setText("" + orderProducts.size());
@@ -243,6 +244,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                     acceptedOrder.put("order_id", order.get("order_id").toString());
                                                                     acceptedOrder.put("ordered_at", order.get("ordered_at").toString());
                                                                     acceptedOrder.put("customer_id", order.get("customer_id").toString());
+                                                                    acceptedOrder.put("count", order.get("count").toString());
                                                                     acceptedOrder.put("delivery_address", order.get("delivery_address").toString());
 
                                                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
@@ -339,6 +341,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                                     cancelledOrder.put("order_id", order.get("order_id").toString());
                                                     cancelledOrder.put("ordered_at", order.get("ordered_at").toString());
                                                     cancelledOrder.put("customer_id", order.get("customer_id").toString());
+                                                    cancelledOrder.put("count", order.get("count").toString());
                                                     cancelledOrder.put("delivery_address", order.get("delivery_address").toString());
 
                                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))

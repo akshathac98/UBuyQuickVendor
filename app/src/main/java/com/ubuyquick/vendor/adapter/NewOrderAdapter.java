@@ -108,7 +108,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderAdapter.ViewHo
             this.tv_customer.setText(newOrder.getCustomerName());
             this.tv_address.setText(newOrder.getAddress());
             this.tv_order_id.setText("Order ID: " + newOrder.getOrderId());
-            this.tv_ordered_at.setText(newOrder.getOrderedAt().substring(0, 17));
+            this.tv_ordered_at.setText(newOrder.getOrderedAt().substring(11, 16));
             this.tv_product_quantity.setText(newOrder.getCount() + "");
             this.tv_order_date.setText(newOrder.getOrderedAt().substring(0, 11));
 

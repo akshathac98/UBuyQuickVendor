@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder> implements ActivityCompat.OnRequestPermissionsResultCallback,
-        Filterable{
+        Filterable {
 
     private static final String TAG = "CreditAdapter";
 
@@ -56,14 +56,15 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
     private List<Credit> credits;
     private List<Credit> creditsFiltered;
 
-    private String shop_id, vendor_id, number;
+    private String shop_id, vendor_id, number, shop_name;
     private int LOGIN_MODE = 0;
 
-    public CreditAdapter(Context context, String shop_id, String vendor_id) {
+    public CreditAdapter(Context context, String shop_id, String vendor_id, String shop_name) {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         this.context = context;
         this.shop_id = shop_id;
+        this.shop_name = shop_name;
         this.vendor_id = vendor_id;
         credits = new ArrayList<>();
         creditsFiltered = new ArrayList<>();
@@ -134,13 +135,17 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                                             final SmsManager smsManager = SmsManager.getDefault();
                                             db.collection("vendors").document(number)
                                                     .collection("shops").document(shop_id).get()
-                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                    Map<String, Object> vendor = task.getResult().getData();
-                                                    smsManager.sendTextMessage("+91" + credits.get(getAdapterPosition()).getCustomerMobile(), null, vendor.get("credit_message").toString(), null, null);
-                                                }
-                                            });
+                                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                            Map<String, Object> vendor = task.getResult().getData();
+                                                            String message = "Please pay the credit amount of " + credits.get(getAdapterPosition()).getCredit() + " to "
+                                                                    + shop_name + " as soon as possible. Thank You.";
+//                                                    smsManager.sendTextMessage("+91" + credits.get(getAdapterPosition()).getCustomerMobile(), null, vendor.get("credit_message").toString(), null, null);
+                                                            smsManager.sendTextMessage("+91" + credits.get(getAdapterPosition()).getCustomerMobile(), null,
+                                                                    message, null, null);
+                                                        }
+                                                    });
                                         }
                                     }
 

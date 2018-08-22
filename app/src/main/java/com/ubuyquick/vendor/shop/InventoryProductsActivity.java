@@ -9,29 +9,40 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.okhttp.Credentials;
 import com.ubuyquick.vendor.R;
 import com.ubuyquick.vendor.adapter.InventoryProductAdapter;
 import com.ubuyquick.vendor.model.InventoryProduct;
+import com.ubuyquick.vendor.model.MainSearchProduct;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class InventoryProductsActivity extends AppCompatActivity {
 
-    private static final String TAG = "InventoryProductsActivity";
+    private static final String TAG = "InventoryProductsActivi";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -40,13 +51,13 @@ public class InventoryProductsActivity extends AppCompatActivity {
     private EditText et_search;
 
     private String shop_id, category, sub_category;
-    private RecyclerView rv_products;
-    private List<InventoryProduct> inventoryProducts;
-    private List<InventoryProduct> inventorySearchProducts;
-    private InventoryProductAdapter inventoryProductAdapter;
 
     private int LOGIN_MODE = 0;
     private String vendor_id, number;
+
+    private RecyclerView rv_products;
+    private List<MainSearchProduct> products;
+    private InventoryProductAdapter productAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +66,17 @@ public class InventoryProductsActivity extends AppCompatActivity {
 
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_up);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        this.getSupportActionBar().setTitle(getIntent().getStringExtra("sub_category_name"));
+        this.getSupportActionBar().setTitle(getIntent().getStringExtra("category"));
 
         shop_id = getIntent().getStringExtra("shop_id");
         vendor_id = getIntent().getStringExtra("vendor_id");
         category = getIntent().getStringExtra("category");
         sub_category = getIntent().getStringExtra("sub_category");
 
-        et_search = findViewById(R.id.et_search);
-        btn_search = findViewById(R.id.btn_search);
         rv_products = (RecyclerView) findViewById(R.id.rv_products);
-        inventoryProductAdapter = new InventoryProductAdapter(this, shop_id, vendor_id);
-        inventoryProducts = new ArrayList<>();
-        inventorySearchProducts = new ArrayList<>();
-        rv_products.setAdapter(inventoryProductAdapter);
+        products = new ArrayList<>();
+        productAdapter = new InventoryProductAdapter(this, getIntent().getStringExtra("shop_id"));
+        rv_products.setAdapter(productAdapter);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -80,77 +88,45 @@ public class InventoryProductsActivity extends AppCompatActivity {
         } else {
             number = mAuth.getCurrentUser().getPhoneNumber().substring(3);
         }
+        final HashMap<String, Double> priceList = new HashMap<>();
 
-        btn_search.setOnClickListener(new View.OnClickListener() {
+        HashMap<String, String> headerMap = new HashMap<>();
+        headerMap.put("Authorization", Credentials.basic("elastic", "TI3gJiW05AD33tp4v707Xq3d"));
+
+        HashMap<String, String> queryMap = new HashMap<>();
+        queryMap.put("q", "message:*" + getIntent().getStringExtra("category") + "*");
+        queryMap.put("from", "0");
+        queryMap.put("size", "50");
+
+        AndroidNetworking.get("https://7e47bc74074e44bb816d48b50c20253d.ap-southeast-1.aws.found.io/_search")
+                .addQueryParameter(queryMap)
+                .addHeaders(headerMap)
+                .build().getAsJSONObject(new JSONObjectRequestListener() {
             @Override
-            public void onClick(View v) {
-                String search = et_search.getText().toString();
-                db.collection("vendors").document(number)
-                        .collection("shops").document(shop_id).collection("inventory")
-                        .whereEqualTo("product_name", search).get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                List<DocumentSnapshot> documents = task.getResult().getDocuments();
-                                if (documents.size() > 0) {
-                                    for (DocumentSnapshot document : documents) {
-                                        Map<String, Object> product = document.getData();
-                                        inventorySearchProducts.add(new InventoryProduct(product.get("product_name").toString(),
-                                                Integer.parseInt(product.get("product_quantity").toString()),
-                                                Double.parseDouble(product.get("product_mrp").toString()),
-                                                product.get("image_url").toString(), true, document.getId(),
-                                                product.get("category").toString(), product.get("sub_category").toString()));
-                                    }
-                                    inventoryProductAdapter.setInventoryProducts(inventorySearchProducts);
-                                    et_search.addTextChangedListener(new TextWatcher() {
-                                        @Override
-                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void onResponse(JSONObject response) {
+                try {
+                    Log.d(TAG, "onResponse: " + response.toString());
+                    JSONArray productsArray = response.getJSONObject("hits").getJSONArray("hits");
+                    for (int i = 0; i < productsArray.length(); i++) {
+                        JSONObject productObj = productsArray.getJSONObject(i);
+                        String product_name = productObj.getJSONObject("_source").getString("Products");
+                        String product_measure = productObj.getJSONObject("_source").getString("Measure");
+                        double product_mrp = productObj.getJSONObject("_source").getDouble("Price");
 
-                                        }
+                        priceList.put(product_name, productObj.getJSONObject("_source").getDouble("Price"));
+                        products.add(new MainSearchProduct(product_name, product_mrp, product_measure, 1));
+                    }
+                    productAdapter.setProducts(products);
+                } catch (JSONException e) {
+                    Log.d(TAG, "onResponse: exception: " + e.getLocalizedMessage());
+                }
+            }
 
-                                        @Override
-                                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                            if (TextUtils.isEmpty(et_search.getText())) {
-                                                inventoryProductAdapter.setInventoryProducts(inventoryProducts);
-                                                inventorySearchProducts.clear();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void afterTextChanged(Editable s) {
-
-                                        }
-                                    });
-                                } else {
-                                    Toast.makeText(InventoryProductsActivity.this, "No item found", Toast.LENGTH_SHORT).show();
-                                }
-
-                            }
-                        });
+            @Override
+            public void onError(ANError anError) {
+                Log.d(TAG, "onError: " + anError.getErrorDetail());
             }
         });
-
-
-
-        db.collection("vendors").document(number)
-                .collection("shops").document(shop_id).collection("inventory").whereEqualTo("sub_category", sub_category)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        List<DocumentSnapshot> documents = task.getResult().getDocuments();
-                        for (DocumentSnapshot document : documents) {
-                            Map<String, Object> product = document.getData();
-                            inventoryProducts.add(new InventoryProduct(product.get("product_name").toString(),
-                                    Integer.parseInt(product.get("product_quantity").toString()),
-                                    Double.parseDouble(product.get("product_mrp").toString()),
-                                    product.get("image_url").toString(),
-                                    true, document.getId(), product.get("category").toString(),
-                                    product.get("sub_category").toString()));
-                        }
-                        inventoryProductAdapter.setInventoryProducts(inventoryProducts);
-                    }
-                });
     }
 
     @Override

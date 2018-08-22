@@ -168,8 +168,12 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                                                 credit.put("name", order.get("customer_name").toString());
                                                 credit.put("number", order.get("customer_id").toString());
                                                 credit.put("order_id", order.get("order_id").toString());
+                                                credit.put("vendor", number);
+                                                credit.put("shop_id", shop_id);
                                                 db.collection("vendors").document(number).collection("shops")
                                                         .document(shop_id).collection("credit_notes").add(credit);
+                                                db.collection("customers").document(order.get("customer_id").toString())
+                                                        .collection("credit_notes").add(credit);
                                                 Toast.makeText(AcceptedOrderActivity.this, "Saved credit note", Toast.LENGTH_SHORT).show();
                                             }
                                         }

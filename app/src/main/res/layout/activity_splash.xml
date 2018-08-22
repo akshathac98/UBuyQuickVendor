@@ -4,12 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CategoryActivity">
-
-    <ListView
-        android:id="@+id/lv_list"
-        android:scrollbars="none"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    android:background="@mipmap/screen"
+    tools:context=".SplashActivity">
 
 </RelativeLayout>

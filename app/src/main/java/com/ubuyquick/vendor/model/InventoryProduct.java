@@ -17,8 +17,8 @@ public class InventoryProduct {
         this.product_mrp = product_mrp;
         this.product_image_url = product_image_url;
         this.available = available;
-        this.product_category = product_category;;
-        this.product_subcategory = product_subcategory;;
+        this.product_category = product_category;
+        this.product_subcategory = product_subcategory;
         this.product_id = product_id;
     }
 

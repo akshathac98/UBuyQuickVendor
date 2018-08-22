@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_inventory"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/colorPrimary"
+        android:layout_below="@id/btn_add_product"
+        android:text="MY INVENTORY"
+        android:textSize="18sp"
+        android:layout_marginStart="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:text="Change View"
+        android:layout_toStartOf="@id/view1"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@android:color/white"
+        android:id="@+id/btn_change_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:id="@+id/view1"
+        android:layout_centerHorizontal="true"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+    <Button
+        android:text="+Add Product"
+        android:layout_toEndOf="@id/view1"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@android:color/white"
+        android:id="@+id/btn_add_product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
