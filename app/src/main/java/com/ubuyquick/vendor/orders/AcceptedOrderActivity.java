@@ -55,6 +55,8 @@ public class AcceptedOrderActivity extends AppCompatActivity {
     private Button btn_delivered, btn_note;
     private int LOGIN_MODE = 0;
 
+    private double order_total = 0.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,11 +127,14 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                             tv_product_count.setText(task.getResult().getDocuments().size() + "");
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> product = document.getData();
+                                order_total += Double.parseDouble(product.get("mrp").toString()) *
+                                        Double.parseDouble(product.get("quantity").toString());
                                 orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
                                         , product.get("image_url").toString(), true));
                             }
                             orderProductAdapter.setOrderProducts(orderProducts);
+                            tv_order_total.setText("\u20B9" + order_total);
                         }
                     }
                 });

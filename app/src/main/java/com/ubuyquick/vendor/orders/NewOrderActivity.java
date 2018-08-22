@@ -240,6 +240,8 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                     final Map<String, Object> acceptedOrder = new HashMap<>();
                                                                     acceptedOrder.put("delivery_agent", agents.get(agent).toString());
                                                                     acceptedOrder.put("delivery_agent_name", agent);
+                                                                    acceptedOrder.put("latitude", order.get("latitude").toString());
+                                                                    acceptedOrder.put("longitude", order.get("longitude").toString());
                                                                     acceptedOrder.put("customer_name", order.get("customer_name").toString());
                                                                     acceptedOrder.put("order_id", order.get("order_id").toString());
                                                                     acceptedOrder.put("ordered_at", order.get("ordered_at").toString());

@@ -81,7 +81,9 @@ public class AcceptedOrdersFragment extends Fragment {
                                         Log.d(TAG, document.getId() + " => " + document.getData());
                                         Map<String, Object> order = document.getData();
                                         acceptedOrders.add(new AcceptedOrder(order.get("order_id").toString(), order.get("customer_name").toString()
-                                                , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString()));
+                                                , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString(),
+                                                order.get("latitude").toString(), order.get("longitude").toString(),
+                                                Integer.parseInt(order.get("count").toString())));
                                     }
                                     acceptedOrderAdapter.setAcceptedOrders(acceptedOrders);
                                 } else {
@@ -111,7 +113,9 @@ public class AcceptedOrdersFragment extends Fragment {
                                         Log.d(TAG, document.getId() + " => " + document.getData());
                                         Map<String, Object> order = document.getData();
                                         acceptedOrders.add(new AcceptedOrder(order.get("order_id").toString(), order.get("customer_name").toString()
-                                                , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString()));
+                                                , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString(),
+                                                order.get("latitude").toString(), order.get("longitude").toString(),
+                                                Integer.parseInt(order.get("count").toString())));
                                     }
                                     acceptedOrderAdapter.setAcceptedOrders(acceptedOrders);
                                 } else {

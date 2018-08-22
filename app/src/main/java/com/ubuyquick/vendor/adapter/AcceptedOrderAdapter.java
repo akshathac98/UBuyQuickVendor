@@ -63,6 +63,8 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
         private TextView tv_address;
         private TextView tv_order_id;
         private TextView tv_ordered_at;
+        private TextView tv_count;
+        private TextView tv_date;
         private Button btn_deliver;
 
         public ViewHolder(View itemView) {
@@ -70,14 +72,18 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
 
             this.tv_customer = (TextView) itemView.findViewById(R.id.tv_customer);
             this.tv_address = (TextView) itemView.findViewById(R.id.tv_address);
+            this.tv_date = (TextView) itemView.findViewById(R.id.tv_order_date);
             this.tv_order_id = (TextView) itemView.findViewById(R.id.tv_order_id);
             this.tv_ordered_at = (TextView) itemView.findViewById(R.id.tv_ordered_at);
+            this.tv_count = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.btn_deliver = (Button) itemView.findViewById(R.id.btn_deliver);
 
             btn_deliver.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Uri mapsUri = Uri.parse("google.navigation:q=Peenya+2nd+Stage,+Bangalore");
+                    String location = acceptedOrders.get(getAdapterPosition()).getLatitude() +
+                            "," + acceptedOrders.get(getAdapterPosition()).getLongitude();
+                    Uri mapsUri = Uri.parse("google.navigation:q=" + location);
                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, mapsUri);
                     mapIntent.setPackage("com.google.android.apps.maps");
                     context.startActivity(mapIntent);
@@ -104,7 +110,9 @@ public class AcceptedOrderAdapter extends RecyclerView.Adapter<AcceptedOrderAdap
             this.tv_customer.setText(acceptedOrder.getCustomerName());
             this.tv_address.setText(acceptedOrder.getAddress());
             this.tv_order_id.setText("Order ID: " + acceptedOrder.getOrderId());
-            this.tv_ordered_at.setText(acceptedOrder.getOrderedAt());
+            this.tv_ordered_at.setText(acceptedOrder.getOrderedAt().substring(11, 16));
+            this.tv_count.setText(acceptedOrder.getCount() + "");
+            this.tv_date.setText(acceptedOrder.getOrderedAt().substring(0, 11));
         }
     }
 
