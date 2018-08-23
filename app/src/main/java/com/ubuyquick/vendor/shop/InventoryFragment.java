@@ -419,7 +419,6 @@ public class InventoryFragment extends Fragment {
         breakfast.add("Milk And Milk Products");
         breakfast.add("Paneer And Curd");
         breakfast.add("Butter And Cheese");
-        breakfast.add("Jams, Honey And Spreads");
         breakfast.add("Breakfast Cereal");
         breakfast.add("Breakfast Mixes And Batter");
 

@@ -136,13 +136,12 @@
                     <TextView
                         android:id="@+id/tv_order_slot"
                         android:layout_width="wrap_content"
-                        android:visibility="gone"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_below="@id/tv_order_id3"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:text="Order Slot:"
+                        android:text="Order Type:"
                         android:textSize="14sp" />
 
                     <TextView
@@ -156,7 +155,6 @@
                         android:layout_marginEnd="8dp"
                         android:layout_toEndOf="@id/tv_order_id1"
                         android:text="Pick Up"
-                        android:visibility="gone"
                         android:textAlignment="textStart"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="14sp" />

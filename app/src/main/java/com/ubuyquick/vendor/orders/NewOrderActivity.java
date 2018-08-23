@@ -58,7 +58,7 @@ public class NewOrderActivity extends AppCompatActivity {
     private Double order_total = 0.0;
 
     private TextView tv_customer, tv_address, tv_order_id, tv_ordered_at, tv_order_total;
-    private TextView tv_total, tv_products, tv_available;
+    private TextView tv_total, tv_products, tv_available, tv_slot;
     private RecyclerView rv_order_products;
     private OrderProductAdapter orderProductAdapter;
     private List<OrderProduct> orderProducts;
@@ -87,6 +87,7 @@ public class NewOrderActivity extends AppCompatActivity {
         tv_order_total = (TextView) findViewById(R.id.tv_order_total);
         tv_total = (TextView) findViewById(R.id.tv_total);
         tv_products = (TextView) findViewById(R.id.tv_products);
+        tv_slot = (TextView) findViewById(R.id.tv_slot);
         tv_available = (TextView) findViewById(R.id.tv_available);
         btn_cancel = (TextView) findViewById(R.id.btn_cancel);
         btn_accept = (TextView) findViewById(R.id.btn_accept);
@@ -180,7 +181,7 @@ public class NewOrderActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> product = document.getData();
                                 order_total += Double.parseDouble(product.get("mrp").toString()) *
-                                Double.parseDouble(product.get("quantity").toString());
+                                        Double.parseDouble(product.get("quantity").toString());
                                 orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
                                         , "", true));
@@ -204,6 +205,15 @@ public class NewOrderActivity extends AppCompatActivity {
                             tv_customer.setText(order.get("customer_name").toString());
                             tv_address.setText(order.get("delivery_address").toString());
                             tv_order_id.setText(order_id);
+
+                            final String slot = order.get("slot").toString();
+                            if (slot.equals("Quick Delivery"))
+                                tv_slot.setText(slot);
+                            else if (!slot.equals("Pick Up"))
+                                tv_slot.setText("Delivery " + slot);
+                            else if (slot.equals("Pick Up"))
+                                tv_slot.setText("Pick Up");
+
                             tv_ordered_at.setText(new Date(new java.sql.Timestamp(Long.parseLong(order.get("order_id").toString())).getTime()).toString());
 
                             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
@@ -212,120 +222,217 @@ public class NewOrderActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull final Task<QuerySnapshot> task) {
 
-                                            btn_accept.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
+                                            if (slot.equals("Pick Up")) {
+                                                btn_accept.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        final android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(NewOrderActivity.this);
+                                                        builder.setTitle("Accept Order?");
+                                                        builder.setNegativeButton("Cancel", null);
+                                                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                final Map<String, Object> acceptedOrder = new HashMap<>();
+                                                                acceptedOrder.put("delivery_agent", "None");
+                                                                acceptedOrder.put("delivery_agent_name", "None");
+                                                                acceptedOrder.put("latitude", order.get("latitude").toString());
+                                                                acceptedOrder.put("longitude", order.get("longitude").toString());
+                                                                acceptedOrder.put("customer_name", order.get("customer_name").toString());
+                                                                acceptedOrder.put("order_id", order.get("order_id").toString());
+                                                                acceptedOrder.put("ordered_at", order.get("ordered_at").toString());
+                                                                acceptedOrder.put("customer_id", order.get("customer_id").toString());
+                                                                acceptedOrder.put("count", order.get("count").toString());
+                                                                acceptedOrder.put("slot", order.get("slot").toString());
+                                                                acceptedOrder.put("delivery_address", order.get("delivery_address").toString());
 
-                                                    final android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(NewOrderActivity.this);
-                                                    builder.setTitle("Select Delivery Agent:");
-                                                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(NewOrderActivity.this,
-                                                            android.R.layout.select_dialog_singlechoice);
-                                                    for (DocumentSnapshot document : task.getResult().getDocuments()) {
-                                                        Map<String, Object> agentInfo = document.getData();
-                                                        agents.put(agentInfo.get("name").toString(), agentInfo.get("user_id").toString());
-                                                        arrayAdapter.add(agentInfo.get("name").toString());
-                                                    }
-
-                                                    builder.setNegativeButton("Cancel", null);
-                                                    builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int which) {
-                                                            final String agent = arrayAdapter.getItem(which);
-                                                            AlertDialog.Builder builderInner = new AlertDialog.Builder(NewOrderActivity.this);
-                                                            builderInner.setMessage(agent);
-                                                            builderInner.setTitle("Selected delivery agent:");
-                                                            builderInner.setPositiveButton("Accept Order", new DialogInterface.OnClickListener() {
-                                                                @Override
-                                                                public void onClick(DialogInterface dialog, int which) {
-                                                                    final Map<String, Object> acceptedOrder = new HashMap<>();
-                                                                    acceptedOrder.put("delivery_agent", agents.get(agent).toString());
-                                                                    acceptedOrder.put("delivery_agent_name", agent);
-                                                                    acceptedOrder.put("latitude", order.get("latitude").toString());
-                                                                    acceptedOrder.put("longitude", order.get("longitude").toString());
-                                                                    acceptedOrder.put("customer_name", order.get("customer_name").toString());
-                                                                    acceptedOrder.put("order_id", order.get("order_id").toString());
-                                                                    acceptedOrder.put("ordered_at", order.get("ordered_at").toString());
-                                                                    acceptedOrder.put("customer_id", order.get("customer_id").toString());
-                                                                    acceptedOrder.put("count", order.get("count").toString());
-                                                                    acceptedOrder.put("slot", order.get("slot").toString());
-                                                                    acceptedOrder.put("delivery_address", order.get("delivery_address").toString());
-
-                                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
-                                                                            .collection("new_orders").document(order.get("order_id").toString()).collection("products")
-                                                                            .get()
-                                                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                                @Override
-                                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                                    if (task.isSuccessful()) {
-                                                                                        int available_products = 0;
-                                                                                        CollectionReference collectionReference =
-                                                                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                                                        .collection("shops").document(shop_id)
-                                                                                                        .collection("accepted_orders").document(order.get("order_id").toString()).collection("products");
-                                                                                        for (OrderProduct orderProduct : orderProducts) {
-                                                                                            if (orderProduct.isAvailable()) {
-                                                                                                available_products++;
-                                                                                                Map<String, Object> product = new HashMap<>();
-                                                                                                product.put("name", orderProduct.getProductName());
-                                                                                                product.put("mrp", orderProduct.getProductMrp());
-                                                                                                product.put("quantity", orderProduct.getProductQuantity());
-                                                                                                product.put("image_url", orderProduct.getProductImageUrl());
-                                                                                                collectionReference.add(product);
-                                                                                            }
+                                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
+                                                                        .collection("new_orders").document(order.get("order_id").toString()).collection("products")
+                                                                        .get()
+                                                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                                if (task.isSuccessful()) {
+                                                                                    int available_products = 0;
+                                                                                    CollectionReference collectionReference =
+                                                                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                                    .collection("shops").document(shop_id)
+                                                                                                    .collection("accepted_orders").document(order.get("order_id").toString()).collection("products");
+                                                                                    for (OrderProduct orderProduct : orderProducts) {
+                                                                                        if (orderProduct.isAvailable()) {
+                                                                                            available_products++;
+                                                                                            Map<String, Object> product = new HashMap<>();
+                                                                                            product.put("name", orderProduct.getProductName());
+                                                                                            product.put("mrp", orderProduct.getProductMrp());
+                                                                                            product.put("quantity", orderProduct.getProductQuantity());
+                                                                                            product.put("image_url", orderProduct.getProductImageUrl());
+                                                                                            collectionReference.add(product);
                                                                                         }
-                                                                                        acceptedOrder.put("product_count", available_products);
-                                                                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                                                .collection("shops").document(shop_id)
-                                                                                                .collection("accepted_orders")
-                                                                                                .document(order.get("order_id").toString())
-                                                                                                .update(acceptedOrder);
                                                                                     }
+                                                                                    acceptedOrder.put("product_count", available_products);
+                                                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                            .collection("shops").document(shop_id)
+                                                                                            .collection("accepted_orders")
+                                                                                            .document(order.get("order_id").toString())
+                                                                                            .update(acceptedOrder);
                                                                                 }
-                                                                            });
+                                                                            }
+                                                                        });
 
-                                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
-                                                                            .collection("shops").document(shop_id)
-                                                                            .collection("accepted_orders")
-                                                                            .document(order.get("order_id").toString())
-                                                                            .set(acceptedOrder)
-                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                @Override
-                                                                                public void onSuccess(Void aVoid) {
-                                                                                    Log.d(TAG, "onComplete: remove id: " + order.get("order_id").toString());
-                                                                                    db.collection("vendors").document(mAuth.getCurrentUser()
-                                                                                            .getPhoneNumber().substring(3)).collection("shops")
-                                                                                            .document(shop_id).collection("new_orders")
-                                                                                            .document(order.get("order_id").toString()).delete()
-                                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                                @Override
-                                                                                                public void onSuccess(Void aVoid) {
-                                                                                                    Toast.makeText(NewOrderActivity.this, "Accepted order.", Toast.LENGTH_SHORT).show();
-                                                                                                    finish();
-                                                                                                }
-                                                                                            })
-                                                                                            .addOnFailureListener(new OnFailureListener() {
-                                                                                                @Override
-                                                                                                public void onFailure(@NonNull Exception e) {
-                                                                                                    Toast.makeText(NewOrderActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                                                                                                }
-                                                                                            });
-                                                                                }
-                                                                            })
-                                                                            .addOnFailureListener(new OnFailureListener() {
-                                                                                @Override
-                                                                                public void onFailure(@NonNull Exception e) {
-                                                                                    Toast.makeText(NewOrderActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                                                                                }
-                                                                            });
-                                                                }
-                                                            });
-                                                            builderInner.show();
+                                                                db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                        .collection("shops").document(shop_id)
+                                                                        .collection("accepted_orders")
+                                                                        .document(order.get("order_id").toString())
+                                                                        .set(acceptedOrder)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                Log.d(TAG, "onComplete: remove id: " + order.get("order_id").toString());
+                                                                                db.collection("vendors").document(mAuth.getCurrentUser()
+                                                                                        .getPhoneNumber().substring(3)).collection("shops")
+                                                                                        .document(shop_id).collection("new_orders")
+                                                                                        .document(order.get("order_id").toString()).delete()
+                                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid) {
+                                                                                                Toast.makeText(NewOrderActivity.this, "Accepted order.", Toast.LENGTH_SHORT).show();
+                                                                                                finish();
+                                                                                            }
+                                                                                        })
+                                                                                        .addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception e) {
+                                                                                                Toast.makeText(NewOrderActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                                                            }
+                                                                                        });
+                                                                            }
+                                                                        })
+                                                                        .addOnFailureListener(new OnFailureListener() {
+                                                                            @Override
+                                                                            public void onFailure(@NonNull Exception e) {
+                                                                                Toast.makeText(NewOrderActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        });
+                                                            }
+                                                        });
+                                                        builder.show();
+                                                    }
+                                                });
+                                            } else
+
+                                                btn_accept.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+
+                                                        final android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(NewOrderActivity.this);
+                                                        builder.setTitle("Select Delivery Agent:");
+                                                        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(NewOrderActivity.this,
+                                                                android.R.layout.select_dialog_singlechoice);
+                                                        for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                                                            Map<String, Object> agentInfo = document.getData();
+                                                            agents.put(agentInfo.get("name").toString(), agentInfo.get("user_id").toString());
+                                                            arrayAdapter.add(agentInfo.get("name").toString());
                                                         }
-                                                    });
-                                                    builder.show();
 
-                                                }
-                                            });
+                                                        builder.setNegativeButton("Cancel", null);
+                                                        builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                final String agent = arrayAdapter.getItem(which);
+                                                                AlertDialog.Builder builderInner = new AlertDialog.Builder(NewOrderActivity.this);
+                                                                builderInner.setMessage(agent);
+                                                                builderInner.setTitle("Selected delivery agent:");
+                                                                builderInner.setPositiveButton("Accept Order", new DialogInterface.OnClickListener() {
+                                                                    @Override
+                                                                    public void onClick(DialogInterface dialog, int which) {
+                                                                        final Map<String, Object> acceptedOrder = new HashMap<>();
+                                                                        acceptedOrder.put("delivery_agent", agents.get(agent).toString());
+                                                                        acceptedOrder.put("delivery_agent_name", agent);
+                                                                        acceptedOrder.put("latitude", order.get("latitude").toString());
+                                                                        acceptedOrder.put("longitude", order.get("longitude").toString());
+                                                                        acceptedOrder.put("customer_name", order.get("customer_name").toString());
+                                                                        acceptedOrder.put("order_id", order.get("order_id").toString());
+                                                                        acceptedOrder.put("ordered_at", order.get("ordered_at").toString());
+                                                                        acceptedOrder.put("customer_id", order.get("customer_id").toString());
+                                                                        acceptedOrder.put("count", order.get("count").toString());
+                                                                        acceptedOrder.put("slot", order.get("slot").toString());
+                                                                        acceptedOrder.put("delivery_address", order.get("delivery_address").toString());
+
+                                                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
+                                                                                .collection("new_orders").document(order.get("order_id").toString()).collection("products")
+                                                                                .get()
+                                                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                                        if (task.isSuccessful()) {
+                                                                                            int available_products = 0;
+                                                                                            CollectionReference collectionReference =
+                                                                                                    db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                                            .collection("shops").document(shop_id)
+                                                                                                            .collection("accepted_orders").document(order.get("order_id").toString()).collection("products");
+                                                                                            for (OrderProduct orderProduct : orderProducts) {
+                                                                                                if (orderProduct.isAvailable()) {
+                                                                                                    available_products++;
+                                                                                                    Map<String, Object> product = new HashMap<>();
+                                                                                                    product.put("name", orderProduct.getProductName());
+                                                                                                    product.put("mrp", orderProduct.getProductMrp());
+                                                                                                    product.put("quantity", orderProduct.getProductQuantity());
+                                                                                                    product.put("image_url", orderProduct.getProductImageUrl());
+                                                                                                    collectionReference.add(product);
+                                                                                                }
+                                                                                            }
+                                                                                            acceptedOrder.put("product_count", available_products);
+                                                                                            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                                    .collection("shops").document(shop_id)
+                                                                                                    .collection("accepted_orders")
+                                                                                                    .document(order.get("order_id").toString())
+                                                                                                    .update(acceptedOrder);
+                                                                                        }
+                                                                                    }
+                                                                                });
+
+                                                                        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                                                                                .collection("shops").document(shop_id)
+                                                                                .collection("accepted_orders")
+                                                                                .document(order.get("order_id").toString())
+                                                                                .set(acceptedOrder)
+                                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        Log.d(TAG, "onComplete: remove id: " + order.get("order_id").toString());
+                                                                                        db.collection("vendors").document(mAuth.getCurrentUser()
+                                                                                                .getPhoneNumber().substring(3)).collection("shops")
+                                                                                                .document(shop_id).collection("new_orders")
+                                                                                                .document(order.get("order_id").toString()).delete()
+                                                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                    @Override
+                                                                                                    public void onSuccess(Void aVoid) {
+                                                                                                        Toast.makeText(NewOrderActivity.this, "Accepted order.", Toast.LENGTH_SHORT).show();
+                                                                                                        finish();
+                                                                                                    }
+                                                                                                })
+                                                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                                                    @Override
+                                                                                                    public void onFailure(@NonNull Exception e) {
+                                                                                                        Toast.makeText(NewOrderActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                    }
+                                                                                                });
+                                                                                    }
+                                                                                })
+                                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NonNull Exception e) {
+                                                                                        Toast.makeText(NewOrderActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                });
+                                                                builderInner.show();
+                                                            }
+                                                        });
+                                                        builder.show();
+
+                                                    }
+                                                });
 
 
                                         }
@@ -344,6 +451,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                                     cancelledOrder.put("order_id", order.get("order_id").toString());
                                                     cancelledOrder.put("ordered_at", order.get("ordered_at").toString());
                                                     cancelledOrder.put("customer_id", order.get("customer_id").toString());
+                                                    cancelledOrder.put("slot", order.get("slot").toString());
                                                     cancelledOrder.put("count", order.get("count").toString());
                                                     cancelledOrder.put("delivery_address", order.get("delivery_address").toString());
 

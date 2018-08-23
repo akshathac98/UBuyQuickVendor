@@ -183,16 +183,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:visibility="gone"
                         android:layout_below="@id/tv_agent"
                         android:layout_marginStart="8dp"
-                        android:text="Order Slot:"
+                        android:text="Order Type:"
                         android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/tv_slot"
                         android:layout_width="wrap_content"
-                        android:visibility="gone"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignStart="@id/tv_address"
