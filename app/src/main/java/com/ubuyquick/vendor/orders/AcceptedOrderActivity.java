@@ -271,7 +271,12 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                             tv_address.setText(order.get("delivery_address").toString());
                             tv_order_id.setText(order_id);
                             tv_ordered_at.setText(order.get("ordered_at").toString());
-                            tv_slot.setText(order.get("slot").toString());
+
+                            if (!order.get("slot").toString().equals("Pick Up") && !order.get("slot").toString()
+                                    .equals("Quick Delivery"))
+                                tv_slot.setText("Delivery " + order.get("slot").toString());
+                            else
+                                tv_slot.setText(order.get("slot").toString());
                         }
                     }
                 });
@@ -282,7 +287,6 @@ public class AcceptedOrderActivity extends AppCompatActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
-
 
 
     @Override
