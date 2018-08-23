@@ -55,6 +55,8 @@ public class AcceptedOrderActivity extends AppCompatActivity {
     private Button btn_delivered, btn_note;
     private int LOGIN_MODE = 0;
 
+    private TextView tv_slot;
+
     private double order_total = 0.0;
 
     @Override
@@ -80,6 +82,7 @@ public class AcceptedOrderActivity extends AppCompatActivity {
         tv_ordered_at = (TextView) findViewById(R.id.tv_ordered_at);
         tv_order_total = (TextView) findViewById(R.id.tv_total);
         tv_product_count = (TextView) findViewById(R.id.tv_product_count2);
+        tv_slot = (TextView) findViewById(R.id.tv_slot);
 
         btn_delivered = (Button) findViewById(R.id.btn_delivered);
         btn_note = (Button) findViewById(R.id.btn_credit);
@@ -263,12 +266,12 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                                             }).show();
                                 }
                             });
-
                             tv_customer.setText(order.get("customer_name").toString());
                             tv_agent.setText(order.get("delivery_agent_name").toString());
                             tv_address.setText(order.get("delivery_address").toString());
                             tv_order_id.setText(order_id);
                             tv_ordered_at.setText(order.get("ordered_at").toString());
+                            tv_slot.setText(order.get("slot").toString());
                         }
                     }
                 });

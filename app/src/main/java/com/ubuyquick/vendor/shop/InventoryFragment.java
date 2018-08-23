@@ -384,8 +384,8 @@ public class InventoryFragment extends Fragment {
         listDataHeader.add("Household Needs");
         listDataHeader.add("Personal Care");
         listDataHeader.add("Breakfast And Dairy");
-        listDataHeader.add("Biscuits, Snacks And Chocolates");
-        listDataHeader.add("Noodles, Sauces And Instant Food");
+        listDataHeader.add("Biscuits Snacks And Chocolates");
+        listDataHeader.add("Noodles Sauces And Instant Food");
         listDataHeader.add("Baby And Kids");
 
         // Adding child data
@@ -419,6 +419,9 @@ public class InventoryFragment extends Fragment {
         breakfast.add("Milk And Milk Products");
         breakfast.add("Paneer And Curd");
         breakfast.add("Butter And Cheese");
+        breakfast.add("Jams, Honey And Spreads");
+        breakfast.add("Breakfast Cereal");
+        breakfast.add("Breakfast Mixes And Batter");
 
         List<String> biscuits = new ArrayList<>();
         biscuits.add("Biscuits And Cookies");
@@ -430,7 +433,6 @@ public class InventoryFragment extends Fragment {
         List<String> noodles = new ArrayList<>();
         noodles.add("Noodles And Vermicelli");
         noodles.add("Sauces And Ketchups");
-        noodles.add("Jam, Honey And Spreads");
         noodles.add("Pasta And Soups");
         noodles.add("Readymade Meals And Mixes");
         noodles.add("Pickles And Chutneys");

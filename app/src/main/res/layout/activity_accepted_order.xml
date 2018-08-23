@@ -178,12 +178,40 @@
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="14sp" />
 
+                    <TextView
+                        android:id="@+id/tv_order_slot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:visibility="gone"
+                        android:layout_below="@id/tv_agent"
+                        android:layout_marginStart="8dp"
+                        android:text="Order Slot:"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tv_slot"
+                        android:layout_width="wrap_content"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignStart="@id/tv_address"
+                        android:layout_below="@id/tv_agent"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_toEndOf="@id/tv_order_id1"
+                        android:text="Pick Up"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="14sp" />
+
                     <View
                         android:id="@+id/view1"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_below="@id/tv_head_agent"
+                        android:layout_below="@id/tv_order_slot"
                         android:layout_marginEnd="2dp"
+                        android:layout_marginTop="8dp"
                         android:layout_marginStart="2dp"
                         android:background="@color/colorAccent" />
 

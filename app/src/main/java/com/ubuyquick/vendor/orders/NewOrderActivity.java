@@ -247,6 +247,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                     acceptedOrder.put("ordered_at", order.get("ordered_at").toString());
                                                                     acceptedOrder.put("customer_id", order.get("customer_id").toString());
                                                                     acceptedOrder.put("count", order.get("count").toString());
+                                                                    acceptedOrder.put("slot", order.get("slot").toString());
                                                                     acceptedOrder.put("delivery_address", order.get("delivery_address").toString());
 
                                                                     db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(shop_id)
