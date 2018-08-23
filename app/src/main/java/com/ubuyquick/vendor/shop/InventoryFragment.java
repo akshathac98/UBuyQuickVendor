@@ -103,12 +103,12 @@ public class InventoryFragment extends Fragment {
         cleaners = new ArrayList<>();
         cleaners.add("Toilet Cleaners");
         cleaners.add("Floor Cleaners");
-        cleaners.add("Multi-Purpose Cleaners");
+        cleaners.add("Multi-Purpose Cleaner");
 
         repellents = new ArrayList<>();
         repellents.add("Mosquito Repellents");
         repellents.add("Sprays");
-        repellents.add("Cream And Other Repellents");
+        repellents.add("Creams And Other Repellents");
 
         poojaneeds = new ArrayList<>();
         poojaneeds.add("Incense Sticks");
@@ -204,7 +204,6 @@ public class InventoryFragment extends Fragment {
         breakfastmixes.add("Batter");
 
         biscuitscookies = new ArrayList<>();
-        biscuitscookies.add("Cookies And Cakes");
         biscuitscookies.add("Healthy And Digestive");
         biscuitscookies.add("Cream Biscuits And Wafers");
         biscuitscookies.add("Sweet And Salty");
@@ -218,7 +217,7 @@ public class InventoryFragment extends Fragment {
 
         chipscrisps = new ArrayList<>();
         chipscrisps.add("Potato Chips");
-        chipscrisps.add("Crisps And Puff");
+        chipscrisps.add("Crisps And Puffs");
         chipscrisps.add("Tortillas And Nachos");
         chipscrisps.add("Popcorns");
 
@@ -315,9 +314,12 @@ public class InventoryFragment extends Fragment {
         spices.add("Ready Masala");
         spices.add("Cooking Paste And Others");
 
+        readymasala = new ArrayList<>();
+        readymasala.add("Ready Masala");
+
         subsubcategories = new HashMap<>();
         subsubcategories.put("Soft Drinks", softdrinks);
-        subsubcategories.put("Juices And Concentrates", juices);
+        subsubcategories.put("Juice And Concentrates", juices);
         subsubcategories.put("Tea And Coffee", teacoffee);
         subsubcategories.put("Health And Energy Drinks", healthenergydrinks);
         subsubcategories.put("Laundry Detergents", laundrydetergents);
@@ -346,13 +348,13 @@ public class InventoryFragment extends Fragment {
         subsubcategories.put("Biscuits And Cookies", biscuitscookies);
         subsubcategories.put("Namkeen And Snacks", namkeensnacks);
         subsubcategories.put("Chips And Crisps", chipscrisps);
-        subsubcategories.put("Chocolates And Candies", chocolatecandies);
+        subsubcategories.put("Chocolate And Candies", chocolatecandies);
         subsubcategories.put("Sweets", sweets);
         subsubcategories.put("Noodles And Vermicelli", noodlesvermicelli);
         subsubcategories.put("Sauces And Ketchups", saucesketchups);
         subsubcategories.put("Jams, Honey And Spreads", jamshoneyspreads);
         subsubcategories.put("Pasta And Soups", pastasoups);
-        subsubcategories.put("Readymade Meals And Mixes", readymademealsmixes);
+        subsubcategories.put("Ready Made Meals And Mixes", readymademealsmixes);
         subsubcategories.put("Pickles And Chutneys", pickleschutneys);
         subsubcategories.put("Canned And Frozen Food", cannedfrozenfood);
         subsubcategories.put("Baking And Dessert Items", bakingdessertitems);
@@ -365,6 +367,7 @@ public class InventoryFragment extends Fragment {
         subsubcategories.put("Edible Oils", edibleoils);
         subsubcategories.put("Ghee And Vanaspathi", gheevanaspathi);
         subsubcategories.put("Spices", spices);
+        subsubcategories.put("Masala", readymasala);
     }
 
     @Nullable
@@ -393,7 +396,7 @@ public class InventoryFragment extends Fragment {
         beverages.add("Soft Drinks");
         beverages.add("Health And Energy Drinks");
         beverages.add("Tea And Coffee");
-        beverages.add("Juices And Concentrates");
+        beverages.add("Juice And Concentrates");
 
         List<String> household = new ArrayList<String>();
         household.add("Laundry Detergents");
@@ -426,14 +429,14 @@ public class InventoryFragment extends Fragment {
         biscuits.add("Biscuits And Cookies");
         biscuits.add("Namkeen And Snacks");
         biscuits.add("Chips And Crisps");
-        biscuits.add("Chocolates And Candies");
+        biscuits.add("Chocolate And Candies");
         biscuits.add("Sweets");
 
         List<String> noodles = new ArrayList<>();
         noodles.add("Noodles And Vermicelli");
         noodles.add("Sauces And Ketchups");
         noodles.add("Pasta And Soups");
-        noodles.add("Readymade Meals And Mixes");
+        noodles.add("Ready Made Meals And Mixes");
         noodles.add("Pickles And Chutneys");
         noodles.add("Canned And Frozen Food");
         noodles.add("Baking And Dessert Items");
@@ -450,6 +453,7 @@ public class InventoryFragment extends Fragment {
         staples.add("Edible Oils");
         staples.add("Ghee And Vanaspathi");
         staples.add("Spices");
+        staples.add("Masala");
 
         listDataChild.put(listDataHeader.get(0), staples);
         listDataChild.put(listDataHeader.get(1), beverages);
@@ -576,4 +580,5 @@ public class InventoryFragment extends Fragment {
     private ArrayList<String> edibleoils;
     private ArrayList<String> gheevanaspathi;
     private ArrayList<String> spices;
+    private ArrayList<String> readymasala;
 }
