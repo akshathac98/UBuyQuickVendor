@@ -352,7 +352,7 @@ public class InventoryFragment extends Fragment {
         subsubcategories.put("Sweets", sweets);
         subsubcategories.put("Noodles And Vermicelli", noodlesvermicelli);
         subsubcategories.put("Sauces And Ketchups", saucesketchups);
-        subsubcategories.put("Jams, Honey And Spreads", jamshoneyspreads);
+        subsubcategories.put("Jams Honey And Spreads", jamshoneyspreads);
         subsubcategories.put("Pasta And Soups", pastasoups);
         subsubcategories.put("Ready Made Meals And Mixes", readymademealsmixes);
         subsubcategories.put("Pickles And Chutneys", pickleschutneys);
@@ -423,6 +423,7 @@ public class InventoryFragment extends Fragment {
         breakfast.add("Paneer And Curd");
         breakfast.add("Butter And Cheese");
         breakfast.add("Breakfast Cereal");
+        breakfast.add("Jams Honey And Spreads");
         breakfast.add("Breakfast Mixes And Batter");
 
         List<String> biscuits = new ArrayList<>();
