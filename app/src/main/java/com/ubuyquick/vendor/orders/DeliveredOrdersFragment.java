@@ -88,7 +88,8 @@ public class DeliveredOrdersFragment extends Fragment {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
                                     Map<String, Object> order = document.getData();
                                     deliveredOrders.add(new DeliveredOrder(order.get("order_id").toString(), order.get("customer_name").toString()
-                                            , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString()));
+                                            , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString(),
+                                            Integer.parseInt(order.get("count").toString())));
                                 }
                                 deliveredOrderAdapter.setDeliveredOrders(deliveredOrders);
                             } else {

@@ -139,11 +139,13 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
                                                         @Override
                                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                             Map<String, Object> vendor = task.getResult().getData();
+                                                            String msg = vendor.get("credit_message").toString().replace("<CREDIT_AMOUNT>", "\u20B9" + credits.get(getAdapterPosition()).getCredit())
+                                                                    .replace("<STORE_NAME>", shop_name);
                                                             String message = "Please pay the credit amount of " + credits.get(getAdapterPosition()).getCredit() + " to "
                                                                     + shop_name + " as soon as possible. Thank You.";
 //                                                    smsManager.sendTextMessage("+91" + credits.get(getAdapterPosition()).getCustomerMobile(), null, vendor.get("credit_message").toString(), null, null);
                                                             smsManager.sendTextMessage("+91" + credits.get(getAdapterPosition()).getCustomerMobile(), null,
-                                                                    message, null, null);
+                                                                    msg, null, null);
                                                         }
                                                     });
                                         }

@@ -229,7 +229,8 @@ public class ShopCreditFragment extends Fragment {
                 List<DocumentSnapshot> documents = task.getResult().getDocuments();
                 for (DocumentSnapshot document : documents) {
                     Map<String, Object> credit = document.getData();
-                    credits.add(new Credit(document.getId(), credit.get("name").toString(), credit.get("number").toString(),
+                    credits.add(new Credit(document.getId(), credit.get("name").toString(),
+                            credit.get("number").toString(),
                             Double.parseDouble(credit.get("balance").toString())));
                 }
                 creditAdapter.setCredits(credits);

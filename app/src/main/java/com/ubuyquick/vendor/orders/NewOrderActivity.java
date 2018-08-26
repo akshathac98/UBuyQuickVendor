@@ -145,6 +145,16 @@ public class NewOrderActivity extends AppCompatActivity {
 
         Log.d(TAG, "initialize: order id: " + order_id);
 
+        db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3))
+                .collection("shops").document(shop_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Map<String, Object> shop = task.getResult().getData();
+                et_package.setText(shop.get("packing_charges").toString());
+                et_shipping.setText(shop.get("delivery_charges").toString());
+            }
+        });
+
         orderProductAdapter = new OrderProductAdapter(this, order_id, shop_id, "NEW", new Utils.OnItemClick() {
             @Override
             public void onClick(int count) {
@@ -154,7 +164,7 @@ public class NewOrderActivity extends AppCompatActivity {
         }, new Utils.OnChange() {
             @Override
             public void onChange(double mrp) {
-                tv_total.setText("" + (mrp + Double.parseDouble(tv_total.getText().toString())));
+                tv_total.setText("" + (mrp + Double.parseDouble(tv_total.getText().toString().substring(1))));
                 order_total = (mrp + Double.parseDouble(tv_total.getText().toString()));
             }
         });
@@ -235,6 +245,10 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                 final Map<String, Object> acceptedOrder = new HashMap<>();
                                                                 acceptedOrder.put("delivery_agent", "None");
                                                                 acceptedOrder.put("delivery_agent_name", "None");
+                                                                acceptedOrder.put("order_total", order_total-
+                                                                Double.parseDouble(et_shipping.getText().toString())-
+                                                                Double.parseDouble(et_discount.getText().toString())-
+                                                                Double.parseDouble(et_package.getText().toString()));
                                                                 acceptedOrder.put("latitude", order.get("latitude").toString());
                                                                 acceptedOrder.put("longitude", order.get("longitude").toString());
                                                                 acceptedOrder.put("customer_name", order.get("customer_name").toString());
@@ -347,7 +361,10 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                         final Map<String, Object> acceptedOrder = new HashMap<>();
                                                                         acceptedOrder.put("delivery_agent", agents.get(agent).toString());
                                                                         acceptedOrder.put("delivery_agent_name", agent);
-                                                                        acceptedOrder.put("latitude", order.get("latitude").toString());
+                                                                        acceptedOrder.put("order_total", order_total-
+                                                                                Double.parseDouble(et_shipping.getText().toString())-
+                                                                                Double.parseDouble(et_discount.getText().toString())-
+                                                                                Double.parseDouble(et_package.getText().toString()));        acceptedOrder.put("latitude", order.get("latitude").toString());
                                                                         acceptedOrder.put("longitude", order.get("longitude").toString());
                                                                         acceptedOrder.put("customer_name", order.get("customer_name").toString());
                                                                         acceptedOrder.put("order_id", order.get("order_id").toString());
@@ -451,7 +468,10 @@ public class NewOrderActivity extends AppCompatActivity {
                                                     cancelledOrder.put("order_id", order.get("order_id").toString());
                                                     cancelledOrder.put("ordered_at", order.get("ordered_at").toString());
                                                     cancelledOrder.put("customer_id", order.get("customer_id").toString());
-                                                    cancelledOrder.put("slot", order.get("slot").toString());
+                                                    cancelledOrder.put("order_total", order_total-
+                                                            Double.parseDouble(et_shipping.getText().toString())-
+                                                            Double.parseDouble(et_discount.getText().toString())-
+                                                            Double.parseDouble(et_package.getText().toString()));cancelledOrder.put("slot", order.get("slot").toString());
                                                     cancelledOrder.put("count", order.get("count").toString());
                                                     cancelledOrder.put("delivery_address", order.get("delivery_address").toString());
 

@@ -221,7 +221,7 @@ public class AddShopActivity extends AppCompatActivity {
                         shop.put("packing_charges", 0.0);
                         shop.put("minimum_order", 0.0);
                         shop.put("delivery_charges", 0.0);
-                        shop.put("credit_message", "Credit balance pending on UBuyQuick");
+                        shop.put("credit_message", "Please pay the remaining balance of <CREDIT_AMOUNT> towards <STORE_NAME> as soon as possible. Thank You. Ignore if already paid.");
                         shop.put("shop_status", true);
                         shop.put("shop_id", shop_id);
                         shop.put("shop_image_url", url);
@@ -317,15 +317,15 @@ public class AddShopActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case 101:
+            /*case 101:
                 if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Location required to set radius", Toast.LENGTH_SHORT).show();
                 } else {
                     startActivity(new Intent(AddShopActivity.this, ShopLocationActivity.class));
                 }
                 break;
-
-            case 102:
+*/
+            case 101:
                 if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
                 } else

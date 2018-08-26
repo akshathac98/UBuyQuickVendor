@@ -51,6 +51,8 @@ public class DeliveredOrderAdapter extends RecyclerView.Adapter<DeliveredOrderAd
         private TextView tv_address;
         private TextView tv_order_id;
         private TextView tv_ordered_at;
+        private TextView tv_ordered_date;
+        private TextView tv_product_quantity;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -58,7 +60,9 @@ public class DeliveredOrderAdapter extends RecyclerView.Adapter<DeliveredOrderAd
             this.tv_customer = (TextView) itemView.findViewById(R.id.tv_customer);
             this.tv_address = (TextView) itemView.findViewById(R.id.tv_address);
             this.tv_order_id = (TextView) itemView.findViewById(R.id.tv_order_id);
+            this.tv_product_quantity = (TextView) itemView.findViewById(R.id.tv_product_quantity);
             this.tv_ordered_at = (TextView) itemView.findViewById(R.id.tv_ordered_at);
+            this.tv_ordered_date = (TextView) itemView.findViewById(R.id.tv_order_date);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -80,7 +84,9 @@ public class DeliveredOrderAdapter extends RecyclerView.Adapter<DeliveredOrderAd
             this.tv_customer.setText(deliveredOrder.getCustomerName());
             this.tv_address.setText(deliveredOrder.getAddress());
             this.tv_order_id.setText("Order ID: " + deliveredOrder.getOrderId());
-            this.tv_ordered_at.setText(deliveredOrder.getOrderedAt());
+            this.tv_ordered_at.setText(deliveredOrder.getOrderedAt().substring(11, 16));
+            this.tv_product_quantity.setText(deliveredOrder.getCount() + "");
+            this.tv_ordered_date.setText(deliveredOrder.getOrderedAt().substring(0, 11));
         }
     }
 

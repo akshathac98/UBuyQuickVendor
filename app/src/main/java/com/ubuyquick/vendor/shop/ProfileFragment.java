@@ -244,7 +244,7 @@ public class ProfileFragment extends Fragment {
                             Toast.makeText(getContext(), "Field cannot be empty", Toast.LENGTH_SHORT).show();
                         } else {
                             minimum_order = Double.parseDouble(amount.getText().toString());
-                            tv_shipping.setText("Minimum Order: \u20B9" + minimum_order);
+                            tv_minimum.setText("Minimum Order: \u20B9" + minimum_order);
                             Map<String, Object> info = new HashMap<>();
                             info.put("minimum_order", minimum_order);
                             if (LOGIN_MODE == 1) {

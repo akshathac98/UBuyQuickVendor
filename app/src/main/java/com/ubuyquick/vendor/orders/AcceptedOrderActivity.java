@@ -130,14 +130,13 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                             tv_product_count.setText(task.getResult().getDocuments().size() + "");
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> product = document.getData();
-                                order_total += Double.parseDouble(product.get("mrp").toString()) *
-                                        Double.parseDouble(product.get("quantity").toString());
+//                                order_total += Double.parseDouble(product.get("mrp").toString()) *
+//                                        Double.parseDouble(product.get("quantity").toString());
                                 orderProducts.add(new OrderProduct(document.getId(), product.get("name").toString(),
                                         Integer.parseInt(product.get("quantity").toString()), Double.parseDouble(product.get("mrp").toString())
                                         , product.get("image_url").toString(), true));
                             }
                             orderProductAdapter.setOrderProducts(orderProducts);
-                            tv_order_total.setText("\u20B9" + order_total);
                         }
                     }
                 });
@@ -202,6 +201,8 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                                                     deliveredOrder.put("customer_name", order.get("customer_name").toString());
                                                     deliveredOrder.put("order_id", order.get("order_id").toString());
                                                     deliveredOrder.put("ordered_at", order.get("ordered_at").toString());
+                                                    deliveredOrder.put("count", order.get("count").toString());
+                                                    deliveredOrder.put("order_total", order.get("order_total").toString());
                                                     deliveredOrder.put("customer_id", order.get("customer_id").toString());
                                                     deliveredOrder.put("delivery_address", order.get("delivery_address").toString());
 
@@ -270,6 +271,7 @@ public class AcceptedOrderActivity extends AppCompatActivity {
                             tv_agent.setText(order.get("delivery_agent_name").toString());
                             tv_address.setText(order.get("delivery_address").toString());
                             tv_order_id.setText(order_id);
+                            tv_order_total.setText("\u20B9" + order.get("order_total").toString());
                             tv_ordered_at.setText(order.get("ordered_at").toString());
 
                             if (!order.get("slot").toString().equals("Pick Up") && !order.get("slot").toString()

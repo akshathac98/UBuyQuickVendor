@@ -6,14 +6,24 @@ public class DeliveredOrder {
     private String customer_name;
     private String customer_id;
     private String address;
+    private int count;
     private String ordered_at;
 
-    public DeliveredOrder(String order_id, String customer_name, String customer_id, String address, String ordered_at) {
+    public DeliveredOrder(String order_id, String customer_name, String customer_id, String address, String ordered_at, int count) {
         this.order_id = order_id;
+        this.count = count;
         this.customer_name = customer_name;
         this.customer_id = customer_id;
         this.address = address;
         this.ordered_at = ordered_at;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public String getOrderId() {
