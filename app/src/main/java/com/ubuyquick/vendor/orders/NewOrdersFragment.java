@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +20,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.R;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class NewOrdersFragment extends Fragment {
+public class NewOrdersFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "NewOrdersFragment";
 
@@ -38,6 +38,7 @@ public class NewOrdersFragment extends Fragment {
     private FirebaseFirestore db;
 
     private RelativeLayout relativeLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout.LayoutParams layoutParams;
     private RecyclerView orderList;
     private NewOrderAdapter newOrderAdapter;
@@ -55,6 +56,8 @@ public class NewOrdersFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         relativeLayout = (RelativeLayout) view.findViewById(R.id.relLayout1);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(this);
         layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
@@ -81,7 +84,7 @@ public class NewOrdersFragment extends Fragment {
                                         Map<String, Object> order = document.getData();
                                         newOrders.add(new NewOrder(order.get("order_id").toString(), order.get("customer_name").toString()
                                                 , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString()
-                                        , Integer.parseInt(order.get("count").toString())));
+                                                , Integer.parseInt(order.get("count").toString())));
                                     }
                                     newOrderAdapter.setNewOrders(newOrders);
                                 } else {
@@ -131,4 +134,71 @@ public class NewOrdersFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onRefresh() {
+
+        newOrders.clear();
+        newOrderAdapter.notifyDataSetChanged();
+
+        if (LOGIN_MODE == 1) {
+
+            db.collection("vendors").document(getArguments().getString("vendor_id")).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult().getDocuments().size() > 0) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Log.d(TAG, document.getId() + " => " + document.getData());
+                                        Map<String, Object> order = document.getData();
+                                        newOrders.add(new NewOrder(order.get("order_id").toString(), order.get("customer_name").toString()
+                                                , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString()
+                                                , Integer.parseInt(order.get("count").toString())));
+                                    }
+                                    newOrderAdapter.setNewOrders(newOrders);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                } else {
+                                    TextView no_orders = new TextView(getContext());
+                                    no_orders.setLayoutParams(layoutParams);
+                                    no_orders.setText("You have no new orders yet.");
+                                    relativeLayout.addView(no_orders);
+                                }
+                            } else {
+                                Log.d(TAG, "onComplete: error getting documents: " + task.getException());
+                            }
+                        }
+                    });
+        } else {
+
+
+            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult().getDocuments().size() > 0) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Log.d(TAG, document.getId() + " => " + document.getData());
+                                        Map<String, Object> order = document.getData();
+                                        newOrders.add(new NewOrder(order.get("order_id").toString(), order.get("customer_name").toString()
+                                                , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString(),
+                                                Integer.parseInt(order.get("count").toString())));
+                                    }
+                                    newOrderAdapter.setNewOrders(newOrders);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                } else {
+                                    TextView no_orders = new TextView(getContext());
+                                    no_orders.setLayoutParams(layoutParams);
+                                    no_orders.setText("You have no new orders yet.");
+                                    relativeLayout.addView(no_orders);
+                                }
+                            } else {
+                                Log.d(TAG, "onComplete: error getting documents: " + task.getException());
+                            }
+                        }
+                    });
+        }
+    }
 }

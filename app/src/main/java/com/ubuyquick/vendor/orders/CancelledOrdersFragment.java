@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CancelledOrdersFragment extends Fragment {
+public class CancelledOrdersFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "CancelledOrdersFragment";
 
@@ -38,6 +39,7 @@ public class CancelledOrdersFragment extends Fragment {
     private FirebaseFirestore db;
 
     private RelativeLayout relativeLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout.LayoutParams layoutParams;
     private RecyclerView orderList;
     private CancelledOrderAdapter cancelledOrderAdapter;
@@ -56,6 +58,8 @@ public class CancelledOrdersFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         relativeLayout = (RelativeLayout) view.findViewById(R.id.relLayout1);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(this);
         layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
@@ -103,5 +107,41 @@ public class CancelledOrdersFragment extends Fragment {
                 });
 
         return view;
+    }
+
+    @Override
+    public void onRefresh() {
+
+        cancelledOrders.clear();
+        cancelledOrderAdapter.notifyDataSetChanged();
+
+        db.collection("vendors").document(number)
+                .collection("shops").document(getArguments().getString("shop_id")).collection("cancelled_orders")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult().getDocuments().size() > 0) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Map<String, Object> order = document.getData();
+                                    cancelledOrders.add(new CancelledOrder(order.get("order_id").toString(), order.get("customer_name").toString()
+                                            , order.get("customer_id").toString(), order.get("delivery_address").toString(), order.get("ordered_at").toString(),
+                                            Integer.parseInt(order.get("count").toString())));
+                                }
+                                cancelledOrderAdapter.setCancelledOrders(cancelledOrders);
+                                swipeRefreshLayout.setRefreshing(false);
+                            } else {
+                                TextView no_orders = new TextView(getContext());
+                                no_orders.setLayoutParams(layoutParams);
+                                no_orders.setText("Good job. No orders cancelled.");
+                                relativeLayout.addView(no_orders);
+                            }
+                        } else {
+                            Log.d(TAG, "onComplete: error getting documents: " + task.getException());
+                        }
+                    }
+                });
     }
 }
