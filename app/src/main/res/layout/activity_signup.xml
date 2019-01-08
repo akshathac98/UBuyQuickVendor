@@ -151,7 +151,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:layout_above="@id/btn_signup"
+            android:layout_below="@id/textView6"
             android:id="@+id/textView7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -5,33 +5,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.ubuyquick.vendor.CategoryActivity;
 import com.ubuyquick.vendor.R;
-import com.ubuyquick.vendor.SubCategoryActivity;
 import com.ubuyquick.vendor.adapter.CategoryListAdapter;
-import com.ubuyquick.vendor.adapter.InventoryProductAdapter;
-import com.ubuyquick.vendor.model.InventoryProduct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +59,6 @@ public class InventoryFragment extends Fragment {
         healthenergydrinks.add("Chocolate And Health");
 
 
-
         laundrydetergents = new ArrayList<>();
         laundrydetergents.add("Detergent Powders");
         laundrydetergents.add("Liquid Detergents");
@@ -90,7 +73,7 @@ public class InventoryFragment extends Fragment {
         cleaners = new ArrayList<>();
         cleaners.add("Toilet Cleaner");
         cleaners.add("Floor Cleaner");
-        cleaners.add("MultiPurpose Cleaner");
+        cleaners.add("Multipurpose Cleaners");
 
         repellents = new ArrayList<>();
         repellents.add("Mosquito Repellents");
@@ -104,7 +87,6 @@ public class InventoryFragment extends Fragment {
         otherneeds = new ArrayList<>();
         otherneeds.add("Batteries");
         otherneeds.add("Trash Bags");
-
 
 
         bathbody = new ArrayList<>();
@@ -148,9 +130,8 @@ public class InventoryFragment extends Fragment {
         healthwellness.add("Health Supplements");
 
 
-
         milkproducts = new ArrayList<>();
-        milkproducts.add("Lassi And Flavoured Milk And Milk Shakes");
+        milkproducts.add("Lassi And Flavored Milk And Milk Shakes");
         milkproducts.add("Cream And Whitener");
 
         buttercheese = new ArrayList<>();
@@ -171,7 +152,6 @@ public class InventoryFragment extends Fragment {
         jamshoneyspreads.add("Food Spreads");
         jamshoneyspreads.add("Peanut Butter And Mayonnaise");
         jamshoneyspreads.add("Dressing And Dips");
-
 
 
         biscuitscookies = new ArrayList<>();
@@ -196,8 +176,6 @@ public class InventoryFragment extends Fragment {
         sweets = new ArrayList<>();
         sweets.add("Instant Mixes");
         sweets.add("Sweets");
-
-
 
 
         noodlesvermicelli = new ArrayList<>();
@@ -236,7 +214,7 @@ public class InventoryFragment extends Fragment {
         groceriesstaples = new ArrayList<String>();
         groceriesstaples.add("Atta And Other Flours");
         groceriesstaples.add("Moong And Toor Dal");
-        groceriesstaples.add("Urad and Channa Dal");
+        groceriesstaples.add("Urad And Channa Dal");
         groceriesstaples.add("Other Pulses");
 
         riceothergrains = new ArrayList<>();
@@ -280,6 +258,9 @@ public class InventoryFragment extends Fragment {
 
         petfood = new ArrayList<>();
         petfood.add("Pigeon Food");
+
+        ArrayList<String> diwali = new ArrayList<>();
+        diwali.add("Haldirams Diwali Gift Packs");
 
         subsubcategories = new HashMap<>();
 
@@ -338,6 +319,8 @@ public class InventoryFragment extends Fragment {
         subsubcategories.put("Fruits And Vegitables", fruitsandveg);
 
         subsubcategories.put("Pet Food", petfood);
+
+        subsubcategories.put("Diwali Gift Packs", diwali);
     }
 
     @Nullable
@@ -360,6 +343,7 @@ public class InventoryFragment extends Fragment {
         listDataHeader.add("Biscuits Snacks And Chocolates");
         listDataHeader.add("Noodles Sauces And Instant Food");
         listDataHeader.add("Baby And Kids");
+        listDataHeader.add("Pet Supplies");
 
         // Adding child data
         List<String> beverages = new ArrayList<String>();
@@ -425,6 +409,10 @@ public class InventoryFragment extends Fragment {
         staples.add("Ghee And Vanaspathi");
         staples.add("Spices");
         staples.add("Masala");
+        staples.add("Diwali Gift Packs");
+
+        List<String> pet = new ArrayList<>();
+        pet.add("Pet Food");
 
         listDataChild.put(listDataHeader.get(0), staples);
         listDataChild.put(listDataHeader.get(1), beverages);
@@ -434,6 +422,7 @@ public class InventoryFragment extends Fragment {
         listDataChild.put(listDataHeader.get(5), biscuits);
         listDataChild.put(listDataHeader.get(6), noodles);
         listDataChild.put(listDataHeader.get(7), baby);
+        listDataChild.put(listDataHeader.get(8), pet);
 
         categoryListAdapter = new CategoryListAdapter(getContext(), listDataHeader, listDataChild);
 

@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ubuyquick.vendor.R;
@@ -72,7 +73,7 @@ public class NewOrdersFragment extends Fragment implements SwipeRefreshLayout.On
 
         if (LOGIN_MODE == 1) {
 
-            db.collection("vendors").document(getArguments().getString("vendor_id")).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders")
+            db.collection("vendors").document(getArguments().getString("vendor_id")).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders").orderBy("ordered_at", Query.Direction.DESCENDING)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -101,7 +102,7 @@ public class NewOrdersFragment extends Fragment implements SwipeRefreshLayout.On
         } else {
 
 
-            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders")
+            db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders").orderBy("ordered_at", Query.Direction.DESCENDING)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -143,7 +144,7 @@ public class NewOrdersFragment extends Fragment implements SwipeRefreshLayout.On
         if (LOGIN_MODE == 1) {
 
             db.collection("vendors").document(getArguments().getString("vendor_id")).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders")
-                    .get()
+                    .orderBy("ordered_at", Query.Direction.DESCENDING).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -173,7 +174,7 @@ public class NewOrdersFragment extends Fragment implements SwipeRefreshLayout.On
 
 
             db.collection("vendors").document(mAuth.getCurrentUser().getPhoneNumber().substring(3)).collection("shops").document(getArguments().getString("shop_id")).collection("new_orders")
-                    .get()
+                    .orderBy("ordered_at", Query.Direction.DESCENDING).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {

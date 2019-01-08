@@ -34,6 +34,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -181,7 +182,7 @@ public class EditShopProfileActivity extends AppCompatActivity {
                 }
 
                 StorageReference storageReference = storage.getReference().child(mobile_number).child(et_shop_name.getText().toString())
-                        .child("shop_image.jpg");
+                        .child("shop_image_" + Timestamp.now() + ".jpg");
 
                 img_shop.setDrawingCacheEnabled(true);
                 img_shop.buildDrawingCache();
@@ -246,7 +247,6 @@ public class EditShopProfileActivity extends AppCompatActivity {
                                         }
                                     });
                         } else {
-
                             db.collection("vendors").document(mobile_number).collection("shops").document(shop_id).update(shop)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
@@ -276,8 +276,6 @@ public class EditShopProfileActivity extends AppCompatActivity {
                                             Toast.makeText(EditShopProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
-
-
                         }
 
                     }
